@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EffectType.h"
+#include "EffectEnums.h"
 #include "EffectData.generated.h"
 /**
  * 
@@ -16,6 +16,9 @@ struct ROUGELIKEWUXIA_API FEffectData
 public:
 	UPROPERTY(EditAnywhere)
 		EEffectType EffectType;
+
+	UPROPERTY(EditAnywhere)
+		EEffectSustainType SustainType;
 
 	UPROPERTY(EditAnywhere)
 		int LastRoundNumber;

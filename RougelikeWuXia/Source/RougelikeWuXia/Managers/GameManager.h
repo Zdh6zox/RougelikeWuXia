@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Card/CardManager.h"
-#include "RoundManager.h"
+#include "BattleManager.h"
 #include "GameManager.generated.h"
 
 class ACharacterBase;
@@ -29,9 +29,9 @@ public:
 	static AGameManager* GetGameManager(UWorld* world);
 
 	FCardManager& GetCardManager() { return m_CardManager; }
-	FRoundManager& GetRoundManager() { return m_RoundManager; }
+	FBattleManager& GetBattleManager() { return m_BattleManager; }
 
 private:
 	FCardManager m_CardManager;
-	FRoundManager m_RoundManager;
+	FBattleManager m_BattleManager;
 };

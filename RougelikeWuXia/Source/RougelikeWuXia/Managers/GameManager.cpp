@@ -26,6 +26,7 @@ void AGameManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	m_BattleManager.RoundFinishedEvent_OneP.Broadcast(1);
 }
 
 AGameManager* AGameManager::GetGameManager(UWorld* world)

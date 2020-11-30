@@ -28,8 +28,6 @@ public:
 	UPROPERTY(VisibleAnywhere, category = "Runtime Stats")
 		float CurrentHealth;
 
-	TArray<TSharedPtr<FEffectBase>> CurrentEffects;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -40,10 +38,4 @@ public:
 
 	virtual void TurnTick(int roundNum);
 	virtual void ForceEndTurn(/*EndReason*/) {}
-
-	void ReceiveEffect(TSharedPtr<FEffectBase> newEffect);
-	void ClearEffect(){}
-
-private:
-	void TickEffect(int roundNum);
 };

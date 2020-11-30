@@ -30,26 +30,4 @@ void ACharacterBase::Tick(float DeltaTime)
 void ACharacterBase::TurnTick(int roundNum)
 {
 	UE_LOG(LogMain, Log, TEXT("%s tick round %d"), *GetName(), roundNum);
-
-	TickEffect(roundNum);
-}
-
-void ACharacterBase::TickEffect(int roundNum)
-{
-	UE_LOG(LogMain, Log, TEXT("%s tick effect"), *GetName());
-}
-
-void ACharacterBase::ReceiveEffect(TSharedPtr<FEffectBase> newEffect)
-{
-	//add up same type effect
-	for (auto& effect : CurrentEffects)
-	{
-		if (effect->GetEffectType() == newEffect->GetEffectType())
-		{
-			effect->IncreaseAmount(newEffect->GetAmount());
-			return;
-		}
-	}
-
-	CurrentEffects.Add(newEffect);
 }
