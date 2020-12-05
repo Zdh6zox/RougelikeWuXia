@@ -1,0 +1,19 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+/**
+ * 
+ */
+UENUM(BlueprintType)
+enum class ERoundPhaseType : uint8
+{
+	RoundStart,
+	PreparePhase,
+	ParticipantTurnStart,
+	ParticipantTurnExecute,
+	ParticipantTurnEnd,
+	RoundEnd
+};
