@@ -31,6 +31,11 @@ public:
 	FCardManager& GetCardManager() { return m_CardManager; }
 	FBattleManager& GetBattleManager() { return m_BattleManager; }
 
+public:
+	//Test Functions
+	UFUNCTION(BlueprintCallable, category = "Test_Battle")
+		void TestBeginBattle();
+
 private:
 	FCardManager m_CardManager;
 	FBattleManager m_BattleManager;

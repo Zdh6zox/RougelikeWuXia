@@ -27,6 +27,11 @@ void FBattleManager::BeginBattle(const TArray<ACharacterBase *> characters)
 #endif
 }
 
+void FBattleManager::SetCurrentRoundPhase(ERoundPhaseType curRoundPhase)
+{
+	m_CurRoundPhase = curRoundPhase;
+}
+
 void FBattleManager::EndBattle()
 {
 #ifdef WITH_EDITOR

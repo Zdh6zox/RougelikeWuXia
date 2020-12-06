@@ -44,6 +44,8 @@ public:
 	void UpdateBattle();
 
 	inline ERoundPhaseType GetCurrentRoundPhase() const { return m_CurRoundPhase; }
+	void SetCurrentRoundPhase(ERoundPhaseType curRoundPhase);
+
 private:
 	ERoundPhaseType m_CurRoundPhase;
 	int m_CurrentRoundNum;

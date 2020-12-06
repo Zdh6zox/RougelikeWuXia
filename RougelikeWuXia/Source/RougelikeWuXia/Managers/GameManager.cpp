@@ -38,3 +38,22 @@ AGameManager* AGameManager::GetGameManager(UWorld* world)
 
 	return nullptr;
 }
+
+
+//Test Functions
+void AGameManager::TestBeginBattle()
+{
+	TArray<AActor*> AllActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterBase::StaticClass(), AllActors);
+
+	TArray<ACharacterBase*> AllCharacters;
+	for (AActor* actor : AllActors)
+	{
+		ACharacterBase* character = Cast<ACharacterBase>(actor);
+		if (character != nullptr)
+		{
+			AllCharacters.Add(character);
+		}
+	}
+	m_BattleManager.BeginBattle(AllCharacters);
+}
