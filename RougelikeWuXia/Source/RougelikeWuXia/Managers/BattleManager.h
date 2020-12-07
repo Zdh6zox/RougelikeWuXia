@@ -6,6 +6,9 @@
 #include "Delegates/Delegate.h"
 #include "Delegates/IDelegateInstance.h"
 
+
+class AGameManager;
+class ACharacterBase;
 //Declare Delegates
 DECLARE_MULTICAST_DELEGATE_OneParam(FRoundFinishedEvent_OneParam, int);
 DECLARE_MULTICAST_DELEGATE_OneParam(FTurnBeginEvent_OneParam, ACharacterBase*);
@@ -13,7 +16,6 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FTurnEndEvent_OneParam, ACharacterBase*);
 /**
  * 
  */
-class AGameManager;
 class ROUGELIKEWUXIA_API FBattleManager
 {
 public:

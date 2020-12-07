@@ -4,6 +4,7 @@
 #include "BattleManager.h"
 #include "GameManager.h"
 #include "GameFramework/Actor.h"
+#include "Character/CharacterBase.h"
 #include "RougelikeWuXia.h"
 
 
@@ -16,12 +17,13 @@ void FBattleManager::BeginBattle(const TArray<ACharacterBase *> characters)
 {
 #ifdef WITH_EDITOR
 	FString battleParticipantsStr;
-	for (auto& character : characters)
+	for (const ACharacterBase* character : characters)
 	{
-		battleParticipantsStr += TEXT("%s ", *AActor::GetDebugName(character));
+        battleParticipantsStr += AActor::GetDebugName(character);
+        battleParticipantsStr += "";
 	}
 
-	UE_LOG(LogMain, Log, TEXT("%s begin combat", battleParticipantsStr));
+	UE_LOG(LogMain, Log, TEXT("%s begin combat"), *battleParticipantsStr);
 #endif
 }
 
