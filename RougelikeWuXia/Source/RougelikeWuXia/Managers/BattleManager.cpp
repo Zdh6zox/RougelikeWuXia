@@ -17,14 +17,19 @@ void FBattleManager::BeginBattle(const TArray<ACharacterBase *> characters)
 {
 #ifdef WITH_EDITOR
 	FString battleParticipantsStr;
-	for (const ACharacterBase* character : characters)
+	for (auto& character : characters)
 	{
-        battleParticipantsStr += AActor::GetDebugName(character);
-        battleParticipantsStr += "";
+		battleParticipantsStr += AActor::GetDebugName(character);
+		battleParticipantsStr += " ";
 	}
 
 	UE_LOG(LogMain, Log, TEXT("%s begin combat"), *battleParticipantsStr);
 #endif
+}
+
+void FBattleManager::SetCurrentRoundPhase(ERoundPhaseType curRoundPhase)
+{
+	m_CurRoundPhase = curRoundPhase;
 }
 
 void FBattleManager::EndBattle()
