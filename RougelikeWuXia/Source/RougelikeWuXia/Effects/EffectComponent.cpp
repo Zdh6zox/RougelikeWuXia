@@ -3,6 +3,7 @@
 
 #include "EffectComponent.h"
 #include "Effects/EffectBase.h"
+#include "Character/CharacterBase.h"
 #include "Managers/GameManager.h"
 #include "Managers/BattleManager.h"
 
@@ -23,12 +24,10 @@ void UEffectComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	m_RoundFinishedHandle = AGameManager::GetGameManager(GetWorld())->GetBattleManager().RoundFinishedEvent_OneP.AddUObject(this, &UEffectComponent::RoundFinished);
 }
 
 void UEffectComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	AGameManager::GetGameManager(GetWorld())->GetBattleManager().RoundFinishedEvent_OneP.Remove(m_RoundFinishedHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -56,7 +55,17 @@ void UEffectComponent::ReceiveEffect(TSharedPtr<FEffectBase> newEffect)
 	m_CurrentEffects.Add(newEffect);
 }
 
-void UEffectComponent::RoundFinished(int curRoundNum)
+void UEffectComponent::OnTurnBegin(ACharacterBase* turnOwner)
+{
+
+}
+
+void UEffectComponent::OnTurnEnd(ACharacterBase* turnOwner)
+{
+
+}
+
+void UEffectComponent::OnRoundFinished(int curRoundNum)
 {
 	UE_LOG(LogEffect, Error, TEXT("%s Round %d finished"), *AActor::GetDebugName(GetOwner()), curRoundNum);
 }

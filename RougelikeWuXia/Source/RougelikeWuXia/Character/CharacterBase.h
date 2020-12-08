@@ -31,11 +31,25 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void TurnTick(int roundNum);
+	virtual void OnBattleStart(const TArray<ACharacterBase*> participants);
+	virtual void OnBattleFinished(const TArray<ACharacterBase*> participants);
+	virtual void OnTurnBegin(ACharacterBase* turnOwner);
+	virtual void OnTurnEnd(ACharacterBase* turnOwner);
+	virtual void OnRoundStart(int roundNum);
+	virtual void OnRoundFinished(int roundNum);
 	virtual void ForceEndTurn(/*EndReason*/) {}
+
+protected:
+	FDelegateHandle m_BattleStartHandle;
+	FDelegateHandle m_BattleFinishedHandle;
+	FDelegateHandle m_TurnBeginHandle;
+	FDelegateHandle m_TurnEndHandle;
+	FDelegateHandle m_RoundStartHandle;
+	FDelegateHandle m_RoundFinishedHandle;
 };

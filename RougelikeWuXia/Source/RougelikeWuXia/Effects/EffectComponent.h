@@ -7,6 +7,7 @@
 #include "EffectComponent.generated.h"
 
 class FEffectBase;
+class ACharacterBase;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ROUGELIKEWUXIA_API UEffectComponent : public UActorComponent
 {
@@ -27,9 +28,10 @@ public:
 	void ReceiveEffect(TSharedPtr<FEffectBase> newEffect);
 	void ClearEffect() {}
 
-	void RoundFinished(int curRoundNum);
+	void OnRoundFinished(int curRoundNum);
+	void OnTurnBegin(ACharacterBase* turnOwner);
+	void OnTurnEnd(ACharacterBase* turnOwner);
 
 private:
 	TArray<TSharedPtr<FEffectBase>> m_CurrentEffects;
-	FDelegateHandle m_RoundFinishedHandle;
 };

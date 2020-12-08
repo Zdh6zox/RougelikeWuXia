@@ -32,4 +32,15 @@ public:
 
 	UPROPERTY(EditAnywhere, category = "Attributes")
 		int Luckiness;
+
+public:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	void OnPlayerSetupBegin();
+	void OnPlayerSetupEnd();
+
+private:
+	FDelegateHandle m_PlayerSetupStartHandle;
+	FDelegateHandle m_PlayerSetupFinishedHandle;
 };
