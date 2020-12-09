@@ -17,3 +17,12 @@ enum class ERoundPhaseType : uint8
 	ParticipantTurnEnd,
 	RoundEnd
 };
+
+UENUM(BlueprintType)
+enum class EBattlePhaseType : uint8
+{
+	NotInBattle,
+	BattleStart,
+	MainPhase,
+	Settlement
+};

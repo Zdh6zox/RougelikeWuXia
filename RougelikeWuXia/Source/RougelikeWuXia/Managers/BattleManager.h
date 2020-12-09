@@ -36,19 +36,25 @@ public:
 	FPlayerSetupPhaseStartEvent_NoParam PlayerSetupPhaseStartEvent_NoP;
 	FPlayerSetupPhaseEndEvent_NoParam PlayerSetupPhaseEndEvent_NoP;
 
-	void BeginBattle(const TArray<ACharacterBase*> characters);
+	void BeginBattle(const TArray<ACharacterBase*>& characters);
 	void EndBattle();
 	void ParticipantBeginTurn(ACharacterBase* turnOwner);
 	void ParticipantEndTurn(ACharacterBase* turnOwner);
 
 	void UpdateBattle();
+	void UpdateRound();
 
 	inline ERoundPhaseType GetCurrentRoundPhase() const { return m_CurRoundPhase; }
 	void SetCurrentRoundPhase(ERoundPhaseType curRoundPhase);
 
+	inline EBattlePhaseType GetCurrentBattlePhase() const { return m_CurBattlePhase; }
+	void SetCurrentBattlePhase(EBattlePhaseType curBattlePhase);
+
 private:
 	ERoundPhaseType m_CurRoundPhase;
+	EBattlePhaseType m_CurBattlePhase;
 	int m_CurrentRoundNum;
 	ACharacterBase* m_CurTurnOwner;
 	AGameManager* m_GameManager;
+	TArray<ACharacterBase*> m_CurBattleParticipants;
 };

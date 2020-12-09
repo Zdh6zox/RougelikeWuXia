@@ -13,8 +13,16 @@ void FBattleManager::Initialize(AGameManager* gm)
 	m_GameManager = gm;
 }
 
-void FBattleManager::BeginBattle(const TArray<ACharacterBase *> characters)
+void FBattleManager::BeginBattle(const TArray<ACharacterBase*>& characters)
 {
+	if (GetCurrentBattlePhase() != EBattlePhaseType::NotInBattle)
+	{
+#ifdef WITH_EDITOR
+		UE_LOG(LogMain, Error, TEXT("already in battle"));
+#endif // WITH_EDITOR
+
+		return;
+	}
 #ifdef WITH_EDITOR
 	FString battleParticipantsStr;
 	for (auto& character : characters)
@@ -25,6 +33,40 @@ void FBattleManager::BeginBattle(const TArray<ACharacterBase *> characters)
 
 	UE_LOG(LogMain, Log, TEXT("%s begin combat"), *battleParticipantsStr);
 #endif
+
+	m_CurBattleParticipants.Append(characters);
+	SetCurrentBattlePhase(EBattlePhaseType::BattleStart);
+	BattleFinishedEvent_OneP.Broadcast(characters);
+}
+
+void FBattleManager::SetCurrentBattlePhase(EBattlePhaseType curBattlePhase)
+{
+	if (m_CurBattlePhase == curBattlePhase)
+	{
+		return;
+	}
+
+#ifdef WITH_EDITOR
+	FString phaseStr;
+	switch (curBattlePhase)
+	{
+	case EBattlePhaseType::NotInBattle:
+		phaseStr = "Not In Battle";
+	case EBattlePhaseType::BattleStart:
+		phaseStr = "Battle Start";
+		break;
+	case EBattlePhaseType::MainPhase:
+		phaseStr = "Main Phase";
+		break;
+	case EBattlePhaseType::Settlement:
+		phaseStr = "Battle Settlement";
+		break;
+	default:
+		break;
+	}
+#endif // WITH_EDITOR
+
+	m_CurBattlePhase = curBattlePhase;
 }
 
 void FBattleManager::SetCurrentRoundPhase(ERoundPhaseType curRoundPhase)
@@ -66,9 +108,21 @@ void FBattleManager::SetCurrentRoundPhase(ERoundPhaseType curRoundPhase)
 
 void FBattleManager::EndBattle()
 {
+	if (GetCurrentBattlePhase() == EBattlePhaseType::NotInBattle)
+	{
 #ifdef WITH_EDITOR
-	UE_LOG(LogMain, Log, TEXT("End combat"));
+		UE_LOG(LogMain, Error, TEXT("already exit battle"));
+#endif // WITH_EDITOR
+
+		return;
+	}
+#ifdef WITH_EDITOR
+	UE_LOG(LogMain, Log, TEXT("end combat"));
 #endif
+
+	SetCurrentBattlePhase(EBattlePhaseType::NotInBattle);
+	BattleFinishedEvent_OneP.Broadcast(m_CurBattleParticipants);
+	m_CurBattleParticipants.Empty();
 }
 
 void FBattleManager::ParticipantBeginTurn(ACharacterBase* turnOwner)
@@ -87,5 +141,45 @@ void FBattleManager::ParticipantEndTurn(ACharacterBase* turnOwner)
 
 void FBattleManager::UpdateBattle()
 {
-	
+	switch (m_CurBattlePhase)
+	{
+	case EBattlePhaseType::NotInBattle:
+		break;
+	case EBattlePhaseType::BattleStart:
+		//Do battle start stuff
+
+		SetCurrentBattlePhase(EBattlePhaseType::MainPhase);
+		SetCurrentRoundPhase(ERoundPhaseType::RoundStart);
+		break;
+	case EBattlePhaseType::MainPhase:
+		UpdateRound();
+		break;
+	case EBattlePhaseType::Settlement:
+		//Do Settlement stuff
+		SetCurrentBattlePhase(EBattlePhaseType::NotInBattle);
+		break;
+	default:
+		break;
+	}
+}
+
+void FBattleManager::UpdateRound()
+{
+	switch (m_CurRoundPhase)
+	{
+	case ERoundPhaseType::RoundStart:
+		break;
+	case ERoundPhaseType::PreparePhase:
+		break;
+	case ERoundPhaseType::ParticipantTurnStart:
+		break;
+	case ERoundPhaseType::ParticipantTurnExecute:
+		break;
+	case ERoundPhaseType::ParticipantTurnEnd:
+		break;
+	case ERoundPhaseType::RoundEnd:
+		break;
+	default:
+		break;
+	}
 }
