@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "CharacterBase.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterDeadEvent, ACharacterBase*); //param: dead character
+DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterTurnEndEvent, ACharacterBase*); //param: turn ended character
+
 class FEffectBase;
 UCLASS()
 class ROUGELIKEWUXIA_API ACharacterBase : public AActor
@@ -28,6 +31,14 @@ public:
 	UPROPERTY(VisibleAnywhere, category = "Runtime Stats")
 		float CurrentHealth;
 
+	UPROPERTY(VisibleAnywhere, category = "Runtime Stats")
+		bool IsEnemy = false;
+
+	bool CheckIsAlive() const;
+
+	FCharacterDeadEvent CharacterDeadEvent_OneP;
+	FCharacterTurnEndEvent CharacterTurnEnd_OneP;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -44,6 +55,9 @@ public:
 	virtual void OnRoundStart(int roundNum);
 	virtual void OnRoundFinished(int roundNum);
 	virtual void ForceEndTurn(/*EndReason*/) {}
+
+	void SendCharacterDeadEvent();
+	void SendCharacterTurnEndEvent();
 
 protected:
 	FDelegateHandle m_BattleStartHandle;

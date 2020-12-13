@@ -8,6 +8,7 @@
 
 class AGameManager;
 class ACharacterBase;
+class APlayerCharacter;
 //Declare Delegates
 DECLARE_MULTICAST_DELEGATE_OneParam(FBattleStartEvent_OneParam, const TArray<ACharacterBase*>); //param: involved characters
 DECLARE_MULTICAST_DELEGATE_OneParam(FBattleFinishedEvent_OneParam, const TArray<ACharacterBase*>); //param: alive characters, can used for end battle settlement
@@ -31,7 +32,7 @@ public:
 	FRoundStartEvent_OneParam RoundStartedEvent_OneP;
 	FRoundFinishedEvent_OneParam RoundFinishedEvent_OneP;
 	FTurnBeginEvent_OneParam TurnBeginEvent_OneP;
-	FTurnBeginEvent_OneParam TurnEndEvent_OneP;
+	FTurnEndEvent_OneParam TurnEndEvent_OneP;
 
 	FPlayerSetupPhaseStartEvent_NoParam PlayerSetupPhaseStartEvent_NoP;
 	FPlayerSetupPhaseEndEvent_NoParam PlayerSetupPhaseEndEvent_NoP;
@@ -41,8 +42,16 @@ public:
 	void ParticipantBeginTurn(ACharacterBase* turnOwner);
 	void ParticipantEndTurn(ACharacterBase* turnOwner);
 
+	void EnterSolo(ACharacterBase* enemy);
+	void ExitSolo();
+
+	void EnterPlayerPhase();
+	void ExitPlayerPhase();
+
 	void UpdateBattle();
 	void UpdateRound();
+
+	bool CheckIfBattleFinished() const;
 
 	inline ERoundPhaseType GetCurrentRoundPhase() const { return m_CurRoundPhase; }
 	void SetCurrentRoundPhase(ERoundPhaseType curRoundPhase);
@@ -50,11 +59,23 @@ public:
 	inline EBattlePhaseType GetCurrentBattlePhase() const { return m_CurBattlePhase; }
 	void SetCurrentBattlePhase(EBattlePhaseType curBattlePhase);
 
+	void OnParticipantDead(ACharacterBase* participant);
+	void OnTurnEnd(ACharacterBase* turnOwner);
+
+	inline const TArray<ACharacterBase*>& GetRoundExecutionOrder() { return m_CurRoundOrderSorted; }
+
 private:
+	void SortRoundOrder(const TArray<ACharacterBase*>& participants);
+	bool PopNextTurnOwner();
+
 	ERoundPhaseType m_CurRoundPhase;
 	EBattlePhaseType m_CurBattlePhase;
 	int m_CurrentRoundNum;
 	ACharacterBase* m_CurTurnOwner;
-	AGameManager* m_GameManager;
+	APlayerCharacter* m_PlayerCharacter;
+	
 	TArray<ACharacterBase*> m_CurBattleParticipants;
+	TArray<ACharacterBase*> m_CurRoundOrderSorted;
+private:
+	AGameManager* m_GameManager;
 };

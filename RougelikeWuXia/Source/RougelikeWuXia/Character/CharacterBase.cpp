@@ -78,3 +78,13 @@ void ACharacterBase::OnBattleFinished(const TArray<ACharacterBase *> participant
 {
 
 }
+
+void ACharacterBase::SendCharacterDeadEvent()
+{
+	CharacterDeadEvent_OneP.Broadcast(this);
+}
+
+bool ACharacterBase::CheckIsAlive() const
+{
+	return CurrentHealth > 0;
+}
