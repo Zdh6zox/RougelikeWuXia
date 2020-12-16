@@ -18,28 +18,28 @@ ACharacterBase::ACharacterBase()
 // Called when the game starts or when spawned
 void ACharacterBase::BeginPlay()
 {
-	Super::BeginPlay();
-	
-	FBattleManager bm = AGameManager::GetGameManager(GetWorld())->GetBattleManager();
+	FBattleManager& bm = AGameManager::GetGameManager(GetWorld())->GetBattleManager();
 	m_BattleStartHandle = bm.BattleStartedEvent_OneP.AddUObject(this, &ACharacterBase::OnBattleStart);
 	m_BattleFinishedHandle = bm.BattleFinishedEvent_OneP.AddUObject(this, &ACharacterBase::OnBattleFinished);
 	m_TurnBeginHandle = bm.TurnBeginEvent_OneP.AddUObject(this, &ACharacterBase::OnTurnBegin);
 	m_TurnEndHandle = bm.TurnEndEvent_OneP.AddUObject(this, &ACharacterBase::OnTurnEnd);
 	m_RoundStartHandle = bm.RoundStartedEvent_OneP.AddUObject(this, &ACharacterBase::OnRoundStart);
 	m_RoundFinishedHandle = bm.RoundFinishedEvent_OneP.AddUObject(this, &ACharacterBase::OnRoundFinished);
+
+	Super::BeginPlay();
 }
 
 void ACharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
-
-	FBattleManager bm = AGameManager::GetGameManager(GetWorld())->GetBattleManager();
+	FBattleManager& bm = AGameManager::GetGameManager(GetWorld())->GetBattleManager();
 	bm.BattleStartedEvent_OneP.Remove(m_BattleStartHandle);
 	bm.BattleFinishedEvent_OneP.Remove(m_BattleFinishedHandle);
 	bm.TurnBeginEvent_OneP.Remove(m_TurnBeginHandle);
 	bm.TurnEndEvent_OneP.Remove(m_TurnEndHandle);
 	bm.RoundStartedEvent_OneP.Remove(m_RoundStartHandle);
 	bm.RoundFinishedEvent_OneP.Remove(m_RoundFinishedHandle);
+
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
@@ -61,7 +61,14 @@ void ACharacterBase::OnRoundFinished(int roundNum)
 
 void ACharacterBase::OnTurnBegin(ACharacterBase* turnOwner)
 {
+	if (turnOwner != this)
+	{
+		return;
+	}
 
+	Test_TurnExecute_BP();
+
+	SendCharacterTurnEndEvent();
 }
 
 void ACharacterBase::OnTurnEnd(ACharacterBase* turnOwner)
@@ -71,7 +78,7 @@ void ACharacterBase::OnTurnEnd(ACharacterBase* turnOwner)
 
 void ACharacterBase::OnBattleStart(const TArray<ACharacterBase *> participants)
 {
-
+	CurrentHealth = MaxHealth;
 }
 
 void ACharacterBase::OnBattleFinished(const TArray<ACharacterBase *> participants)
@@ -82,6 +89,11 @@ void ACharacterBase::OnBattleFinished(const TArray<ACharacterBase *> participant
 void ACharacterBase::SendCharacterDeadEvent()
 {
 	CharacterDeadEvent_OneP.Broadcast(this);
+}
+
+void ACharacterBase::SendCharacterTurnEndEvent()
+{
+	CharacterTurnEnd_OneP.Broadcast(this);
 }
 
 bool ACharacterBase::CheckIsAlive() const

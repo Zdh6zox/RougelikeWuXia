@@ -19,6 +19,7 @@ void AGameManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	m_BattleManager.Initialize(this);
 }
 
 // Called every frame
@@ -26,6 +27,7 @@ void AGameManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	m_BattleManager.UpdateBattle();
 }
 
 AGameManager* AGameManager::GetGameManager(UWorld* world)
@@ -38,7 +40,6 @@ AGameManager* AGameManager::GetGameManager(UWorld* world)
 
 	return nullptr;
 }
-
 
 //Test Functions
 void AGameManager::TestBeginBattle()
@@ -56,4 +57,19 @@ void AGameManager::TestBeginBattle()
 		}
 	}
 	m_BattleManager.BeginBattle(AllCharacters);
+}
+
+void AGameManager::TestPlayerAttackPhaseStart()
+{
+	m_BattleManager.EnterSolo(nullptr);
+}
+
+void AGameManager::TestPlayerAttackPhaseEnd()
+{
+	m_BattleManager.ExitSolo();
+}
+
+void AGameManager::TestPlayerPhaseEnd()
+{
+	m_BattleManager.ExitPlayerPhase();
 }

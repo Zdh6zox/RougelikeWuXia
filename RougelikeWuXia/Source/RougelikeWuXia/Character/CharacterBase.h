@@ -20,7 +20,7 @@ public:
 	ACharacterBase();
 
 	UPROPERTY(VisibleAnywhere, category = "Static Stats")
-		float MaxHealth;
+		float MaxHealth = 100;
 
 	UPROPERTY(VisibleAnywhere, category = "Static Stats")
 		float MaxStamina;
@@ -31,7 +31,7 @@ public:
 	UPROPERTY(VisibleAnywhere, category = "Runtime Stats")
 		float CurrentHealth;
 
-	UPROPERTY(VisibleAnywhere, category = "Runtime Stats")
+	UPROPERTY(EditAnywhere, category = "Runtime Stats")
 		bool IsEnemy = false;
 
 	bool CheckIsAlive() const;
@@ -43,6 +43,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+public:
+	UFUNCTION(BlueprintImplementableEvent, category = "Test_CharacterFunc")
+		void Test_TurnExecute_BP();
 
 public:	
 	// Called every frame

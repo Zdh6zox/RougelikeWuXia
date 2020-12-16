@@ -36,6 +36,15 @@ public:
 	UFUNCTION(BlueprintCallable, category = "Test_Battle")
 		void TestBeginBattle();
 
+	UFUNCTION(BlueprintCallable, category = "Test_Battle")
+		void TestPlayerPhaseEnd();
+
+	UFUNCTION(BlueprintCallable, category = "Test_Battle")
+		void TestPlayerAttackPhaseStart();
+
+	UFUNCTION(BlueprintCallable, category = "Test_Battle")
+		void TestPlayerAttackPhaseEnd();
+
 private:
 	FCardManager m_CardManager;
 	FBattleManager m_BattleManager;

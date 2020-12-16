@@ -8,10 +8,30 @@
 #include "Character/PlayerCharacter.h"
 #include "RougelikeWuXia.h"
 
-
 void FBattleManager::Initialize(AGameManager* gm)
 {
 	m_GameManager = gm;
+	m_CurBattleParticipants.Empty();
+}
+
+void FBattleManager::RegisterBattleEvent(ACharacterBase* character)
+{
+	BattleStartedEvent_OneP.AddUObject(character, &ACharacterBase::OnBattleStart);
+	BattleFinishedEvent_OneP.AddUObject(character, &ACharacterBase::OnBattleFinished);
+	TurnBeginEvent_OneP.AddUObject(character, &ACharacterBase::OnTurnBegin);
+	TurnEndEvent_OneP.AddUObject(character, &ACharacterBase::OnTurnEnd);
+	RoundStartedEvent_OneP.AddUObject(character, &ACharacterBase::OnRoundStart);
+	RoundFinishedEvent_OneP.AddUObject(character, &ACharacterBase::OnRoundFinished);
+}
+
+void FBattleManager::UnregisterBattleEvent(ACharacterBase* character)
+{
+	BattleStartedEvent_OneP.RemoveAll(character);
+	BattleFinishedEvent_OneP.RemoveAll(character);
+	TurnBeginEvent_OneP.RemoveAll(character);
+	TurnEndEvent_OneP.RemoveAll(character);
+	RoundStartedEvent_OneP.RemoveAll(character);
+	RoundFinishedEvent_OneP.RemoveAll(character);
 }
 
 void FBattleManager::BeginBattle(const TArray<ACharacterBase*>& characters)
@@ -35,7 +55,9 @@ void FBattleManager::BeginBattle(const TArray<ACharacterBase*>& characters)
 #endif
 	for (auto& character : characters)
 	{
-		character->CharacterDeadEvent_OneP.AddSP(this, &FBattleManager::OnParticipantDead);
+		//RegisterBattleEvent(character);
+		character->CharacterDeadEvent_OneP.AddSP(MakeShared<FBattleManager>(*this), &FBattleManager::OnParticipantDead);
+		character->CharacterTurnEnd_OneP.AddSP(MakeShared<FBattleManager>(*this), &FBattleManager::OnTurnEnd);
 		if (character->IsA<APlayerCharacter>())
 		{
 			m_PlayerCharacter = Cast<APlayerCharacter>(character);
@@ -44,7 +66,7 @@ void FBattleManager::BeginBattle(const TArray<ACharacterBase*>& characters)
 
 	m_CurBattleParticipants.Append(characters);
 	SetCurrentBattlePhase(EBattlePhaseType::BattleStart);
-	BattleFinishedEvent_OneP.Broadcast(characters);
+	BattleStartedEvent_OneP.Broadcast(characters);
 }
 
 void FBattleManager::SetCurrentBattlePhase(EBattlePhaseType curBattlePhase)
@@ -73,6 +95,8 @@ void FBattleManager::SetCurrentBattlePhase(EBattlePhaseType curBattlePhase)
 	default:
 		break;
 	}
+
+	UE_LOG(LogMain, Log, TEXT("Enter Battle Phase : %s"), *phaseStr);
 #endif // WITH_EDITOR
 
 	m_CurBattlePhase = curBattlePhase;
@@ -92,8 +116,8 @@ void FBattleManager::SetCurrentRoundPhase(ERoundPhaseType curRoundPhase)
 	case ERoundPhaseType::RoundStart:
 		phaseStr = "Round Start";
 		break;
-	case ERoundPhaseType::PlayerPreparePhase:
-		phaseStr = "Player Prepare Phase";
+	case ERoundPhaseType::PlayerPhase:
+		phaseStr = "Player Phase";
 		break;
 	case ERoundPhaseType::PlayerAttackPhase:
 		phaseStr = "Player Attack Phase";
@@ -113,7 +137,7 @@ void FBattleManager::SetCurrentRoundPhase(ERoundPhaseType curRoundPhase)
 	default:
 		break;
 	}
-	UE_LOG(LogMain, Log, TEXT("Enter Phase : %s"), *phaseStr);
+	UE_LOG(LogMain, Log, TEXT("Enter Round Phase : %s"), *phaseStr);
 #endif
 	m_CurRoundPhase = curRoundPhase;
 }
@@ -134,6 +158,10 @@ void FBattleManager::EndBattle()
 
 	SetCurrentBattlePhase(EBattlePhaseType::NotInBattle);
 	BattleFinishedEvent_OneP.Broadcast(m_CurBattleParticipants);
+	for (auto& character : m_CurBattleParticipants)
+	{
+		//UnregisterBattleEvent(character);
+	}
 	m_CurBattleParticipants.Empty();
 }
 
@@ -177,10 +205,9 @@ void FBattleManager::UpdateBattle()
 		break;
 	case EBattlePhaseType::BattleStart:
 		//Do battle start stuff
-
-		SetCurrentBattlePhase(EBattlePhaseType::MainPhase);
 		m_CurrentRoundNum = 0;
 		SetCurrentRoundPhase(ERoundPhaseType::RoundStart);
+		SetCurrentBattlePhase(EBattlePhaseType::MainPhase);
 		break;
 	case EBattlePhaseType::MainPhase:
 		if (!CheckIfBattleFinished())
@@ -194,7 +221,7 @@ void FBattleManager::UpdateBattle()
 		break;
 	case EBattlePhaseType::Settlement:
 		//Do Settlement stuff
-		SetCurrentBattlePhase(EBattlePhaseType::NotInBattle);
+		EndBattle();
 		break;
 	default:
 		break;
@@ -221,7 +248,7 @@ void FBattleManager::UpdateRound()
 		}
 		break;
 	}
-	case ERoundPhaseType::PlayerPreparePhase:
+	case ERoundPhaseType::PlayerPhase:
 		break;
 	case ERoundPhaseType::PlayerAttackPhase:
 		break;
@@ -250,6 +277,7 @@ void FBattleManager::UpdateRound()
 	}
 	case ERoundPhaseType::RoundEnd:
 		RoundFinishedEvent_OneP.Broadcast(m_CurrentRoundNum);
+		SetCurrentRoundPhase(ERoundPhaseType::RoundStart);
 		break;
 	default:
 		break;
@@ -273,9 +301,9 @@ bool FBattleManager::CheckIfBattleFinished() const
 	}
 
 	//Check if player is dead
-	bool isPlayerDead = m_PlayerCharacter->CheckIsAlive();
+	bool isPlayerAlive = m_PlayerCharacter->CheckIsAlive();
 
-	return !(hasEnemy && !isPlayerDead);
+	return !(hasEnemy && isPlayerAlive);
 }
 
 bool FBattleManager::PopNextTurnOwner()
@@ -296,12 +324,17 @@ void FBattleManager::OnParticipantDead(ACharacterBase* participant)
 
 void FBattleManager::OnTurnEnd(ACharacterBase* turnOwner)
 {
+	if (turnOwner != m_CurTurnOwner)
+	{
+		return;
+	}
+
 	SetCurrentRoundPhase(ERoundPhaseType::ParticipantTurnEnd);
 }
 
 void FBattleManager::EnterPlayerPhase()
 {
-	SetCurrentRoundPhase(ERoundPhaseType::PlayerPreparePhase);
+	SetCurrentRoundPhase(ERoundPhaseType::PlayerPhase);
 }
 
 void FBattleManager::ExitPlayerPhase()
@@ -311,7 +344,7 @@ void FBattleManager::ExitPlayerPhase()
 
 void FBattleManager::EnterSolo(ACharacterBase* enemy)
 {
-	if (m_CurBattlePhase != EBattlePhaseType::MainPhase || m_CurRoundPhase != ERoundPhaseType::PlayerPreparePhase)
+	if (m_CurBattlePhase != EBattlePhaseType::MainPhase || m_CurRoundPhase != ERoundPhaseType::PlayerPhase)
 	{
 		return;
 	}
@@ -321,5 +354,5 @@ void FBattleManager::EnterSolo(ACharacterBase* enemy)
 
 void FBattleManager::ExitSolo()
 {
-	SetCurrentRoundPhase(ERoundPhaseType::PlayerPreparePhase);
+	SetCurrentRoundPhase(ERoundPhaseType::PlayerPhase);
 }

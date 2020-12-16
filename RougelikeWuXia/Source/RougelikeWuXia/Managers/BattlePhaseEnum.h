@@ -11,7 +11,7 @@ UENUM(BlueprintType)
 enum class ERoundPhaseType : uint8
 {
 	RoundStart,
-	PlayerPreparePhase,
+	PlayerPhase,
 	PlayerAttackPhase,
 	ParticipantTurnStart,
 	ParticipantTurnExecute,

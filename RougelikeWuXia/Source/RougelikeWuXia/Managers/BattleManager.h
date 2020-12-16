@@ -62,6 +62,9 @@ public:
 	void OnParticipantDead(ACharacterBase* participant);
 	void OnTurnEnd(ACharacterBase* turnOwner);
 
+	void RegisterBattleEvent(ACharacterBase* character);
+	void UnregisterBattleEvent(ACharacterBase* character);
+
 	inline const TArray<ACharacterBase*>& GetRoundExecutionOrder() { return m_CurRoundOrderSorted; }
 
 private:
