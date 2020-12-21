@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Utils/BattleLog.h"
 #include "BattlePhaseEnum.h"
 
 
 class AGameManager;
 class ACharacterBase;
 class APlayerCharacter;
+class FBattleLog;
 //Declare Delegates
 DECLARE_MULTICAST_DELEGATE_OneParam(FBattleStartEvent_OneParam, const TArray<ACharacterBase*>); //param: involved characters
 DECLARE_MULTICAST_DELEGATE_OneParam(FBattleFinishedEvent_OneParam, const TArray<ACharacterBase*>); //param: alive characters, can used for end battle settlement
@@ -81,4 +83,5 @@ private:
 	TArray<ACharacterBase*> m_CurRoundOrderSorted;
 private:
 	AGameManager* m_GameManager;
+    FBattleLog m_Log;
 };
