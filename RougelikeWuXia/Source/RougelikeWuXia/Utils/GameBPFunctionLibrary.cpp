@@ -3,10 +3,31 @@
 
 #include "GameBPFunctionLibrary.h"
 #include "Card/CardBase.h"
+#include "Managers/GameManager.h"
+#include "Managers/BattleManager.h"
+#include "Card/CardManager.h"
+#include "RougelikeWuXia.h"
 
-UCardBase* UGameBPFunctionLibrary::CreateNewCard(UObject* outer, FCardData data)
+UCardBase* UGameBPFunctionLibrary::CreateNewCard(UObject* outer, int cardID)
 {
-    UCardBase* newCard = NewObject<UCardBase>(outer, UCardBase::StaticClass(), NAME_None);
-    newCard->InitializeFromCardData(data);
-    return newCard;
+    if (outer == nullptr)
+    {
+        UE_LOG(LogMain, Error, TEXT("outer cannot be null!"));
+        return nullptr;
+    }
+
+    UWorld* world = outer->GetWorld();
+    if (world == nullptr)
+    {
+        UE_LOG(LogMain, Error, TEXT("world cannot be found!"));
+        return nullptr;
+    }
+
+    AGameManager* gm = GetGameManager(world);
+    return gm->GetCardManager().CreateCardViaCardID((uint32)cardID);
+}
+
+AGameManager* UGameBPFunctionLibrary::GetGameManager(UWorld* world)
+{
+    return AGameManager::GetGameManager(world);
 }

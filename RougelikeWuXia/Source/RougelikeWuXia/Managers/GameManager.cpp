@@ -4,6 +4,7 @@
 #include "GameManager.h"
 #include "EngineUtils.h"
 #include "Character/CharacterBase.h"
+#include "Engine/DataTable.h" 
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -20,6 +21,7 @@ void AGameManager::BeginPlay()
 	Super::BeginPlay();
 	
 	m_BattleManager.Initialize(this);
+    m_CardManager.InitializeManager(this);
 }
 
 // Called every frame

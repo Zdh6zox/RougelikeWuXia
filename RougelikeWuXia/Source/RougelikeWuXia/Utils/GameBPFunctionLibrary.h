@@ -9,6 +9,7 @@
 
 class UCardBase;
 class AGameManager;
+class UWorld;
 /**
  * 
  */
@@ -19,5 +20,8 @@ class ROUGELIKEWUXIA_API UGameBPFunctionLibrary : public UBlueprintFunctionLibra
 	
 public:
     UFUNCTION(BlueprintCallable, Category = "Card BP Function")
-        static UCardBase* CreateNewCard(UObject* outer, FCardData data);
+        static UCardBase* CreateNewCard(UObject* outer, int cardID);
+
+    UFUNCTION(BlueprintCallable, Category = "Basic BP Function")
+        static AGameManager* GetGameManager(UWorld* world);
 };

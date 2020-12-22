@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditAnywhere, category = "Attributes")
 		int Luckiness;
 
+    UPROPERTY(EditAnywhere, category = "Deck")
+        TArray<uint32> CardDeck;
+
 public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

@@ -9,6 +9,7 @@
 #include "GameManager.generated.h"
 
 class ACharacterBase;
+class UDataTable;
 UCLASS()
 class ROUGELIKEWUXIA_API AGameManager : public AActor
 {
@@ -44,6 +45,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, category = "Test_Battle")
 		void TestPlayerAttackPhaseEnd();
+
+public:
+    UPROPERTY(EditAnywhere, category = "Data Tables")
+        UDataTable* CardDataTable;
 
 private:
 	FCardManager m_CardManager;
