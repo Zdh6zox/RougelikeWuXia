@@ -11,6 +11,7 @@
 /**
  * 
  */
+class UTexture;
 USTRUCT(BlueprintType)
 struct ROUGELIKEWUXIA_API FCardData : public FTableRowBase
 {
@@ -20,8 +21,14 @@ public:
 	UPROPERTY(EditAnywhere)
 		uint32 CardID;
 
+    UPROPERTY(EditAnywhere)
+        ECardType CardType;
+
 	UPROPERTY(EditAnywhere)
-		FString CardName;
+		FText CardName;
+
+    UPROPERTY(EditAnywhere)
+        UTexture* CardPic;
 
 	UPROPERTY(EditAnywhere)
 		bool IsComposite;
@@ -33,7 +40,7 @@ public:
 		ECardNatureType NatureType;
 
 	UPROPERTY(EditAnywhere) 
-		FString CardDescription;
+        FText CardDescription;
 };
 
 USTRUCT(BlueprintType)

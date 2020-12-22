@@ -21,3 +21,11 @@ enum class ECardNatureType : uint8
 	Yin UMETA(DisplayName = "阴"),
 	Neutral UMETA(DisplayName = "中庸")
 };
+
+UENUM(BlueprintType)
+enum class ECardType : uint8
+{
+    Item UMETA(DisplayName = "物品"),
+    Skill UMETA(DisplayName = "招式"),
+    Intention UMETA(DisplayName = "意图")
+};
