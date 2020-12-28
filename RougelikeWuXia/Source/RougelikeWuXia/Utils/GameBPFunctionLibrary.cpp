@@ -31,3 +31,18 @@ AGameManager* UGameBPFunctionLibrary::GetGameManager(UWorld* world)
 {
     return AGameManager::GetGameManager(world);
 }
+
+FWidgetTransform UGameBPFunctionLibrary::LerpWidgetTransform(FWidgetTransform currentTrans, FWidgetTransform targetTrans, float ratio)
+{
+	FVector2D newTranslation = FMath::Lerp(currentTrans.Translation, targetTrans.Translation, ratio);
+	FVector2D newShear = FMath::Lerp(currentTrans.Shear, targetTrans.Shear, ratio);
+	FVector2D newScale = FMath::Lerp(currentTrans.Scale, targetTrans.Scale, ratio);
+	float newAngle = FMath::Lerp(currentTrans.Angle, targetTrans.Angle, ratio);
+
+	return FWidgetTransform(newTranslation, newScale, newShear, newAngle);
+}
+
+bool UGameBPFunctionLibrary::WidgetTransformEqual(const FWidgetTransform& a, const FWidgetTransform& b)
+{
+	return a == b;
+}

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Card/CardData.h"
+#include "Slate/WidgetTransform.h"
 #include "GameBPFunctionLibrary.generated.h"
 
 class UCardBase;
@@ -24,4 +25,10 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Basic BP Function")
         static AGameManager* GetGameManager(UWorld* world);
+
+	UFUNCTION(BlueprintCallable, Category = "Help Function")
+		static FWidgetTransform LerpWidgetTransform(FWidgetTransform currentTrans, FWidgetTransform targetTrans, float ratio);
+
+	UFUNCTION(BlueprintPure, Category = "Help Function")
+		static bool WidgetTransformEqual(const FWidgetTransform& a, const FWidgetTransform& b);
 };

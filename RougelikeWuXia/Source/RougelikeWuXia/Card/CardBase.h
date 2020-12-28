@@ -18,7 +18,7 @@ class ROUGELIKEWUXIA_API UCardBase : public UObject
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, category = "Card Basic")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, category = "Card Basic")
 		int CardID;
 
     UFUNCTION(BlueprintCallable, category = "Card Property")
@@ -29,6 +29,9 @@ public:
 
     UFUNCTION(BlueprintCallable, category = "Card Property")
         FText GetCardDescription() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Runtime")
+		int CardIndex;
 
     void InitializeFromCardData(FCardData cardData);
 
