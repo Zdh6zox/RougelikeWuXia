@@ -49,19 +49,6 @@ ACardActor::ACardActor()
 void ACardActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//if (m_FrontWidgetClass != NULL)
-	//{
-	//	CardWidgetFront = CreateWidget<UUserWidget>(GetWorld(), m_FrontWidgetClass);
-	//	m_FrontWidgetComp->SetWidget(CardWidgetFront);
-	//}
-
-	//if (m_BackWigdetClass != NULL)
-	//{
-	//	CardWidgetBack = CreateWidget<UUserWidget>(GetWorld(), m_BackWigdetClass);
-	//	m_BackWidgetComp->SetWidget(CardWidgetBack);
-	//}
-
 }
 
 // Called every frame

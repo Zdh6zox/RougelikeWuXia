@@ -29,3 +29,12 @@ enum class ECardType : uint8
     Skill UMETA(DisplayName = "招式"),
     Intention UMETA(DisplayName = "意图")
 };
+
+UENUM(BlueprintType)
+enum class ECardLocationType : uint8
+{
+	Deck UMETA(DisplayName = "牌组"),
+	External UMETA(DisplayName = "额外"),
+	InHand UMETA(DisplayName = "手牌"),
+	Discarded UMETA(DisplayName = "废弃")
+};

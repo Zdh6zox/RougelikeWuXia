@@ -18,10 +18,10 @@ AGameManager::AGameManager()
 // Called when the game starts or when spawned
 void AGameManager::BeginPlay()
 {
-	Super::BeginPlay();
-	
 	m_BattleManager.Initialize(this);
-    m_CardManager.InitializeManager(this);
+	m_CardManager.InitializeManager(this);
+
+	Super::BeginPlay();
 }
 
 // Called every frame
@@ -74,4 +74,9 @@ void AGameManager::TestPlayerAttackPhaseEnd()
 void AGameManager::TestPlayerPhaseEnd()
 {
 	m_BattleManager.ExitPlayerPhase();
+}
+
+void AGameManager::TestFindCardTransform(ECardLocationType locationType, int totalInhandNum, int cardIndex)
+{
+	m_CardManager.GetTransformData(locationType, totalInhandNum, cardIndex);
 }

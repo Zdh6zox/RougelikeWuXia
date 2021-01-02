@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Card/CardManager.h"
 #include "BattleManager.h"
+#include "Card/CardEnums.h"
 #include "GameManager.generated.h"
 
 class ACharacterBase;
@@ -45,6 +46,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, category = "Test_Battle")
 		void TestPlayerAttackPhaseEnd();
+
+	UFUNCTION(BlueprintCallable, category = "Test_Battle")
+		void TestFindCardTransform(ECardLocationType locationType, int totalInhandNum, int cardIndex);
 
 public:
     UPROPERTY(EditAnywhere, category = "Data Tables")

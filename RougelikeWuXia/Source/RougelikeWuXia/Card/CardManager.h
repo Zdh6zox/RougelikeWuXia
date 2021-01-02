@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CardTransformData.h"
 
 class UCardBase;
 class AGameManager;
+class UDataTable;
 /**
  * 
  */
@@ -16,7 +18,10 @@ public:
 
     UCardBase* CreateCardViaCardID(uint32 cardID);
 
+	FCardTransformData GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex);
+
 private:
+	UDataTable* m_CardTransDataTableMap;
 	AGameManager* m_GMCache;
     TArray<UCardBase*> m_ExistingCards;
 };

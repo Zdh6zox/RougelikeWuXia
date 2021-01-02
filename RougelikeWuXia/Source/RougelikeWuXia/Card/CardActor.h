@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "CardTransformData.h"
 #include "CardActor.generated.h"
 
 class UCardBase;
@@ -28,6 +29,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 		UUserWidget* CardWidgetBack;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+		FCardTransformData CardTransformData;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
