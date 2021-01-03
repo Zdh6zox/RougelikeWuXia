@@ -36,5 +36,6 @@ enum class ECardLocationType : uint8
 	Deck UMETA(DisplayName = "牌组"),
 	External UMETA(DisplayName = "额外"),
 	InHand UMETA(DisplayName = "手牌"),
-	Discarded UMETA(DisplayName = "废弃")
+	Discarded UMETA(DisplayName = "废弃"),
+	Destroyed UMETA(DisplayName = "销毁")
 };

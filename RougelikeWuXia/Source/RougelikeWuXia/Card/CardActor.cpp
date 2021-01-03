@@ -51,6 +51,11 @@ void ACardActor::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ACardActor::CardTransformTo(FCardTransformData destTrans)
+{
+
+}
+
 // Called every frame
 void ACardActor::Tick(float DeltaTime)
 {

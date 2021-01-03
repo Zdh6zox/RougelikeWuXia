@@ -32,6 +32,7 @@ public:
 
 	FCardManager& GetCardManager() { return m_CardManager; }
 	FBattleManager& GetBattleManager() { return m_BattleManager; }
+	FRandomStream& GetRandomStream() { return m_RandomStream; }
 
 public:
 	//Test Functions
@@ -57,4 +58,7 @@ public:
 private:
 	FCardManager m_CardManager;
 	FBattleManager m_BattleManager;
+
+	FRandomStream m_RandomStream;
+	int32 m_CurrentRandomSeed;
 };
