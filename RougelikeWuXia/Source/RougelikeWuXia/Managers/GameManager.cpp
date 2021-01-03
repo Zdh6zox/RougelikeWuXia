@@ -83,3 +83,13 @@ void AGameManager::TestFindCardTransform(ECardLocationType locationType, int tot
 {
 	m_CardManager.GetTransformData(locationType, totalInhandNum, cardIndex);
 }
+
+void AGameManager::TestCreateDefaultCardsInDeck(int number)
+{
+	m_CardManager.Test_CreateDefaultCardsInDeck(number);
+}
+
+void AGameManager::TestPlayerDrawCard()
+{
+	m_CardManager.PlayerDrawCard();
+}

@@ -18,6 +18,13 @@ void FCardManager::InitializeManager(AGameManager* gm)
 	FString tableMapPath = "DataTable'/Game/DataTable/CardTransTableMap.CardTransTableMap'";
 	m_CardTransDataTableMap = LoadObject<UDataTable>(NULL, *tableMapPath);
 	check(m_CardTransDataTableMap != NULL);
+
+	m_CardsInDeck.Empty();
+	m_CardActors.Empty();
+	m_CardsInHand.Empty();
+	m_AllPlayerCards.Empty();
+	m_DiscardedCards.Empty();
+	m_DestroyedCards.Empty();
 }
 
 UCardBase* FCardManager::CreateCardViaCardID(uint32 cardID)
@@ -147,6 +154,11 @@ void FCardManager::PlayerDrawCard()
 
 	UCardBase* drawingCard = m_CardsInDeck[drawingCardDeckIndex];
 	m_CardsInHand.Insert(drawingCard, 0);
+	m_CardsInDeck.RemoveAt(drawingCardDeckIndex);
+	
+	SpawnCardActor(drawingCard, GetTransformData(ECardLocationType::Deck, m_CardsInHand.Num(), 0));
+
+	RearrangeCardsInHand();
 }
 
 void FCardManager::PlayerAddCardFromExternal(int cardID, ECardLocationType addTo)
@@ -162,6 +174,8 @@ void FCardManager::PlayerDiscardCard(UCardBase* discardingCard)
 void FCardManager::SpawnCardActor(UCardBase* cardBase, FCardTransformData cardTrans)
 {
 	ACardActor* spawnedActor = m_GMCache->GetWorld()->SpawnActor<ACardActor>(ACardActor::StaticClass(), cardTrans.CardTransform);
+	spawnedActor->CardTransformData = cardTrans;
+	spawnedActor->Card = cardBase;
 	m_CardActors.Add(spawnedActor);
 }
 
@@ -175,6 +189,26 @@ void FCardManager::RearrangeCardsInHand()
 {
 	for (int i = 0; i < m_CardsInHand.Num(); ++i)
 	{
-		
+		auto* actorPtr = m_CardActors.FindByPredicate([&](ACardActor* actor)
+		{
+			return actor->Card == m_CardsInHand[i];
+		});
+
+		if (actorPtr != nullptr)
+		{
+			ACardActor* foundActor = *actorPtr;
+			FCardTransformData newTrans = GetTransformData(ECardLocationType::InHand, m_CardsInHand.Num(), i);
+			foundActor->CardTransformTo(newTrans);
+		}
+	}
+}
+
+//Test Functions
+void FCardManager::Test_CreateDefaultCardsInDeck(int num)
+{
+	for (int i = 0; i < num; ++i)
+	{
+		UCardBase* newCard = CreateCardViaCardID(0);
+		m_CardsInDeck.Add(newCard);
 	}
 }

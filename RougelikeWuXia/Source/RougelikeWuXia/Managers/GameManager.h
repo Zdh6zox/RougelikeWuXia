@@ -51,6 +51,12 @@ public:
 	UFUNCTION(BlueprintCallable, category = "Test_Battle")
 		void TestFindCardTransform(ECardLocationType locationType, int totalInhandNum, int cardIndex);
 
+	UFUNCTION(BlueprintCallable, category = "Test_Battle")
+		void TestCreateDefaultCardsInDeck(int number);
+
+	UFUNCTION(BlueprintCallable, category = "Test_Battle")
+		void TestPlayerDrawCard();
+
 public:
     UPROPERTY(EditAnywhere, category = "Data Tables")
         UDataTable* CardDataTable;

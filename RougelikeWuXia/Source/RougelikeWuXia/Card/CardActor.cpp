@@ -28,7 +28,7 @@ ACardActor::ACardActor()
 
 
 	USceneComponent* rootComponent = CreateDefaultSubobject<USceneComponent>("Root");
-	rootComponent->Mobility = EComponentMobility::Static;
+	rootComponent->Mobility = EComponentMobility::Movable;
 	SetRootComponent(rootComponent);
 
 	CardMesh = CreateDefaultSubobject<UStaticMeshComponent>("CardMesh");
@@ -53,7 +53,8 @@ void ACardActor::BeginPlay()
 
 void ACardActor::CardTransformTo(FCardTransformData destTrans)
 {
-
+	SetActorTransform(destTrans.CardTransform);
+	CardTransformData = destTrans;
 }
 
 // Called every frame

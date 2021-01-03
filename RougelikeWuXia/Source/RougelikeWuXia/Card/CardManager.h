@@ -27,6 +27,9 @@ public:
 
 	FCardTransformData GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex);
 
+	//Test Functions
+	void Test_CreateDefaultCardsInDeck(int num);
+
 private:
 	void AddEscapeCardInHand();
 	void RearrangeCardsInHand();
