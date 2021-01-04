@@ -20,11 +20,18 @@ public:
 		ECardLocationType CardLocationType;
 
 	UPROPERTY(EditAnywhere)
+		FTransform CardTransform;
+};
+
+USTRUCT(BlueprintType)
+struct ROUGELIKEWUXIA_API FInHandCardTransOffsetPreset : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
 		int TotalNumberInHand;
 
 	UPROPERTY(EditAnywhere)
-		int CardInHandIndex;
-
-	UPROPERTY(EditAnywhere)
-		FTransform CardTransform;
+		FTransform CardTransformOffset;
 };

@@ -34,7 +34,10 @@ private:
 	void AddEscapeCardInHand();
 	void RearrangeCardsInHand();
 
-	UDataTable* m_CardTransDataTableMap;
+	FTransform GetOffsetViaIndex(FTransform offset, int totalInHandNum, int cardIndex);
+
+	UDataTable* m_CardTransDataTable;
+	UDataTable* m_InHandCardOffsetTable;
 	AGameManager* m_GMCache;
     TArray<UCardBase*> m_AllPlayerCards;
 
@@ -43,4 +46,8 @@ private:
 	TArray<UCardBase*> m_CardsInHand;
 	TArray<ACardActor*> m_CardActors;
 	TArray<UCardBase*> m_DestroyedCards;
+
+	UClass* m_CardActorClass;
+
+	FVector m_InHandCardPivot;
 };

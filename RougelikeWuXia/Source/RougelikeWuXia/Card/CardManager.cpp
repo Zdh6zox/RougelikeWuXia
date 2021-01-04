@@ -11,13 +11,26 @@
 #include "Card/CardActor.h"
 #include "RougelikeWuXia.h"
 
+
+#pragma optimize( "", off )
+
 void FCardManager::InitializeManager(AGameManager* gm)
 {
 	m_GMCache = gm;
 
-	FString tableMapPath = "DataTable'/Game/DataTable/CardTransTableMap.CardTransTableMap'";
-	m_CardTransDataTableMap = LoadObject<UDataTable>(NULL, *tableMapPath);
-	check(m_CardTransDataTableMap != NULL);
+	m_InHandCardPivot = m_GMCache->InHandCardPivot;
+
+	FString cardTransTablePath = "DataTable'/Game/DataTable/CardTransformPreset_Global.CardTransformPreset_Global'";
+	m_CardTransDataTable = LoadObject<UDataTable>(NULL, *cardTransTablePath);
+	check(m_CardTransDataTable != NULL);
+
+	FString inHandOffsetTablePath = "DataTable'/Game/DataTable/CardInHandOffet.CardInHandOffet'";
+	m_InHandCardOffsetTable = LoadObject<UDataTable>(NULL, *inHandOffsetTablePath);
+	check(m_InHandCardOffsetTable != NULL);
+
+	FString cardActorPath = "Blueprint'/Game/Card/CardActor_BP.CardActor_BP_C'";
+	m_CardActorClass = LoadClass<ACardActor>(NULL, *cardActorPath);
+	check(m_CardActorClass != NULL);
 
 	m_CardsInDeck.Empty();
 	m_CardActors.Empty();
@@ -57,90 +70,76 @@ UCardBase* FCardManager::CreateCardViaCardID(uint32 cardID)
 FCardTransformData FCardManager::GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex)
 {
 	UDataTable* tableToSearch = nullptr;
-	TArray<FCardTransTableMap*> allTables;
-	m_CardTransDataTableMap->GetAllRows<FCardTransTableMap>(FString(""), allTables);
+	FCardTransformData foundNewTrans;
+	TArray<FCardTransformDataPreset*> allTrans;
+	m_CardTransDataTable->GetAllRows<FCardTransformDataPreset>(FString(""), allTrans);
+	bool foundTrans = false;
 	switch (locationType)
 	{
 	case ECardLocationType::Deck:
 	case ECardLocationType::Discarded:
 	case ECardLocationType::External:
 	{
-		for (int i = 0; i < allTables.Num(); ++i)
+		for (int i = 0; i < allTrans.Num(); ++i)
 		{
-			if (allTables[i]->CardLocationType == locationType)
+			if (allTrans[i]->CardLocationType == locationType)
 			{
-				tableToSearch = allTables[i]->CardTransTable;
+				foundNewTrans.CardTransform = allTrans[i]->CardTransform;
+				foundNewTrans.CardLocationType = locationType;
+				foundNewTrans.CardInHandIndex = 0;
+				foundTrans = true;
 				break;
 			}
 		}
 	}
 		break;
 	case ECardLocationType::InHand:
-	{
-		for (int i = 0; i < allTables.Num(); ++i)
+	{	
+		for (int i = 0; i < allTrans.Num(); ++i)
 		{
-			if (allTables[i]->CardLocationType == ECardLocationType::InHand && allTables[i]->TotalCardNumOnHand == totalInHandNum)
+			if (allTrans[i]->CardLocationType == ECardLocationType::InHand)
 			{
-				tableToSearch = allTables[i]->CardTransTable;
+				TArray<FInHandCardTransOffsetPreset*> allOffset;
+				m_InHandCardOffsetTable->GetAllRows<FInHandCardTransOffsetPreset>(FString(""), allOffset);
+				FTransform offset;
+				for (int j = 0; j < allOffset.Num(); ++j)
+				{
+					if (allOffset[j]->TotalNumberInHand == totalInHandNum)
+					{
+						offset = allOffset[j]->CardTransformOffset;
+
+						//Change card transform according to card index;
+						FTransform finalOffset = GetOffsetViaIndex(offset, totalInHandNum, cardIndex);
+						foundNewTrans.CardTransform = allTrans[i]->CardTransform;
+						foundNewTrans.CardTransform.AddToTranslation(finalOffset.GetLocation());
+						foundNewTrans.CardTransform.SetRotation(finalOffset.GetRotation());
+						foundNewTrans.CardInHandIndex = cardIndex;
+						foundTrans = true;
+						break;
+					}
+				}
 				break;
 			}
-		}
+		}	
+
 	}
 		break;
 	default:
 		break;
 	}
 
-	check(tableToSearch);
+	check(foundTrans);
 
-	TArray<FCardTransformDataPreset*> allTransPreset;
-	tableToSearch->GetAllRows<FCardTransformDataPreset>(FString(""), allTransPreset);
-	FCardTransformData newTransformData;
-	newTransformData.CardLocationType = locationType;
-	newTransformData.CardInHandIndex = cardIndex;
-	bool foundTransformInTable = false;
+	return foundNewTrans;
+}
 
-	switch (locationType)
-	{
-	case ECardLocationType::Deck:
-	case ECardLocationType::Discarded:
-	case ECardLocationType::External:
-	{
-		for (int i = 0; i < allTransPreset.Num(); ++i)
-		{
-			if (allTransPreset[i]->CardLocationType == locationType)
-			{
-				newTransformData.CardTransform = allTransPreset[i]->CardTransform;
-				foundTransformInTable = true;
-				break;
-			}
-		}
-	}
-		break;
-	case ECardLocationType::InHand:
-	{
-		for (int i = 0; i < allTransPreset.Num(); ++i)
-		{
-			if (allTransPreset[i]->CardInHandIndex == cardIndex)
-			{
-				newTransformData.CardTransform = allTransPreset[i]->CardTransform;
-				foundTransformInTable = true;
-				break;
-			}
-		}
-	}
-	    break;
-	default:
-		break;
-	}
-
-	check(foundTransformInTable);
-
-#ifdef WITH_EDITOR
-	UE_LOG(LogMain, Log, TEXT("found Transform %s"), *newTransformData.CardTransform.ToString());
-#endif
-
-	return newTransformData;
+FTransform FCardManager::GetOffsetViaIndex(FTransform offset, int totalInHandNum, int cardIndex)
+{
+	float middleNum = ((float)totalInHandNum + 1) / 2.f;
+	float diff = (float)cardIndex + 1 - middleNum;
+	FRotator rotator(offset.GetRotation());
+	rotator = rotator * diff;
+	return FTransform(rotator, offset.GetLocation()*diff, offset.GetScale3D());
 }
 
 void FCardManager::PlayerDrawCard()
@@ -173,7 +172,7 @@ void FCardManager::PlayerDiscardCard(UCardBase* discardingCard)
 
 void FCardManager::SpawnCardActor(UCardBase* cardBase, FCardTransformData cardTrans)
 {
-	ACardActor* spawnedActor = m_GMCache->GetWorld()->SpawnActor<ACardActor>(ACardActor::StaticClass(), cardTrans.CardTransform);
+	ACardActor* spawnedActor = m_GMCache->GetWorld()->SpawnActor<ACardActor>(m_CardActorClass, cardTrans.CardTransform);
 	spawnedActor->CardTransformData = cardTrans;
 	spawnedActor->Card = cardBase;
 	m_CardActors.Add(spawnedActor);
@@ -212,3 +211,5 @@ void FCardManager::Test_CreateDefaultCardsInDeck(int num)
 		m_CardsInDeck.Add(newCard);
 	}
 }
+
+#pragma optimize( "", on )

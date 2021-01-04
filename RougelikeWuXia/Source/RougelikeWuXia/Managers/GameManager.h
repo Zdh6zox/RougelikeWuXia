@@ -61,6 +61,9 @@ public:
     UPROPERTY(EditAnywhere, category = "Data Tables")
         UDataTable* CardDataTable;
 
+	UPROPERTY(EditAnywhere, category = "Card Manager")
+		FVector InHandCardPivot;
+
 private:
 	FCardManager m_CardManager;
 	FBattleManager m_BattleManager;

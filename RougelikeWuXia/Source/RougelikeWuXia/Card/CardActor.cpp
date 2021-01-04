@@ -27,21 +27,21 @@ ACardActor::ACardActor()
 
 
 
-	USceneComponent* rootComponent = CreateDefaultSubobject<USceneComponent>("Root");
-	rootComponent->Mobility = EComponentMobility::Movable;
-	SetRootComponent(rootComponent);
+	CustomRoot = CreateDefaultSubobject<USceneComponent>("Root");
+	CustomRoot->Mobility = EComponentMobility::Movable;
+	SetRootComponent(CustomRoot);
 
 	CardMesh = CreateDefaultSubobject<UStaticMeshComponent>("CardMesh");
 	CardMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	CardMesh->SetupAttachment(rootComponent);
+	CardMesh->SetupAttachment(CustomRoot);
 
 	m_FrontWidgetComp = CreateDefaultSubobject<UWidgetComponent>("FrontWidget");
-	m_FrontWidgetComp->SetupAttachment(rootComponent);
+	m_FrontWidgetComp->SetupAttachment(CustomRoot);
 	m_FrontWidgetComp->SetWidgetClass(m_FrontWidgetClass);
 
 
 	m_BackWidgetComp = CreateDefaultSubobject<UWidgetComponent>("BackWigdet");
-	m_BackWidgetComp->SetupAttachment(rootComponent);
+	m_BackWidgetComp->SetupAttachment(CustomRoot);
 	m_BackWidgetComp->SetWidgetClass(m_BackWigdetClass);
 }
 
