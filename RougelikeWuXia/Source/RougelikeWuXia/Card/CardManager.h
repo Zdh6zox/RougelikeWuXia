@@ -34,7 +34,7 @@ private:
 	void AddEscapeCardInHand();
 	void RearrangeCardsInHand();
 
-	FTransform GetOffsetViaIndex(FTransform offset, int totalInHandNum, int cardIndex);
+	FRotator GetOffsetViaIndex(FRotator rotaionOffset, int totalInHandNum, int cardIndex);
 
 	UDataTable* m_CardTransDataTable;
 	UDataTable* m_InHandCardOffsetTable;

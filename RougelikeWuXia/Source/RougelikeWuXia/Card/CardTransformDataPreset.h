@@ -33,5 +33,11 @@ public:
 		int TotalNumberInHand;
 
 	UPROPERTY(EditAnywhere)
-		FTransform CardTransformOffset;
+		FVector CardPivotOffset;
+
+	UPROPERTY(EditAnywhere)
+		float Radius;
+
+	UPROPERTY(EditAnywhere)
+		FRotator CardRotaionOffset;
 };

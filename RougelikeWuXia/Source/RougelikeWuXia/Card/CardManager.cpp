@@ -101,18 +101,25 @@ FCardTransformData FCardManager::GetTransformData(ECardLocationType locationType
 			{
 				TArray<FInHandCardTransOffsetPreset*> allOffset;
 				m_InHandCardOffsetTable->GetAllRows<FInHandCardTransOffsetPreset>(FString(""), allOffset);
-				FTransform offset;
+				FRotator offset;
 				for (int j = 0; j < allOffset.Num(); ++j)
 				{
 					if (allOffset[j]->TotalNumberInHand == totalInHandNum)
 					{
-						offset = allOffset[j]->CardTransformOffset;
+						offset = allOffset[j]->CardRotaionOffset;
 
 						//Change card transform according to card index;
-						FTransform finalOffset = GetOffsetViaIndex(offset, totalInHandNum, cardIndex);
-						foundNewTrans.CardTransform = allTrans[i]->CardTransform;
-						foundNewTrans.CardTransform.AddToTranslation(finalOffset.GetLocation());
-						foundNewTrans.CardTransform.SetRotation(finalOffset.GetRotation());
+						FRotator finalRotOffset = GetOffsetViaIndex(offset, totalInHandNum, cardIndex);
+						FTransform trans = allTrans[i]->CardTransform;
+						FVector pivot = trans.GetLocation() + allOffset[j]->CardPivotOffset;
+						FVector finalVec = finalRotOffset.RotateVector(FVector::UpVector);
+						FVector finalLoc = pivot + allOffset[j]->Radius * finalVec;
+						//add little bias to avoid overlap
+						finalLoc = finalLoc + FVector(0.01f, 0.f, 0.f) * cardIndex;
+						foundNewTrans.CardTransform = FTransform(finalRotOffset, finalLoc, trans.GetScale3D());
+
+						//foundNewTrans.CardTransform.AddToTranslation(finalOffset.GetLocation());
+						//foundNewTrans.CardTransform.SetRotation(finalOffset.GetRotation());
 						foundNewTrans.CardInHandIndex = cardIndex;
 						foundTrans = true;
 						break;
@@ -133,13 +140,12 @@ FCardTransformData FCardManager::GetTransformData(ECardLocationType locationType
 	return foundNewTrans;
 }
 
-FTransform FCardManager::GetOffsetViaIndex(FTransform offset, int totalInHandNum, int cardIndex)
+FRotator FCardManager::GetOffsetViaIndex(FRotator rotaionOffset, int totalInHandNum, int cardIndex)
 {
 	float middleNum = ((float)totalInHandNum + 1) / 2.f;
 	float diff = (float)cardIndex + 1 - middleNum;
-	FRotator rotator(offset.GetRotation());
-	rotator = rotator * diff;
-	return FTransform(rotator, offset.GetLocation()*diff, offset.GetScale3D());
+
+	return rotaionOffset * diff;;
 }
 
 void FCardManager::PlayerDrawCard()
