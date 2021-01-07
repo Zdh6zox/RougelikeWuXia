@@ -7,7 +7,6 @@
 #include "Card/CardData.h"
 #include "Card/CardBase.h"
 #include "Card/CardTransformDataPreset.h"
-#include "Card/CardTransTableMap.h"
 #include "Card/CardActor.h"
 #include "RougelikeWuXia.h"
 
@@ -107,19 +106,21 @@ FCardTransformData FCardManager::GetTransformData(ECardLocationType locationType
 					if (allOffset[j]->TotalNumberInHand == totalInHandNum)
 					{
 						offset = allOffset[j]->CardRotaionOffset;
+						FTransform trans = allTrans[i]->CardTransform;
 
 						//Change card transform according to card index;
+						FRotator cameraRotate = FRotator(-m_GMCache->GetCameraRotation().Pitch, 0.0f, 0.0f);
+						FVector camVec = cameraRotate.RotateVector(m_GMCache->GetCameraUpVector());
+						FVector pivot = trans.GetLocation() + camVec * allOffset[j]->CardPivotOffset.Z;
+						FTransform pivotTrans = FTransform(cameraRotate, pivot);
 						FRotator finalRotOffset = GetOffsetViaIndex(offset, totalInHandNum, cardIndex);
-						FTransform trans = allTrans[i]->CardTransform;
-						FVector pivot = trans.GetLocation() + allOffset[j]->CardPivotOffset;
-						FVector finalVec = finalRotOffset.RotateVector(FVector::UpVector);
-						FVector finalLoc = pivot + allOffset[j]->Radius * finalVec;
+						FVector finalVec = finalRotOffset.RotateVector(m_GMCache->GetCameraUpVector());
+						FVector finalLoc = allOffset[j]->Radius * finalVec;
+						finalLoc = finalLoc + m_GMCache->GetCameraForwardVector() * 0.01f * cardIndex;
+						FTransform relativeTrans = FTransform(finalRotOffset, finalLoc);
 						//add little bias to avoid overlap
-						finalLoc = finalLoc + FVector(0.01f, 0.f, 0.f) * cardIndex;
-						foundNewTrans.CardTransform = FTransform(finalRotOffset, finalLoc, trans.GetScale3D());
-
-						//foundNewTrans.CardTransform.AddToTranslation(finalOffset.GetLocation());
-						//foundNewTrans.CardTransform.SetRotation(finalOffset.GetRotation());
+	
+						foundNewTrans.CardTransform = relativeTrans * pivotTrans;
 						foundNewTrans.CardInHandIndex = cardIndex;
 						foundTrans = true;
 						break;

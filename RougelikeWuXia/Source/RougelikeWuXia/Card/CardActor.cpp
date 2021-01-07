@@ -53,8 +53,10 @@ void ACardActor::BeginPlay()
 
 void ACardActor::CardTransformTo(FCardTransformData destTrans)
 {
-	SetActorTransform(destTrans.CardTransform);
+	m_IsMoving = true;
+	m_MovingRatio = 0.f;
 	CardTransformData = destTrans;
+	m_TargetTrans = CardTransformData.CardTransform;
 }
 
 // Called every frame
@@ -62,5 +64,22 @@ void ACardActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (m_IsMoving)
+	{
+		m_MovingRatio += DeltaTime / TransformDuration;
+		FVector curLoc = GetActorLocation();
+		FRotator curRot = GetActorRotation();
+		FVector curScale = GetActorScale3D();
+		FVector newLoc = FMath::Lerp(curLoc, m_TargetTrans.GetLocation(), m_MovingRatio);
+		FRotator newRot = FMath::Lerp(curRot, FRotator(m_TargetTrans.GetRotation()), m_MovingRatio);
+		FVector newScale = FMath::Lerp(curScale, m_TargetTrans.GetScale3D(), m_MovingRatio);
+		FTransform newTrans = FTransform(newRot, newLoc, newScale);
+
+		SetActorTransform(newTrans);
+		if (m_MovingRatio >= 1.0f)
+		{
+			m_IsMoving = false;
+		}
+	}
 }
 

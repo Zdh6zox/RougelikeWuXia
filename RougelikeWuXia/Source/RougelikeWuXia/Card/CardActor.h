@@ -33,6 +33,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 		FCardTransformData CardTransformData;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float TransformDuration = 2.0f;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		USceneComponent* CustomRoot;
@@ -65,4 +68,7 @@ private:
 	UClass* m_FrontWidgetClass;
 	UClass* m_BackWigdetClass;
 
+	bool m_IsMoving = false;
+	float m_MovingRatio = 0.f;
+	FTransform m_TargetTrans;
 };

@@ -11,6 +11,7 @@
 
 class ACharacterBase;
 class UDataTable;
+class ACameraActor;
 UCLASS()
 class ROUGELIKEWUXIA_API AGameManager : public AActor
 {
@@ -33,6 +34,11 @@ public:
 	FCardManager& GetCardManager() { return m_CardManager; }
 	FBattleManager& GetBattleManager() { return m_BattleManager; }
 	FRandomStream& GetRandomStream() { return m_RandomStream; }
+
+
+	FVector GetCameraUpVector();
+	FVector GetCameraForwardVector();
+	FRotator GetCameraRotation();
 
 public:
 	//Test Functions
@@ -68,6 +74,7 @@ private:
 	FCardManager m_CardManager;
 	FBattleManager m_BattleManager;
 
+	ACameraActor* m_CameraCache;
 	FRandomStream m_RandomStream;
 	int32 m_CurrentRandomSeed;
 };

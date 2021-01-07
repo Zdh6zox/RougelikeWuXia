@@ -5,6 +5,7 @@
 #include "EngineUtils.h"
 #include "Character/CharacterBase.h"
 #include "Engine/DataTable.h" 
+#include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -44,6 +45,60 @@ AGameManager* AGameManager::GetGameManager(UWorld* world)
 	}
 
 	return nullptr;
+}
+
+FVector AGameManager::GetCameraUpVector()
+{
+	if (m_CameraCache != nullptr)
+	{
+		return m_CameraCache->GetActorUpVector();
+	}
+	else
+	{
+		for (TActorIterator<ACameraActor> It(GetWorld(), ACameraActor::StaticClass()); It; ++It)
+		{
+			m_CameraCache = *It;
+			break;
+		}
+
+		return m_CameraCache->GetActorUpVector();
+	}
+}
+
+FVector AGameManager::GetCameraForwardVector()
+{
+	if (m_CameraCache != nullptr)
+	{
+		return m_CameraCache->GetActorForwardVector();
+	}
+	else
+	{
+		for (TActorIterator<ACameraActor> It(GetWorld(), ACameraActor::StaticClass()); It; ++It)
+		{
+			m_CameraCache = *It;
+			break;
+		}
+
+		return m_CameraCache->GetActorForwardVector();
+	}
+}
+
+FRotator AGameManager::GetCameraRotation()
+{
+	if (m_CameraCache != nullptr)
+	{
+		return m_CameraCache->GetActorRotation();
+	}
+	else
+	{
+		for (TActorIterator<ACameraActor> It(GetWorld(), ACameraActor::StaticClass()); It; ++It)
+		{
+			m_CameraCache = *It;
+			break;
+		}
+
+		return m_CameraCache->GetActorRotation();
+	}
 }
 
 //Test Functions
