@@ -6,6 +6,8 @@
 #include "UMG/Public/Blueprint/UserWidget.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Managers/GameManager.h"
+#include "Card/CardManager.h"
 
 // Sets default values
 ACardActor::ACardActor()
@@ -83,3 +85,30 @@ void ACardActor::Tick(float DeltaTime)
 	}
 }
 
+void ACardActor::OnCardSelected()
+{
+	if (IsSelected)
+	{
+		return;
+	}
+
+	IsSelected = true;
+
+	AGameManager::GetGameManager(GetWorld())->GetCardManager().SetCurSelectedCard(CardTransformData.CardInHandIndex);
+	FTransform curTrans = GetActorTransform();
+	//Remove Roll
+	FRotator curRot = GetActorRotation();
+	curRot.Roll = 0.f;
+	SetActorRotation(curRot);
+}
+
+void ACardActor::OnCardUnSelected()
+{
+	if (!IsSelected)
+	{
+		return;
+	}
+
+	CardTransformTo(CardTransformData);
+	IsSelected = false;
+}

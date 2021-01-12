@@ -36,6 +36,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float TransformDuration = 2.0f;
 
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+		bool IsSelected = false;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		USceneComponent* CustomRoot;
@@ -57,6 +60,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void CardTransformTo(FCardTransformData destTrans);
+
+	void OnCardSelected();
+	void OnCardUnSelected();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void CardConstructedEvent_BP();

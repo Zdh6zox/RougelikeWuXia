@@ -17,8 +17,6 @@ void FCardManager::InitializeManager(AGameManager* gm)
 {
 	m_GMCache = gm;
 
-	m_InHandCardPivot = m_GMCache->InHandCardPivot;
-
 	FString cardTransTablePath = "DataTable'/Game/DataTable/CardTransformPreset_Global.CardTransformPreset_Global'";
 	m_CardTransDataTable = LoadObject<UDataTable>(NULL, *cardTransTablePath);
 	check(m_CardTransDataTable != NULL);
@@ -116,9 +114,10 @@ FCardTransformData FCardManager::GetTransformData(ECardLocationType locationType
 						FRotator finalRotOffset = GetOffsetViaIndex(offset, totalInHandNum, cardIndex);
 						FVector finalVec = finalRotOffset.RotateVector(m_GMCache->GetCameraUpVector());
 						FVector finalLoc = allOffset[j]->Radius * finalVec;
+						//add little bias to avoid overlap
 						finalLoc = finalLoc + m_GMCache->GetCameraForwardVector() * 0.01f * cardIndex;
 						FTransform relativeTrans = FTransform(finalRotOffset, finalLoc);
-						//add little bias to avoid overlap
+
 	
 						foundNewTrans.CardTransform = relativeTrans * pivotTrans;
 						foundNewTrans.CardInHandIndex = cardIndex;
@@ -167,6 +166,16 @@ void FCardManager::PlayerDrawCard()
 	RearrangeCardsInHand();
 }
 
+UCardBase* FCardManager::GetCurSelectedCardInHand()
+{
+	 if (m_CurSelectedInHandCardInx < m_CardsInHand.Num())
+	 {
+		 return m_CardsInHand[m_CurSelectedInHandCardInx];
+	 }
+
+	 return nullptr;
+}
+
 void FCardManager::PlayerAddCardFromExternal(int cardID, ECardLocationType addTo)
 {
 
@@ -207,6 +216,27 @@ void FCardManager::RearrangeCardsInHand()
 			foundActor->CardTransformTo(newTrans);
 		}
 	}
+}
+
+void FCardManager::SetCurSelectedCard(int cardIndex)
+{
+	if (cardIndex == m_CurSelectedInHandCardInx)
+	{
+		return;
+	}
+
+	auto* actorPtr = m_CardActors.FindByPredicate([&](ACardActor* actor)
+	{
+		return actor->CardTransformData.CardInHandIndex == m_CurSelectedInHandCardInx;
+	});
+
+	if (actorPtr != nullptr)
+	{
+		ACardActor* foundActor = *actorPtr;
+		foundActor->OnCardUnSelected();
+	}
+	
+	m_CurSelectedInHandCardInx = cardIndex;
 }
 
 //Test Functions

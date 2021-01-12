@@ -9,6 +9,7 @@ class UCardBase;
 class AGameManager;
 class UDataTable;
 class ACardActor;
+struct FCardData;
 
 /**
  * 
@@ -24,8 +25,11 @@ public:
 	void PlayerDrawCard();
 	void PlayerAddCardFromExternal(int cardID, ECardLocationType addTo);
 	void PlayerDiscardCard(UCardBase* discardingCard);
+	void SetCurSelectedCard(int cardIndex);
 
 	FCardTransformData GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex);
+
+	UCardBase* GetCurSelectedCardInHand();
 
 	//Test Functions
 	void Test_CreateDefaultCardsInDeck(int num);
@@ -44,10 +48,9 @@ private:
 	TArray<UCardBase*> m_CardsInDeck;
 	TArray<UCardBase*> m_DiscardedCards;
 	TArray<UCardBase*> m_CardsInHand;
-	TArray<ACardActor*> m_CardActors;
 	TArray<UCardBase*> m_DestroyedCards;
 
+	TArray<ACardActor*> m_CardActors;
+	int m_CurSelectedInHandCardInx;
 	UClass* m_CardActorClass;
-
-	FVector m_InHandCardPivot;
 };
