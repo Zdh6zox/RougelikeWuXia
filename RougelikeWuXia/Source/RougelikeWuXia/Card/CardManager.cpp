@@ -8,6 +8,7 @@
 #include "Card/CardBase.h"
 #include "Card/CardTransformDataPreset.h"
 #include "Card/CardActor.h"
+#include "UI/BattleScreenWidget.h"
 #include "RougelikeWuXia.h"
 
 
@@ -166,11 +167,11 @@ void FCardManager::PlayerDrawCard()
 	RearrangeCardsInHand();
 }
 
-UCardBase* FCardManager::GetCurSelectedCardInHand()
+UCardBase* FCardManager::GetCurFocusedCardInHand()
 {
-	 if (m_CurSelectedInHandCardInx < m_CardsInHand.Num())
+	 if (m_CurFocusedInHandCardInx < m_CardsInHand.Num())
 	 {
-		 return m_CardsInHand[m_CurSelectedInHandCardInx];
+		 return m_CardsInHand[m_CurFocusedInHandCardInx];
 	 }
 
 	 return nullptr;
@@ -191,6 +192,8 @@ void FCardManager::SpawnCardActor(UCardBase* cardBase, FCardTransformData cardTr
 	ACardActor* spawnedActor = m_GMCache->GetWorld()->SpawnActor<ACardActor>(m_CardActorClass, cardTrans.CardTransform);
 	spawnedActor->CardTransformData = cardTrans;
 	spawnedActor->Card = cardBase;
+
+	m_GMCache->BattleScreenWidget->AddCardEventSpy(spawnedActor);
 	m_CardActors.Add(spawnedActor);
 }
 
@@ -218,11 +221,26 @@ void FCardManager::RearrangeCardsInHand()
 	}
 }
 
-void FCardManager::SetCurSelectedCard(int cardIndex)
+void FCardManager::SetCurFocusedCard(int cardIndex)
 {
-	if (cardIndex == m_CurSelectedInHandCardInx)
+	if (cardIndex == m_CurFocusedInHandCardInx)
 	{
 		return;
+	}
+
+	for (int i = 0; i < m_CardActors.Num(); ++i)
+	{
+		ACardActor* cardActor = m_CardActors[i];
+		if (cardActor == nullptr)
+		{
+			continue;
+		}
+
+		if (cardActor->CardTransformData.CardInHandIndex == m_CurFocusedInHandCardInx)
+		{
+			cardActor->OnCardUnSelected();
+			break;
+		}
 	}
 
 	for (int i = 0; i < m_CardActors.Num(); ++i)
@@ -236,29 +254,23 @@ void FCardManager::SetCurSelectedCard(int cardIndex)
 		if (cardActor->CardTransformData.CardInHandIndex == cardIndex)
 		{
 			cardActor->OnCardSelected();
-			continue;
-		}
-
-		if (cardActor->CardTransformData.CardInHandIndex == m_CurSelectedInHandCardInx)
-		{
-			cardActor->OnCardUnSelected();
-			continue;
+			break;
 		}
 	}
-	
-	m_CurSelectedInHandCardInx = cardIndex;
+
+	m_CurFocusedInHandCardInx = cardIndex;
 }
 
-void FCardManager::SetCurSelectedCard(ACardActor* cardActor)
+void FCardManager::SetCurFocusedCard(ACardActor* cardActor)
 {
 	if (cardActor == nullptr)
 	{
-		SetCurSelectedCard(-1);
+		SetCurFocusedCard(-1);
 	}
 	else
 	{
 		int cardIndex = cardActor->CardTransformData.CardInHandIndex;
-		SetCurSelectedCard(cardIndex);
+		SetCurFocusedCard(cardIndex);
 	}
 }
 
@@ -267,7 +279,7 @@ void FCardManager::Test_CreateDefaultCardsInDeck(int num)
 {
 	for (int i = 0; i < num; ++i)
 	{
-		UCardBase* newCard = CreateCardViaCardID(0);
+		UCardBase* newCard = CreateCardViaCardID(i);
 		m_CardsInDeck.Add(newCard);
 	}
 }

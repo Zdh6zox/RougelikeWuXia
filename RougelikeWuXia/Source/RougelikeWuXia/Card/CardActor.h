@@ -11,6 +11,10 @@ class UCardBase;
 class UUserWidget;
 class UStaticMeshComponent;
 class UWidgetComponent;
+class ACardActor;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FCardFocusedEvent, ACardActor*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FCardLostFocusEvent, ACardActor*);
 
 UCLASS()
 class ROUGELIKEWUXIA_API ACardActor : public AActor
@@ -40,7 +44,10 @@ public:
 		float DisplayTransDuration = 0.5f;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
-		bool IsSelected = false;
+		bool IsFocused = false;
+
+	FCardFocusedEvent CardFocusedEvent_OneP;
+	FCardLostFocusEvent CardLostFocusEvent_OneP;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

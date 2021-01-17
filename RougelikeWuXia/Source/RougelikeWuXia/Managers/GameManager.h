@@ -12,6 +12,7 @@
 class ACharacterBase;
 class UDataTable;
 class ACameraActor;
+class UBattleScreenWidget;
 UCLASS()
 class ROUGELIKEWUXIA_API AGameManager : public AActor
 {
@@ -66,6 +67,12 @@ public:
 public:
     UPROPERTY(EditAnywhere, category = "Data Tables")
         UDataTable* CardDataTable;
+
+	UPROPERTY(VisibleAnywhere, category = "Widgets")
+		UBattleScreenWidget* BattleScreenWidget;
+
+	UPROPERTY(EditAnywhere, category = "Widgets")
+		TSubclassOf<UBattleScreenWidget> BattleScreenWidgetClass;
 
 private:
 	FCardManager m_CardManager;

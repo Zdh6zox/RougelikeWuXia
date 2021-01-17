@@ -7,6 +7,8 @@
 #include "Engine/DataTable.h" 
 #include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
+#include "ScreenOnlyPlayerController.h"
+#include "UI/BattleScreenWidget.h"
 
 // Sets default values
 AGameManager::AGameManager()
@@ -26,6 +28,17 @@ void AGameManager::BeginPlay()
 	m_CurrentRandomSeed = m_RandomStream.GetCurrentSeed();
 
 	Super::BeginPlay();
+
+	if (BattleScreenWidgetClass != NULL)
+	{
+		AScreenOnlyPlayerController* playerCon = Cast<AScreenOnlyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		check(playerCon);
+
+		BattleScreenWidget = CreateWidget<UBattleScreenWidget>(playerCon, BattleScreenWidgetClass);
+		check(BattleScreenWidget);
+
+		BattleScreenWidget->AddToViewport(1);
+	}
 }
 
 // Called every frame

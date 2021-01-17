@@ -20,6 +20,6 @@ void AScreenOnlyPlayerController::PlayerTick(float DeltaTime)
 	{
 		AActor* hittedActor = hitResult.Actor.Get();
 		ACardActor* hittedCardActor = Cast<ACardActor>(hittedActor);
-		m_GMCache->GetCardManager().SetCurSelectedCard(hittedCardActor);
+		m_GMCache->GetCardManager().SetCurFocusedCard(hittedCardActor);
 	}
 }

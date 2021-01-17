@@ -86,12 +86,12 @@ void ACardActor::Tick(float DeltaTime)
 
 void ACardActor::OnCardSelected()
 {
-	if (IsSelected)
+	if (IsFocused)
 	{
 		return;
 	}
 
-	IsSelected = true;
+	IsFocused = true;
 
 	if (GEngine != nullptr)
 	{
@@ -105,11 +105,14 @@ void ACardActor::OnCardSelected()
 	curTrans.SetRotation(FQuat(curRot));
 
 	StartMovingTo(curTrans, DisplayTransDuration);
+
+	CardFocusedEvent_OneP.Broadcast(this);
+	DisplayCardInfoEvent_BP();
 }
 
 void ACardActor::OnCardUnSelected()
 {
-	if (!IsSelected)
+	if (!IsFocused)
 	{
 		return;
 	}
@@ -119,8 +122,9 @@ void ACardActor::OnCardUnSelected()
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Orange, FString::Printf(TEXT("%s is unselected"), *GetDebugName(this)));
 	}
 
-	IsSelected = false;
+	IsFocused = false;
 	StartMovingTo(CardTransformData.CardTransform, InHandTransDuration);
+	CardLostFocusEvent_OneP.Broadcast(this);
 }
 
 void ACardActor::StartMovingTo(FTransform targetTrans, float time)
