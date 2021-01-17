@@ -9,6 +9,7 @@
 /**
  * 
  */
+class AGameManager;
 UCLASS()
 class ROUGELIKEWUXIA_API AScreenOnlyPlayerController : public APlayerController
 {
@@ -16,7 +17,11 @@ class ROUGELIKEWUXIA_API AScreenOnlyPlayerController : public APlayerController
 	
 
 protected:
+	virtual void BeginPlay() override;
 	// Begin PlayerController interface
 	virtual void PlayerTick(float DeltaTime) override;
 	// End PlayerController interface
+
+private:
+	AGameManager* m_GMCache;
 };

@@ -26,6 +26,7 @@ public:
 	void PlayerAddCardFromExternal(int cardID, ECardLocationType addTo);
 	void PlayerDiscardCard(UCardBase* discardingCard);
 	void SetCurSelectedCard(int cardIndex);
+	void SetCurSelectedCard(ACardActor* cardActor);
 
 	FCardTransformData GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex);
 
@@ -51,6 +52,6 @@ private:
 	TArray<UCardBase*> m_DestroyedCards;
 
 	TArray<ACardActor*> m_CardActors;
-	int m_CurSelectedInHandCardInx;
+	int m_CurSelectedInHandCardInx = -1;
 	UClass* m_CardActorClass;
 };

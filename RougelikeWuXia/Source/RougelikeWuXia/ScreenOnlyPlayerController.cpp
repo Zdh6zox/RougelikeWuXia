@@ -3,6 +3,14 @@
 
 #include "ScreenOnlyPlayerController.h"
 #include "Card/CardActor.h"
+#include "Managers/GameManager.h"
+
+void AScreenOnlyPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	m_GMCache = AGameManager::GetGameManager(GetWorld());
+}
 
 void AScreenOnlyPlayerController::PlayerTick(float DeltaTime)
 {
@@ -11,9 +19,7 @@ void AScreenOnlyPlayerController::PlayerTick(float DeltaTime)
 	if (hitResult.bBlockingHit)
 	{
 		AActor* hittedActor = hitResult.Actor.Get();
-		if (ACardActor* hittedCardActor = Cast<ACardActor>(hittedActor))
-		{
-			hittedCardActor->OnCardSelected();
-		}
+		ACardActor* hittedCardActor = Cast<ACardActor>(hittedActor);
+		m_GMCache->GetCardManager().SetCurSelectedCard(hittedCardActor);
 	}
 }

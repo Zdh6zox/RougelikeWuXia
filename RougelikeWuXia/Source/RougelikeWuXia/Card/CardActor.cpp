@@ -55,10 +55,9 @@ void ACardActor::BeginPlay()
 
 void ACardActor::CardTransformTo(FCardTransformData destTrans)
 {
-	m_IsMoving = true;
-	m_MovingRatio = 0.f;
 	CardTransformData = destTrans;
-	m_TargetTrans = CardTransformData.CardTransform;
+
+	StartMovingTo(CardTransformData.CardTransform, InHandTransDuration);
 }
 
 // Called every frame
@@ -66,9 +65,9 @@ void ACardActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (m_IsMoving)
+	if (m_IsMoving && m_CurTransDuration > 0.0f)
 	{
-		m_MovingRatio += DeltaTime / TransformDuration;
+		m_MovingRatio += DeltaTime / m_CurTransDuration;
 		FVector curLoc = GetActorLocation();
 		FRotator curRot = GetActorRotation();
 		FVector curScale = GetActorScale3D();
@@ -94,12 +93,18 @@ void ACardActor::OnCardSelected()
 
 	IsSelected = true;
 
-	AGameManager::GetGameManager(GetWorld())->GetCardManager().SetCurSelectedCard(CardTransformData.CardInHandIndex);
-	FTransform curTrans = GetActorTransform();
+	if (GEngine != nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Red, FString::Printf(TEXT("%s is selected"), *GetDebugName(this)));
+	}
+
 	//Remove Roll
-	FRotator curRot = GetActorRotation();
+	FTransform curTrans = CardTransformData.CardTransform;
+	FRotator curRot = FRotator(curTrans.GetRotation());
 	curRot.Roll = 0.f;
-	SetActorRotation(curRot);
+	curTrans.SetRotation(FQuat(curRot));
+
+	StartMovingTo(curTrans, DisplayTransDuration);
 }
 
 void ACardActor::OnCardUnSelected()
@@ -109,6 +114,20 @@ void ACardActor::OnCardUnSelected()
 		return;
 	}
 
-	CardTransformTo(CardTransformData);
+	if (GEngine != nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Orange, FString::Printf(TEXT("%s is unselected"), *GetDebugName(this)));
+	}
+
 	IsSelected = false;
+	StartMovingTo(CardTransformData.CardTransform, InHandTransDuration);
+}
+
+void ACardActor::StartMovingTo(FTransform targetTrans, float time)
+{
+	m_IsMoving = true;
+	m_MovingRatio = 0.f;
+
+	m_TargetTrans = targetTrans;
+	m_CurTransDuration = time;
 }

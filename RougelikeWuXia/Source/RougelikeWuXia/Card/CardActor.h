@@ -34,7 +34,10 @@ public:
 		FCardTransformData CardTransformData;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		float TransformDuration = 2.0f;
+		float InHandTransDuration = 2.0f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		float DisplayTransDuration = 0.5f;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 		bool IsSelected = false;
@@ -71,10 +74,13 @@ public:
 		void DisplayCardInfoEvent_BP();
 
 private:
+	void StartMovingTo(FTransform targetTrans, float time);
+
 	UClass* m_FrontWidgetClass;
 	UClass* m_BackWigdetClass;
 
 	bool m_IsMoving = false;
 	float m_MovingRatio = 0.f;
+	float m_CurTransDuration = 0.f;
 	FTransform m_TargetTrans;
 };

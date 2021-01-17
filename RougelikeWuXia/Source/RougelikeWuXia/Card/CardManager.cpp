@@ -225,18 +225,41 @@ void FCardManager::SetCurSelectedCard(int cardIndex)
 		return;
 	}
 
-	auto* actorPtr = m_CardActors.FindByPredicate([&](ACardActor* actor)
+	for (int i = 0; i < m_CardActors.Num(); ++i)
 	{
-		return actor->CardTransformData.CardInHandIndex == m_CurSelectedInHandCardInx;
-	});
+		ACardActor* cardActor = m_CardActors[i];
+		if (cardActor == nullptr)
+		{
+			continue;
+		}
 
-	if (actorPtr != nullptr)
-	{
-		ACardActor* foundActor = *actorPtr;
-		foundActor->OnCardUnSelected();
+		if (cardActor->CardTransformData.CardInHandIndex == cardIndex)
+		{
+			cardActor->OnCardSelected();
+			continue;
+		}
+
+		if (cardActor->CardTransformData.CardInHandIndex == m_CurSelectedInHandCardInx)
+		{
+			cardActor->OnCardUnSelected();
+			continue;
+		}
 	}
 	
 	m_CurSelectedInHandCardInx = cardIndex;
+}
+
+void FCardManager::SetCurSelectedCard(ACardActor* cardActor)
+{
+	if (cardActor == nullptr)
+	{
+		SetCurSelectedCard(-1);
+	}
+	else
+	{
+		int cardIndex = cardActor->CardTransformData.CardInHandIndex;
+		SetCurSelectedCard(cardIndex);
+	}
 }
 
 //Test Functions
