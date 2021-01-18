@@ -4,6 +4,7 @@
 #include "ScreenOnlyPlayerController.h"
 #include "Card/CardActor.h"
 #include "Managers/GameManager.h"
+#include "GameFramework/PlayerInput.h"
 
 void AScreenOnlyPlayerController::BeginPlay()
 {
@@ -14,6 +15,18 @@ void AScreenOnlyPlayerController::BeginPlay()
 
 void AScreenOnlyPlayerController::PlayerTick(float DeltaTime)
 {
+	bool justPressed = false;
+	if (PlayerInput->WasJustPressed(EKeys::LeftMouseButton))
+	{
+		justPressed = true;
+	}
+
+	bool justReleased = false;
+	if (PlayerInput->WasJustReleased(EKeys::LeftMouseButton))
+	{
+		justReleased = true;
+	}
+
 	FHitResult hitResult;
 	GetHitResultUnderCursor(ECC_Visibility, false, hitResult);
 	if (hitResult.bBlockingHit)
@@ -21,5 +34,10 @@ void AScreenOnlyPlayerController::PlayerTick(float DeltaTime)
 		AActor* hittedActor = hitResult.Actor.Get();
 		ACardActor* hittedCardActor = Cast<ACardActor>(hittedActor);
 		m_GMCache->GetCardManager().SetCurFocusedCard(hittedCardActor);
+
+		if (justPressed)
+		{
+			m_GMCache->GetCardManager().SetCurSelectedCard(hittedCardActor);
+		}
 	}
 }

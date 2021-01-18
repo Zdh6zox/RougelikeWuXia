@@ -27,6 +27,8 @@ public:
 	void PlayerDiscardCard(UCardBase* discardingCard);
 	void SetCurFocusedCard(int cardIndex);
 	void SetCurFocusedCard(ACardActor* cardActor);
+	void SetCurSelectedCard(int cardIndex);
+	void SetCurSelectedCard(ACardActor* cardActor);
 
 	FCardTransformData GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex);
 
@@ -54,6 +56,7 @@ private:
 
 	TArray<ACardActor*> m_CardActors;
 	int m_CurFocusedInHandCardInx = -1;
+	int m_CurSelectedInHandCardInx = -1;
 	UClass* m_CardActorClass;
 	FPlane m_CardMovingPlane;
 };

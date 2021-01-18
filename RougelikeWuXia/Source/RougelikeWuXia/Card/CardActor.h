@@ -50,6 +50,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 		bool IsFocused = false;
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+		bool IsSelected = false;
 
 	FCardFocusedEvent CardFocusedEvent_OneP;
 	FCardLostFocusEvent CardLostFocusEvent_OneP;
@@ -81,14 +83,13 @@ public:
 
 	void CardTransformTo(FCardTransformData destTrans);
 
+	void OnCardFocused();
+	void OnCardLostFocus();
 	void OnCardSelected();
-	void OnCardUnSelected();
+	void OnCardUnselected();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void CardConstructedEvent_BP();
-
-	UFUNCTION(BlueprintImplementableEvent)
-		void DisplayCardInfoEvent_BP();
 
 private:
 	void StartMovingTo(FTransform targetTrans, float time);
@@ -100,5 +101,4 @@ private:
 	float m_MovingRatio = 0.f;
 	float m_CurTransDuration = 0.f;
 	FTransform m_TargetTrans;
-	FPlane
 };

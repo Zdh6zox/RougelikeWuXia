@@ -228,6 +228,8 @@ void FCardManager::SetCurFocusedCard(int cardIndex)
 		return;
 	}
 
+	int preInx = -1;
+	int curInx = -1;
 	for (int i = 0; i < m_CardActors.Num(); ++i)
 	{
 		ACardActor* cardActor = m_CardActors[i];
@@ -238,23 +240,32 @@ void FCardManager::SetCurFocusedCard(int cardIndex)
 
 		if (cardActor->CardTransformData.CardInHandIndex == m_CurFocusedInHandCardInx)
 		{
-			cardActor->OnCardUnSelected();
-			break;
-		}
-	}
-
-	for (int i = 0; i < m_CardActors.Num(); ++i)
-	{
-		ACardActor* cardActor = m_CardActors[i];
-		if (cardActor == nullptr)
-		{
+			preInx = i;
 			continue;
 		}
 
 		if (cardActor->CardTransformData.CardInHandIndex == cardIndex)
 		{
-			cardActor->OnCardSelected();
-			break;
+			curInx = i;
+			continue;
+		}
+	}
+
+	if (preInx != -1)
+	{
+		ACardActor* cardActor = m_CardActors[preInx];
+		if (cardActor != nullptr)
+		{
+			cardActor->OnCardLostFocus();
+		}
+	}
+
+	if (curInx != -1)
+	{
+		ACardActor* cardActor = m_CardActors[curInx];
+		if (cardActor != nullptr)
+		{
+			cardActor->OnCardFocused();
 		}
 	}
 
@@ -271,6 +282,70 @@ void FCardManager::SetCurFocusedCard(ACardActor* cardActor)
 	{
 		int cardIndex = cardActor->CardTransformData.CardInHandIndex;
 		SetCurFocusedCard(cardIndex);
+	}
+}
+
+void FCardManager::SetCurSelectedCard(int cardIndex)
+{
+	if (cardIndex == m_CurSelectedInHandCardInx)
+	{
+		return;
+	}
+
+	int preInx = -1;
+	int curInx = -1;
+	for (int i = 0; i < m_CardActors.Num(); ++i)
+	{
+		ACardActor* cardActor = m_CardActors[i];
+		if (cardActor == nullptr)
+		{
+			continue;
+		}
+
+		if (cardActor->CardTransformData.CardInHandIndex == m_CurSelectedInHandCardInx)
+		{
+			preInx = i;
+			continue;
+		}
+
+		if (cardActor->CardTransformData.CardInHandIndex == cardIndex)
+		{
+			curInx = i;
+			continue;
+		}
+	}
+
+	if (preInx != -1)
+	{
+		ACardActor* cardActor = m_CardActors[preInx];
+		if (cardActor != nullptr)
+		{
+			cardActor->OnCardUnselected();
+		}
+	}
+
+	if (curInx != -1)
+	{
+		ACardActor* cardActor = m_CardActors[curInx];
+		if (cardActor != nullptr)
+		{
+			cardActor->OnCardSelected();
+		}
+	}
+
+	m_CurSelectedInHandCardInx = cardIndex;
+}
+
+void FCardManager::SetCurSelectedCard(ACardActor* cardActor)
+{
+	if (cardActor == nullptr)
+	{
+		SetCurSelectedCard(-1);
+	}
+	else
+	{
+		int cardIndex = cardActor->CardTransformData.CardInHandIndex;
+		SetCurSelectedCard(cardIndex);
 	}
 }
 
