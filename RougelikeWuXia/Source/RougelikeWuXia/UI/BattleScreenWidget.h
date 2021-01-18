@@ -22,11 +22,29 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
 		void OnCardLostFocusEvent_BP(ACardActor* lostFocusCard);
 
+	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
+		void OnCardSelectedEvent_BP(ACardActor* lostFocusCard);
+
+	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
+		void OnCardUnselectedEvent_BP(ACardActor* lostFocusCard);
+
+	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
+		void OnCardAboutToTriggerEvent_BP(ACardActor* lostFocusCard);
+
+	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
+		void OnCardCancelTriggerEvent_BP(ACardActor* lostFocusCard);
+
+	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
+		void OnCardTriggeredEvent_BP(ACardActor* lostFocusCard);
+
 public:
 	void AddCardEventSpy(ACardActor* spyingCard);
 
 	void OnCardFocused(ACardActor* focusedCard);
 	void OnCardLostFocus(ACardActor* lostFocusCard);
-
-
+	void OnCardSelected(ACardActor* selectedCard);
+	void OnCardUnselected(ACardActor* unselectedCard);
+	void OnCardAboutToTrigger(ACardActor* triggeringCard);
+	void OnCardCancelTrigger(ACardActor* cancelledCard);
+	void OnCardTriggered(ACardActor* triggeredCard);
 };

@@ -31,6 +31,7 @@ public:
 	FCardTransformData GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex);
 
 	UCardBase* GetCurFocusedCardInHand();
+	FVector GetProjectedPos(FVector originPos);
 
 	//Test Functions
 	void Test_CreateDefaultCardsInDeck(int num);
@@ -54,4 +55,5 @@ private:
 	TArray<ACardActor*> m_CardActors;
 	int m_CurFocusedInHandCardInx = -1;
 	UClass* m_CardActorClass;
+	FPlane m_CardMovingPlane;
 };

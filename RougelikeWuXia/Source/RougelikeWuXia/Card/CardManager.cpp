@@ -274,6 +274,11 @@ void FCardManager::SetCurFocusedCard(ACardActor* cardActor)
 	}
 }
 
+FVector FCardManager::GetProjectedPos(FVector originPos)
+{
+	return FVector::PointPlaneProject(originPos, m_CardMovingPlane);
+}
+
 //Test Functions
 void FCardManager::Test_CreateDefaultCardsInDeck(int num)
 {
