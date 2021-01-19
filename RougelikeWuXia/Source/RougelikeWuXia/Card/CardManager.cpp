@@ -17,6 +17,8 @@
 void FCardManager::InitializeManager(AGameManager* gm)
 {
 	m_GMCache = gm;
+	FTransform trans = m_GMCache->CardMovingPlaneTrans;
+	m_CardMovingPlane = FPlane(trans.GetLocation(), trans.GetScaledAxis(EAxis::Z));
 
 	FString cardTransTablePath = "DataTable'/Game/DataTable/CardTransformPreset_Global.CardTransformPreset_Global'";
 	m_CardTransDataTable = LoadObject<UDataTable>(NULL, *cardTransTablePath);
@@ -147,6 +149,15 @@ FRotator FCardManager::GetOffsetViaIndex(FRotator rotaionOffset, int totalInHand
 	float diff = (float)cardIndex + 1 - middleNum;
 
 	return rotaionOffset * diff;;
+}
+
+void FCardManager::UpdateCard(FVector mousePos)
+{
+	if (m_CurSelectedCard != NULL)
+	{
+		FVector projectedPos = GetProjectedPos(mousePos);
+		m_CurSelectedCard->SetActorLocation(projectedPos);
+	}
 }
 
 void FCardManager::PlayerDrawCard()
@@ -330,7 +341,12 @@ void FCardManager::SetCurSelectedCard(int cardIndex)
 		if (cardActor != nullptr)
 		{
 			cardActor->OnCardSelected();
+			m_CurSelectedCard = cardActor;
 		}
+	}
+	else
+	{
+		m_CurSelectedCard = NULL;
 	}
 
 	m_CurSelectedInHandCardInx = cardIndex;

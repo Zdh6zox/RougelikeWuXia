@@ -138,6 +138,8 @@ void ACardActor::OnCardSelected()
 	{
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Blue, FString::Printf(TEXT("%s is selected"), *GetDebugName(this)));
 	}
+
+	CardSelectedEvent_BP();
 }
 
 void ACardActor::OnCardUnselected()
@@ -152,6 +154,8 @@ void ACardActor::OnCardUnselected()
 	{
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, FString::Printf(TEXT("%s is unselected"), *GetDebugName(this)));
 	}
+
+	CardUnselectedEvent_BP();
 }
 
 void ACardActor::StartMovingTo(FTransform targetTrans, float time)

@@ -13,6 +13,7 @@ class ACharacterBase;
 class UDataTable;
 class ACameraActor;
 class UBattleScreenWidget;
+class AScreenOnlyPlayerController;
 UCLASS()
 class ROUGELIKEWUXIA_API AGameManager : public AActor
 {
@@ -35,7 +36,6 @@ public:
 	FCardManager& GetCardManager() { return m_CardManager; }
 	FBattleManager& GetBattleManager() { return m_BattleManager; }
 	FRandomStream& GetRandomStream() { return m_RandomStream; }
-
 
 	FVector GetCameraUpVector();
 	FVector GetCameraForwardVector();
@@ -65,6 +65,9 @@ public:
 		void TestPlayerDrawCard();
 
 public:
+	UPROPERTY(EditAnywhere, category = "Cards")
+		FTransform CardMovingPlaneTrans;
+
     UPROPERTY(EditAnywhere, category = "Data Tables")
         UDataTable* CardDataTable;
 
@@ -79,6 +82,7 @@ private:
 	FBattleManager m_BattleManager;
 
 	ACameraActor* m_CameraCache;
+	AScreenOnlyPlayerController* m_PlayerController;
 	FRandomStream m_RandomStream;
 	int32 m_CurrentRandomSeed;
 };

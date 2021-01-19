@@ -18,6 +18,7 @@ class ROUGELIKEWUXIA_API FCardManager
 {
 public:
 	void InitializeManager(AGameManager* gm);
+	void UpdateCard(FVector mousePos);
 
     UCardBase* CreateCardViaCardID(uint32 cardID);
 	void SpawnCardActor(UCardBase* cardBase, FCardTransformData cardTrans);
@@ -55,6 +56,7 @@ private:
 	TArray<UCardBase*> m_DestroyedCards;
 
 	TArray<ACardActor*> m_CardActors;
+	ACardActor* m_CurSelectedCard = nullptr;
 	int m_CurFocusedInHandCardInx = -1;
 	int m_CurSelectedInHandCardInx = -1;
 	UClass* m_CardActorClass;

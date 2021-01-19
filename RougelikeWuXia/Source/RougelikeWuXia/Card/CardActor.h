@@ -89,7 +89,10 @@ public:
 	void OnCardUnselected();
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void CardConstructedEvent_BP();
+		void CardSelectedEvent_BP();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void CardUnselectedEvent_BP();
 
 private:
 	void StartMovingTo(FTransform targetTrans, float time);

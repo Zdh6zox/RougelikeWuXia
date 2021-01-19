@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "ScreenOnlyPlayerController.h"
 #include "UI/BattleScreenWidget.h"
+#include "Card/CardActor.h"
 
 // Sets default values
 AGameManager::AGameManager()
@@ -29,12 +30,13 @@ void AGameManager::BeginPlay()
 
 	Super::BeginPlay();
 
+	AScreenOnlyPlayerController* playerCon = Cast<AScreenOnlyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	check(playerCon);
+	m_PlayerController = playerCon;
+
 	if (BattleScreenWidgetClass != NULL)
 	{
-		AScreenOnlyPlayerController* playerCon = Cast<AScreenOnlyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-		check(playerCon);
-
-		BattleScreenWidget = CreateWidget<UBattleScreenWidget>(playerCon, BattleScreenWidgetClass);
+		BattleScreenWidget = CreateWidget<UBattleScreenWidget>(m_PlayerController, BattleScreenWidgetClass);
 		check(BattleScreenWidget);
 
 		BattleScreenWidget->AddToViewport(1);
@@ -44,9 +46,36 @@ void AGameManager::BeginPlay()
 // Called every frame
 void AGameManager::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
 	m_BattleManager.UpdateBattle();
+
+	bool justPressed = false;
+	if (m_PlayerController->IsInputKeyDown(EKeys::LeftMouseButton))
+	{
+		justPressed = true;
+	}
+
+	bool justReleased = false;
+	if (m_PlayerController->WasInputKeyJustReleased(EKeys::LeftMouseButton))
+	{
+		justReleased = true;
+	}
+
+	FHitResult hitResult;
+	m_PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, hitResult);
+	if (hitResult.bBlockingHit)
+	{
+		AActor* hittedActor = hitResult.Actor.Get();
+		ACardActor* hittedCardActor = Cast<ACardActor>(hittedActor);
+		m_CardManager.SetCurFocusedCard(hittedCardActor);
+
+		if (justPressed)
+		{
+			m_CardManager.SetCurSelectedCard(hittedCardActor);
+		}
+
+		m_CardManager.UpdateCard(hitResult.ImpactPoint);
+	}
+	Super::Tick(DeltaTime);
 }
 
 AGameManager* AGameManager::GetGameManager(UWorld* world)
