@@ -47,34 +47,8 @@ void AGameManager::BeginPlay()
 void AGameManager::Tick(float DeltaTime)
 {
 	m_BattleManager.UpdateBattle();
+	m_CardManager.UpdateCards();
 
-	bool justPressed = false;
-	if (m_PlayerController->IsInputKeyDown(EKeys::LeftMouseButton))
-	{
-		justPressed = true;
-	}
-
-	bool justReleased = false;
-	if (m_PlayerController->WasInputKeyJustReleased(EKeys::LeftMouseButton))
-	{
-		justReleased = true;
-	}
-
-	FHitResult hitResult;
-	m_PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, hitResult);
-	if (hitResult.bBlockingHit)
-	{
-		AActor* hittedActor = hitResult.Actor.Get();
-		ACardActor* hittedCardActor = Cast<ACardActor>(hittedActor);
-		m_CardManager.SetCurFocusedCard(hittedCardActor);
-
-		if (justPressed)
-		{
-			m_CardManager.SetCurSelectedCard(hittedCardActor);
-		}
-
-		m_CardManager.UpdateCard(hitResult.ImpactPoint);
-	}
 	Super::Tick(DeltaTime);
 }
 

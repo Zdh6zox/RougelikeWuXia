@@ -17,8 +17,15 @@ struct FCardData;
 class ROUGELIKEWUXIA_API FCardManager
 {
 public:
+	enum CardManagerMode
+	{
+		Browse,
+		MovingCard,
+		Triggering
+	};
+
 	void InitializeManager(AGameManager* gm);
-	void UpdateCard(FVector mousePos);
+	void UpdateCards();
 
     UCardBase* CreateCardViaCardID(uint32 cardID);
 	void SpawnCardActor(UCardBase* cardBase, FCardTransformData cardTrans);
@@ -34,7 +41,6 @@ public:
 	FCardTransformData GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex);
 
 	UCardBase* GetCurFocusedCardInHand();
-	FVector GetProjectedPos(FVector originPos);
 
 	//Test Functions
 	void Test_CreateDefaultCardsInDeck(int num);
@@ -60,5 +66,5 @@ private:
 	int m_CurFocusedInHandCardInx = -1;
 	int m_CurSelectedInHandCardInx = -1;
 	UClass* m_CardActorClass;
-	FPlane m_CardMovingPlane;
+	CardManagerMode m_Mode;
 };

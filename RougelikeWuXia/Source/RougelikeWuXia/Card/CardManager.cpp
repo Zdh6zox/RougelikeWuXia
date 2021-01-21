@@ -9,6 +9,7 @@
 #include "Card/CardTransformDataPreset.h"
 #include "Card/CardActor.h"
 #include "UI/BattleScreenWidget.h"
+#include "ScreenOnlyPlayerController.h"
 #include "RougelikeWuXia.h"
 
 
@@ -17,8 +18,6 @@
 void FCardManager::InitializeManager(AGameManager* gm)
 {
 	m_GMCache = gm;
-	FTransform trans = m_GMCache->CardMovingPlaneTrans;
-	m_CardMovingPlane = FPlane(trans.GetLocation(), trans.GetScaledAxis(EAxis::Z));
 
 	FString cardTransTablePath = "DataTable'/Game/DataTable/CardTransformPreset_Global.CardTransformPreset_Global'";
 	m_CardTransDataTable = LoadObject<UDataTable>(NULL, *cardTransTablePath);
@@ -151,12 +150,54 @@ FRotator FCardManager::GetOffsetViaIndex(FRotator rotaionOffset, int totalInHand
 	return rotaionOffset * diff;;
 }
 
-void FCardManager::UpdateCard(FVector mousePos)
+void FCardManager::UpdateCards()
 {
-	if (m_CurSelectedCard != NULL)
+	AScreenOnlyPlayerController* playCon = m_GMCache->GetPlayerController();
+
+	bool justPressed = false;
+	if (playCon->IsInputKeyDown(EKeys::LeftMouseButton))
 	{
-		FVector projectedPos = GetProjectedPos(mousePos);
-		m_CurSelectedCard->SetActorLocation(projectedPos);
+		justPressed = true;
+	}
+
+	bool justReleased = false;
+	if (playCon->WasInputKeyJustReleased(EKeys::LeftMouseButton))
+	{
+		justReleased = true;
+	}
+
+	if (m_Mode == CardManagerMode::Browse)
+	{
+		FHitResult hitResult;
+		playCon->GetHitResultUnderCursor(ECC_Visibility, false, hitResult);
+		if (hitResult.bBlockingHit)
+		{
+			AActor* hittedActor = hitResult.Actor.Get();
+			ACardActor* hittedCardActor = Cast<ACardActor>(hittedActor);
+			SetCurFocusedCard(hittedCardActor);
+
+			if (justPressed)
+			{
+				SetCurSelectedCard(hittedCardActor);
+			}
+		}
+	}
+	else if (m_Mode == CardManagerMode::MovingCard)
+	{
+		FHitResult hitResult;
+		playCon->GetHitResultUnderCursor(ECC_PhysicsBody, false, hitResult);
+		if (hitResult.bBlockingHit)
+		{
+			AActor* hittedActor = hitResult.Actor.Get();
+			if (hittedActor == m_GMCache->CardMovingPlane)
+			{
+				m_CurSelectedCard->SetActorLocation(hitResult.ImpactPoint);
+			}
+		}
+	}
+	else if (m_Mode == CardManagerMode::Triggering)
+	{
+
 	}
 }
 
@@ -341,12 +382,14 @@ void FCardManager::SetCurSelectedCard(int cardIndex)
 		if (cardActor != nullptr)
 		{
 			cardActor->OnCardSelected();
+			m_Mode = CardManagerMode::MovingCard;
 			m_CurSelectedCard = cardActor;
 		}
 	}
 	else
 	{
 		m_CurSelectedCard = NULL;
+		m_Mode = CardManagerMode::Browse;
 	}
 
 	m_CurSelectedInHandCardInx = cardIndex;
@@ -363,11 +406,6 @@ void FCardManager::SetCurSelectedCard(ACardActor* cardActor)
 		int cardIndex = cardActor->CardTransformData.CardInHandIndex;
 		SetCurSelectedCard(cardIndex);
 	}
-}
-
-FVector FCardManager::GetProjectedPos(FVector originPos)
-{
-	return FVector::PointPlaneProject(originPos, m_CardMovingPlane);
 }
 
 //Test Functions

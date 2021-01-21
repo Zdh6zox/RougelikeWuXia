@@ -16,4 +16,6 @@ void AScreenOnlyPlayerController::BeginPlay()
 void AScreenOnlyPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+
+
 }

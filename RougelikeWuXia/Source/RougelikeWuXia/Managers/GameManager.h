@@ -66,7 +66,7 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, category = "Cards")
-		FTransform CardMovingPlaneTrans;
+		AActor* CardMovingPlane;
 
     UPROPERTY(EditAnywhere, category = "Data Tables")
         UDataTable* CardDataTable;
@@ -76,6 +76,8 @@ public:
 
 	UPROPERTY(EditAnywhere, category = "Widgets")
 		TSubclassOf<UBattleScreenWidget> BattleScreenWidgetClass;
+
+	AScreenOnlyPlayerController* GetPlayerController() { return m_PlayerController; }
 
 private:
 	FCardManager m_CardManager;
