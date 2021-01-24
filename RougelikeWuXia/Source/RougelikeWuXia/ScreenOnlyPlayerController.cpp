@@ -11,6 +11,8 @@ void AScreenOnlyPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	m_GMCache = AGameManager::GetGameManager(GetWorld());
+
+	
 }
 
 void AScreenOnlyPlayerController::PlayerTick(float DeltaTime)

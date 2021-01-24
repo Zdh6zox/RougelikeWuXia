@@ -12,6 +12,7 @@ class UUserWidget;
 class UStaticMeshComponent;
 class UWidgetComponent;
 class ACardActor;
+class UBoxComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FCardFocusedEvent, ACardActor*);
 DECLARE_MULTICAST_DELEGATE_OneParam(FCardLostFocusEvent, ACardActor*);
@@ -29,6 +30,7 @@ class ROUGELIKEWUXIA_API ACardActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ACardActor();
+	~ACardActor();
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 		UCardBase* Card;
@@ -69,10 +71,13 @@ protected:
 		UStaticMeshComponent* CardMesh;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	    UWidgetComponent* m_FrontWidgetComp;
+	    UWidgetComponent* FrontWidgetComp;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	    UWidgetComponent* m_BackWidgetComp;
+	    UWidgetComponent* BackWidgetComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		UBoxComponent* CardBox;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -87,6 +92,8 @@ public:
 	void OnCardLostFocus();
 	void OnCardSelected();
 	void OnCardUnselected();
+	void OnCardTriggered();
+	void OnCardDiscarded();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void CardSelectedEvent_BP();
@@ -96,11 +103,13 @@ public:
 
 private:
 	void StartMovingTo(FTransform targetTrans, float time);
+	void StopMoving();
 
 	UClass* m_FrontWidgetClass;
 	UClass* m_BackWigdetClass;
 
 	bool m_IsMoving = false;
+	bool m_IsDiscarding = false;
 	float m_MovingRatio = 0.f;
 	float m_CurTransDuration = 0.f;
 	FTransform m_TargetTrans;

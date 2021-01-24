@@ -152,7 +152,14 @@ void AGameManager::TestPlayerPhaseEnd()
 
 void AGameManager::TestFindCardTransform(ECardLocationType locationType, int totalInhandNum, int cardIndex)
 {
-	m_CardManager.GetTransformData(locationType, totalInhandNum, cardIndex);
+	if (locationType!= ECardLocationType::InHand)
+	{
+		m_CardManager.GetTransformData(locationType);
+	}
+	else
+	{
+		m_CardManager.GetInHandTransformData(totalInhandNum, cardIndex);
+	}
 }
 
 void AGameManager::TestCreateDefaultCardsInDeck(int number)

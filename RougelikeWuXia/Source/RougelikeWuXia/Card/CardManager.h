@@ -9,6 +9,7 @@ class UCardBase;
 class AGameManager;
 class UDataTable;
 class ACardActor;
+class ACardMovingPlane;
 struct FCardData;
 
 /**
@@ -28,19 +29,19 @@ public:
 	void UpdateCards();
 
     UCardBase* CreateCardViaCardID(uint32 cardID);
-	void SpawnCardActor(UCardBase* cardBase, FCardTransformData cardTrans);
+	void SpawnCardActor(UCardBase* cardBase);
 
 	void PlayerDrawCard();
 	void PlayerAddCardFromExternal(int cardID, ECardLocationType addTo);
-	void PlayerDiscardCard(UCardBase* discardingCard);
-	void SetCurFocusedCard(int cardIndex);
+	void PlayerDiscardCard(int discardingCardInx);
+
 	void SetCurFocusedCard(ACardActor* cardActor);
-	void SetCurSelectedCard(int cardIndex);
 	void SetCurSelectedCard(ACardActor* cardActor);
 
-	FCardTransformData GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex);
+	void SetCardManagerMode(CardManagerMode mode);
 
-	UCardBase* GetCurFocusedCardInHand();
+	FCardTransformData GetTransformData(ECardLocationType locationType);
+	FCardTransformData GetInHandTransformData(int totalInHandNum, int cardIndex);
 
 	//Test Functions
 	void Test_CreateDefaultCardsInDeck(int num);
@@ -48,6 +49,8 @@ public:
 private:
 	void AddEscapeCardInHand();
 	void RearrangeCardsInHand();
+	void SetCurFocusedCard_Internal(int cardIndex);
+	void SetCurSelectedCard_Internal(int cardIndex);
 
 	FRotator GetOffsetViaIndex(FRotator rotaionOffset, int totalInHandNum, int cardIndex);
 
@@ -56,15 +59,17 @@ private:
 	AGameManager* m_GMCache;
     TArray<UCardBase*> m_AllPlayerCards;
 
+	TArray<ACardActor*> m_CardActors;
 	TArray<UCardBase*> m_CardsInDeck;
 	TArray<UCardBase*> m_DiscardedCards;
-	TArray<UCardBase*> m_CardsInHand;
 	TArray<UCardBase*> m_DestroyedCards;
 
-	TArray<ACardActor*> m_CardActors;
+
 	ACardActor* m_CurSelectedCard = nullptr;
 	int m_CurFocusedInHandCardInx = -1;
 	int m_CurSelectedInHandCardInx = -1;
 	UClass* m_CardActorClass;
 	CardManagerMode m_Mode;
+
+	ACardMovingPlane* m_CardMovingPlane;
 };

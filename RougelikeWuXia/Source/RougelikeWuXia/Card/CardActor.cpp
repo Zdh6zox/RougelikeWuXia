@@ -6,6 +6,7 @@
 #include "UMG/Public/Blueprint/UserWidget.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/BoxComponent.h"
 #include "Managers/GameManager.h"
 #include "Card/CardManager.h"
 
@@ -27,8 +28,6 @@ ACardActor::ACardActor()
 		m_BackWigdetClass = backWidgetClass.Class;
 	}
 
-
-
 	CustomRoot = CreateDefaultSubobject<USceneComponent>("Root");
 	CustomRoot->Mobility = EComponentMobility::Movable;
 	SetRootComponent(CustomRoot);
@@ -37,14 +36,28 @@ ACardActor::ACardActor()
 	CardMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CardMesh->SetupAttachment(CustomRoot);
 
-	m_FrontWidgetComp = CreateDefaultSubobject<UWidgetComponent>("FrontWidget");
-	m_FrontWidgetComp->SetupAttachment(CustomRoot);
-	m_FrontWidgetComp->SetWidgetClass(m_FrontWidgetClass);
+	FrontWidgetComp = CreateDefaultSubobject<UWidgetComponent>("FrontWidget");
+	FrontWidgetComp->SetupAttachment(CustomRoot);
+	FrontWidgetComp->SetWidgetClass(m_FrontWidgetClass);
 
+	BackWidgetComp = CreateDefaultSubobject<UWidgetComponent>("BackWigdet");
+	BackWidgetComp->SetupAttachment(CustomRoot);
+	BackWidgetComp->SetWidgetClass(m_BackWigdetClass);
 
-	m_BackWidgetComp = CreateDefaultSubobject<UWidgetComponent>("BackWigdet");
-	m_BackWidgetComp->SetupAttachment(CustomRoot);
-	m_BackWidgetComp->SetWidgetClass(m_BackWigdetClass);
+	CardBox = CreateDefaultSubobject<UBoxComponent>("CardBox");
+	CardBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CardBox->SetupAttachment(CustomRoot);
+}
+
+ACardActor::~ACardActor()
+{
+	CardFocusedEvent_OneP.Clear();
+	CardLostFocusEvent_OneP.Clear();
+	CardSelectedEvent_OneP.Clear();
+	CardUnselectedEvent_OneP.Clear();
+	CardTriggeredEvent_OneP.Clear();
+	CardAboutToTriggerEvent_OneP.Clear();
+	CardCancelTriggerEvent_OneP.Clear();
 }
 
 // Called when the game starts or when spawned
@@ -79,7 +92,7 @@ void ACardActor::Tick(float DeltaTime)
 		SetActorTransform(newTrans);
 		if (m_MovingRatio >= 1.0f)
 		{
-			m_IsMoving = false;
+			StopMoving();
 		}
 	}
 }
@@ -139,6 +152,7 @@ void ACardActor::OnCardSelected()
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Blue, FString::Printf(TEXT("%s is selected"), *GetDebugName(this)));
 	}
 
+	StopMoving();
 	CardSelectedEvent_BP();
 }
 
@@ -155,7 +169,22 @@ void ACardActor::OnCardUnselected()
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, FString::Printf(TEXT("%s is unselected"), *GetDebugName(this)));
 	}
 
+	FTransform curTrans = CardTransformData.CardTransform;
+	StartMovingTo(curTrans, InHandTransDuration);
+
 	CardUnselectedEvent_BP();
+}
+
+void ACardActor::OnCardTriggered()
+{
+	OnCardDiscarded();
+}
+
+void ACardActor::OnCardDiscarded()
+{
+	FCardTransformData discardedTrans = AGameManager::GetGameManager(GetWorld())->GetCardManager().GetTransformData(ECardLocationType::Discarded);
+	CardTransformTo(discardedTrans);
+	m_IsDiscarding = true;
 }
 
 void ACardActor::StartMovingTo(FTransform targetTrans, float time)
@@ -165,4 +194,15 @@ void ACardActor::StartMovingTo(FTransform targetTrans, float time)
 
 	m_TargetTrans = targetTrans;
 	m_CurTransDuration = time;
+}
+
+void ACardActor::StopMoving()
+{
+	m_IsMoving = false;
+	m_MovingRatio = 0.0f;
+
+	if (m_IsDiscarding)
+	{
+		Destroy();
+	}
 }

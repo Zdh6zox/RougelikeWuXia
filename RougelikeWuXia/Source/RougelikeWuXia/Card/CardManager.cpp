@@ -3,11 +3,13 @@
 
 #include "CardManager.h"
 #include "Managers/GameManager.h"
+#include "EngineUtils.h"
 #include "Engine/DataTable.h"
 #include "Card/CardData.h"
 #include "Card/CardBase.h"
 #include "Card/CardTransformDataPreset.h"
 #include "Card/CardActor.h"
+#include "Card/CardMovingPlane.h"
 #include "UI/BattleScreenWidget.h"
 #include "ScreenOnlyPlayerController.h"
 #include "RougelikeWuXia.h"
@@ -31,9 +33,15 @@ void FCardManager::InitializeManager(AGameManager* gm)
 	m_CardActorClass = LoadClass<ACardActor>(NULL, *cardActorPath);
 	check(m_CardActorClass != NULL);
 
+	//Find and store card moving plane actor
+	for (TActorIterator<ACardMovingPlane> It(m_GMCache->GetWorld(), ACardMovingPlane::StaticClass()); It; ++It)
+	{
+		m_CardMovingPlane = *It;
+	}
+	check(m_CardMovingPlane);
+
 	m_CardsInDeck.Empty();
 	m_CardActors.Empty();
-	m_CardsInHand.Empty();
 	m_AllPlayerCards.Empty();
 	m_DiscardedCards.Empty();
 	m_DestroyedCards.Empty();
@@ -66,7 +74,7 @@ UCardBase* FCardManager::CreateCardViaCardID(uint32 cardID)
     return newCard;
 }
 
-FCardTransformData FCardManager::GetTransformData(ECardLocationType locationType, int totalInHandNum, int cardIndex)
+FCardTransformData FCardManager::GetTransformData(ECardLocationType locationType)
 {
 	UDataTable* tableToSearch = nullptr;
 	FCardTransformData foundNewTrans;
@@ -92,53 +100,62 @@ FCardTransformData FCardManager::GetTransformData(ECardLocationType locationType
 		}
 	}
 		break;
-	case ECardLocationType::InHand:
-	{	
-		for (int i = 0; i < allTrans.Num(); ++i)
-		{
-			if (allTrans[i]->CardLocationType == ECardLocationType::InHand)
-			{
-				TArray<FInHandCardTransOffsetPreset*> allOffset;
-				m_InHandCardOffsetTable->GetAllRows<FInHandCardTransOffsetPreset>(FString(""), allOffset);
-				FRotator offset;
-				for (int j = 0; j < allOffset.Num(); ++j)
-				{
-					if (allOffset[j]->TotalNumberInHand == totalInHandNum)
-					{
-						offset = allOffset[j]->CardRotaionOffset;
-						FTransform trans = allTrans[i]->CardTransform;
-
-						//Change card transform according to card index;
-						FRotator cameraRotate = FRotator(-m_GMCache->GetCameraRotation().Pitch, 0.0f, 0.0f);
-						FVector camVec = cameraRotate.RotateVector(m_GMCache->GetCameraUpVector());
-						FVector pivot = trans.GetLocation() + camVec * allOffset[j]->CardPivotOffset.Z;
-						FTransform pivotTrans = FTransform(cameraRotate, pivot);
-						FRotator finalRotOffset = GetOffsetViaIndex(offset, totalInHandNum, cardIndex);
-						FVector finalVec = finalRotOffset.RotateVector(m_GMCache->GetCameraUpVector());
-						FVector finalLoc = allOffset[j]->Radius * finalVec;
-						//add little bias to avoid overlap
-						finalLoc = finalLoc + m_GMCache->GetCameraForwardVector() * 0.01f * cardIndex;
-						FTransform relativeTrans = FTransform(finalRotOffset, finalLoc);
-
-	
-						foundNewTrans.CardTransform = relativeTrans * pivotTrans;
-						foundNewTrans.CardInHandIndex = cardIndex;
-						foundTrans = true;
-						break;
-					}
-				}
-				break;
-			}
-		}	
-
-	}
-		break;
 	default:
 		break;
 	}
 
 	check(foundTrans);
 
+	return foundNewTrans;
+}
+
+FCardTransformData FCardManager::GetInHandTransformData(int totalInHandNum, int cardIndex)
+{
+	FCardTransformData foundNewTrans;
+
+	FTransform trans;
+	TArray<FCardTransformDataPreset*> allTrans;
+	m_CardTransDataTable->GetAllRows<FCardTransformDataPreset>(FString(""), allTrans);
+	for (int i = 0; i < allTrans.Num(); i++)
+	{
+		if (allTrans[i]->CardLocationType == ECardLocationType::InHand)
+		{
+			trans = allTrans[i]->CardTransform;
+			break;
+		}
+	}
+
+	bool foundTrans = false;
+	TArray<FInHandCardTransOffsetPreset*> allOffset;
+	m_InHandCardOffsetTable->GetAllRows<FInHandCardTransOffsetPreset>(FString(""), allOffset);
+	FRotator offset;
+	for (int j = 0; j < allOffset.Num(); ++j)
+	{
+		if (allOffset[j]->TotalNumberInHand == totalInHandNum)
+		{
+			offset = allOffset[j]->CardRotaionOffset;
+
+			//Change card transform according to card index;
+			FRotator cameraRotate = FRotator(-m_GMCache->GetCameraRotation().Pitch, 0.0f, 0.0f);
+			FVector camVec = cameraRotate.RotateVector(m_GMCache->GetCameraUpVector());
+			FVector pivot = trans.GetLocation() + camVec * allOffset[j]->CardPivotOffset.Z;
+			FTransform pivotTrans = FTransform(cameraRotate, pivot);
+			FRotator finalRotOffset = GetOffsetViaIndex(offset, totalInHandNum, cardIndex);
+			FVector finalVec = finalRotOffset.RotateVector(m_GMCache->GetCameraUpVector());
+			FVector finalLoc = allOffset[j]->Radius * finalVec;
+			//add little bias to avoid overlap
+			finalLoc = finalLoc + m_GMCache->GetCameraForwardVector() * 0.01f * cardIndex;
+			FTransform relativeTrans = FTransform(finalRotOffset, finalLoc);
+
+
+			foundNewTrans.CardTransform = relativeTrans * pivotTrans;
+			foundNewTrans.CardInHandIndex = cardIndex;
+			foundTrans = true;
+			break;
+		}
+	}
+
+	check(foundTrans);
 	return foundNewTrans;
 }
 
@@ -150,54 +167,86 @@ FRotator FCardManager::GetOffsetViaIndex(FRotator rotaionOffset, int totalInHand
 	return rotaionOffset * diff;;
 }
 
+void FCardManager::SetCardManagerMode(CardManagerMode mode)
+{
+	if (mode == m_Mode)
+	{
+		return;
+	}
+
+	switch (mode)
+	{
+	case FCardManager::Browse:
+		m_Mode = mode;
+		break;
+	case FCardManager::MovingCard:
+		m_Mode = mode;
+		break;
+	case FCardManager::Triggering:
+		m_Mode = mode;
+		break;
+	default:
+		break;
+	}
+}
+
 void FCardManager::UpdateCards()
 {
 	AScreenOnlyPlayerController* playCon = m_GMCache->GetPlayerController();
 
-	bool justPressed = false;
-	if (playCon->IsInputKeyDown(EKeys::LeftMouseButton))
-	{
-		justPressed = true;
-	}
-
-	bool justReleased = false;
-	if (playCon->WasInputKeyJustReleased(EKeys::LeftMouseButton))
-	{
-		justReleased = true;
-	}
-
 	if (m_Mode == CardManagerMode::Browse)
 	{
 		FHitResult hitResult;
-		playCon->GetHitResultUnderCursor(ECC_Visibility, false, hitResult);
+		playCon->GetHitResultUnderCursor(ECC_WorldDynamic, false, hitResult);
 		if (hitResult.bBlockingHit)
 		{
 			AActor* hittedActor = hitResult.Actor.Get();
 			ACardActor* hittedCardActor = Cast<ACardActor>(hittedActor);
 			SetCurFocusedCard(hittedCardActor);
 
-			if (justPressed)
+			if (playCon->WasInputKeyJustPressed(EKeys::LeftMouseButton))
 			{
 				SetCurSelectedCard(hittedCardActor);
+				SetCardManagerMode(CardManagerMode::MovingCard);
 			}
 		}
 	}
 	else if (m_Mode == CardManagerMode::MovingCard)
 	{
+		if (playCon->WasInputKeyJustReleased(EKeys::LeftMouseButton))
+		{
+			SetCurSelectedCard(NULL);
+			SetCardManagerMode(CardManagerMode::Browse);
+			return;
+		}
+
 		FHitResult hitResult;
 		playCon->GetHitResultUnderCursor(ECC_PhysicsBody, false, hitResult);
 		if (hitResult.bBlockingHit)
 		{
 			AActor* hittedActor = hitResult.Actor.Get();
-			if (hittedActor == m_GMCache->CardMovingPlane)
+			if (hittedActor == m_CardMovingPlane)
 			{
 				m_CurSelectedCard->SetActorLocation(hitResult.ImpactPoint);
+
+				if (m_CardMovingPlane->IsCardInsideTriggerBox(m_CurSelectedCard))
+				{
+					SetCardManagerMode(Triggering);
+				}
 			}
 		}
 	}
 	else if (m_Mode == CardManagerMode::Triggering)
 	{
+		if (playCon->WasInputKeyJustReleased(EKeys::LeftMouseButton))
+		{
+			SetCardManagerMode(CardManagerMode::Browse);
+			PlayerDiscardCard(m_CurSelectedCard->CardTransformData.CardInHandIndex);
 
+			m_CurSelectedCard->OnCardTriggered();
+			SetCurSelectedCard(NULL);
+			return;
+		}
 	}
 }
 
@@ -211,22 +260,11 @@ void FCardManager::PlayerDrawCard()
 	int drawingCardDeckIndex = m_GMCache->GetRandomStream().RandRange(0, m_CardsInDeck.Num() - 1);
 
 	UCardBase* drawingCard = m_CardsInDeck[drawingCardDeckIndex];
-	m_CardsInHand.Insert(drawingCard, 0);
 	m_CardsInDeck.RemoveAt(drawingCardDeckIndex);
 	
-	SpawnCardActor(drawingCard, GetTransformData(ECardLocationType::Deck, m_CardsInHand.Num(), 0));
+	SpawnCardActor(drawingCard);
 
 	RearrangeCardsInHand();
-}
-
-UCardBase* FCardManager::GetCurFocusedCardInHand()
-{
-	 if (m_CurFocusedInHandCardInx < m_CardsInHand.Num())
-	 {
-		 return m_CardsInHand[m_CurFocusedInHandCardInx];
-	 }
-
-	 return nullptr;
 }
 
 void FCardManager::PlayerAddCardFromExternal(int cardID, ECardLocationType addTo)
@@ -234,19 +272,21 @@ void FCardManager::PlayerAddCardFromExternal(int cardID, ECardLocationType addTo
 
 }
 
-void FCardManager::PlayerDiscardCard(UCardBase* discardingCard)
+void FCardManager::PlayerDiscardCard(int discardingCardInx)
 {
-
+	m_CardActors.RemoveAt(discardingCardInx);
+	RearrangeCardsInHand();
 }
 
-void FCardManager::SpawnCardActor(UCardBase* cardBase, FCardTransformData cardTrans)
+void FCardManager::SpawnCardActor(UCardBase* cardBase)
 {
-	ACardActor* spawnedActor = m_GMCache->GetWorld()->SpawnActor<ACardActor>(m_CardActorClass, cardTrans.CardTransform);
-	spawnedActor->CardTransformData = cardTrans;
+	FCardTransformData deckTrans = GetTransformData(ECardLocationType::Deck);
+	ACardActor* spawnedActor = m_GMCache->GetWorld()->SpawnActor<ACardActor>(m_CardActorClass, deckTrans.CardTransform);
+	m_CardActors.Insert(spawnedActor, 0);
+	spawnedActor->CardTransformData = GetInHandTransformData(m_CardActors.Num(), 0);
 	spawnedActor->Card = cardBase;
 
 	m_GMCache->BattleScreenWidget->AddCardEventSpy(spawnedActor);
-	m_CardActors.Add(spawnedActor);
 }
 
 void FCardManager::AddEscapeCardInHand()
@@ -257,23 +297,18 @@ void FCardManager::AddEscapeCardInHand()
 
 void FCardManager::RearrangeCardsInHand()
 {
-	for (int i = 0; i < m_CardsInHand.Num(); ++i)
+	for (int i = 0; i < m_CardActors.Num(); ++i)
 	{
-		auto* actorPtr = m_CardActors.FindByPredicate([&](ACardActor* actor)
+		ACardActor* cardActor = m_CardActors[i];
+		if (cardActor != nullptr)
 		{
-			return actor->Card == m_CardsInHand[i];
-		});
-
-		if (actorPtr != nullptr)
-		{
-			ACardActor* foundActor = *actorPtr;
-			FCardTransformData newTrans = GetTransformData(ECardLocationType::InHand, m_CardsInHand.Num(), i);
-			foundActor->CardTransformTo(newTrans);
+			FCardTransformData newTrans = GetInHandTransformData(m_CardActors.Num(), i);
+			cardActor->CardTransformTo(newTrans);
 		}
 	}
 }
 
-void FCardManager::SetCurFocusedCard(int cardIndex)
+void FCardManager::SetCurFocusedCard_Internal(int cardIndex)
 {
 	if (cardIndex == m_CurFocusedInHandCardInx)
 	{
@@ -328,16 +363,16 @@ void FCardManager::SetCurFocusedCard(ACardActor* cardActor)
 {
 	if (cardActor == nullptr)
 	{
-		SetCurFocusedCard(-1);
+		SetCurFocusedCard_Internal(-1);
 	}
 	else
 	{
 		int cardIndex = cardActor->CardTransformData.CardInHandIndex;
-		SetCurFocusedCard(cardIndex);
+		SetCurFocusedCard_Internal(cardIndex);
 	}
 }
 
-void FCardManager::SetCurSelectedCard(int cardIndex)
+void FCardManager::SetCurSelectedCard_Internal(int cardIndex)
 {
 	if (cardIndex == m_CurSelectedInHandCardInx)
 	{
@@ -382,14 +417,12 @@ void FCardManager::SetCurSelectedCard(int cardIndex)
 		if (cardActor != nullptr)
 		{
 			cardActor->OnCardSelected();
-			m_Mode = CardManagerMode::MovingCard;
 			m_CurSelectedCard = cardActor;
 		}
 	}
 	else
 	{
 		m_CurSelectedCard = NULL;
-		m_Mode = CardManagerMode::Browse;
 	}
 
 	m_CurSelectedInHandCardInx = cardIndex;
@@ -399,12 +432,12 @@ void FCardManager::SetCurSelectedCard(ACardActor* cardActor)
 {
 	if (cardActor == nullptr)
 	{
-		SetCurSelectedCard(-1);
+		SetCurSelectedCard_Internal(-1);
 	}
 	else
 	{
 		int cardIndex = cardActor->CardTransformData.CardInHandIndex;
-		SetCurSelectedCard(cardIndex);
+		SetCurSelectedCard_Internal(cardIndex);
 	}
 }
 
