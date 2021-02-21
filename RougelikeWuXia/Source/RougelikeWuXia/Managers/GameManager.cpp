@@ -8,6 +8,7 @@
 #include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "ScreenOnlyPlayerController.h"
+#include "Pawn/CardPawnWithCamera.h"
 #include "UI/BattleScreenWidget.h"
 #include "Card/CardActor.h"
 
@@ -47,7 +48,7 @@ void AGameManager::BeginPlay()
 void AGameManager::Tick(float DeltaTime)
 {
 	m_BattleManager.UpdateBattle();
-	m_CardManager.UpdateCards();
+	//m_CardManager.UpdateCards();
 
 	Super::Tick(DeltaTime);
 }
@@ -164,10 +165,16 @@ void AGameManager::TestFindCardTransform(ECardLocationType locationType, int tot
 
 void AGameManager::TestCreateDefaultCardsInDeck(int number)
 {
-	m_CardManager.Test_CreateDefaultCardsInDeck(number);
+	ACardPawnWithCamera* pawn = Cast<ACardPawnWithCamera>(GetPlayerController()->GetPawn());
+
+	pawn->TestCreateDeck();
+	//m_CardManager.Test_CreateDefaultCardsInDeck(number);
 }
 
 void AGameManager::TestPlayerDrawCard()
 {
-	m_CardManager.PlayerDrawCard();
+	ACardPawnWithCamera* pawn = Cast<ACardPawnWithCamera>(GetPlayerController()->GetPawn());
+
+	pawn->DrawCard();
+	//m_CardManager.PlayerDrawCard();
 }

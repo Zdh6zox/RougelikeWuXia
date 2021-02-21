@@ -15,6 +15,9 @@ class ROUGELIKEWUXIA_API AScreenOnlyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+public:
+	bool WasJustTriggered();
+	bool WasJustReleased();
 
 protected:
 	virtual void BeginPlay() override;

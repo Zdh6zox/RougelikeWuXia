@@ -9,7 +9,6 @@ class UCardBase;
 class AGameManager;
 class UDataTable;
 class ACardActor;
-class ACardMovingPlane;
 struct FCardData;
 
 /**
@@ -18,18 +17,13 @@ struct FCardData;
 class ROUGELIKEWUXIA_API FCardManager
 {
 public:
-	enum CardManagerMode
-	{
-		Browse,
-		MovingCard,
-		Triggering
-	};
 
 	void InitializeManager(AGameManager* gm);
-	void UpdateCards();
 
     UCardBase* CreateCardViaCardID(uint32 cardID);
-	void SpawnCardActor(UCardBase* cardBase);
+	bool LookUpCardDataViaID(uint32 cardID, FCardData& foundData);
+
+	ACardActor* SpawnCardActor(UCardBase* cardBase);
 
 	void PlayerDrawCard();
 	void PlayerAddCardFromExternal(int cardID, ECardLocationType addTo);
@@ -38,10 +32,9 @@ public:
 	void SetCurFocusedCard(ACardActor* cardActor);
 	void SetCurSelectedCard(ACardActor* cardActor);
 
-	void SetCardManagerMode(CardManagerMode mode);
-
 	FCardTransformData GetTransformData(ECardLocationType locationType);
 	FCardTransformData GetInHandTransformData(int totalInHandNum, int cardIndex);
+	bool GetInHandTransformPreset(int totalInHandNum, int cardIndex, FVector& pivotOffset, FRotator& rotationOffset, float& radius);
 
 	//Test Functions
 	void Test_CreateDefaultCardsInDeck(int num);
@@ -54,6 +47,7 @@ private:
 
 	FRotator GetOffsetViaIndex(FRotator rotaionOffset, int totalInHandNum, int cardIndex);
 
+	UDataTable* m_CardDataTable;
 	UDataTable* m_CardTransDataTable;
 	UDataTable* m_InHandCardOffsetTable;
 	AGameManager* m_GMCache;
@@ -69,7 +63,4 @@ private:
 	int m_CurFocusedInHandCardInx = -1;
 	int m_CurSelectedInHandCardInx = -1;
 	UClass* m_CardActorClass;
-	CardManagerMode m_Mode;
-
-	ACardMovingPlane* m_CardMovingPlane;
 };

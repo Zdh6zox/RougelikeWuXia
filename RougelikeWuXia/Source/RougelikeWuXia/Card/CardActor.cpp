@@ -106,11 +106,6 @@ void ACardActor::OnCardFocused()
 
 	IsFocused = true;
 
-	//if (GEngine != nullptr)
-	//{
-	//	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Red, FString::Printf(TEXT("%s is focused"), *GetDebugName(this)));
-	//}
-
 	//Remove Roll
 	FTransform curTrans = CardTransformData.CardTransform;
 	FRotator curRot = FRotator(curTrans.GetRotation());
@@ -120,6 +115,7 @@ void ACardActor::OnCardFocused()
 	StartMovingTo(curTrans, DisplayTransDuration);
 
 	CardFocusedEvent_OneP.Broadcast(this);
+	CardFocusedEvent_BP();
 }
 
 void ACardActor::OnCardLostFocus()
@@ -129,14 +125,10 @@ void ACardActor::OnCardLostFocus()
 		return;
 	}
 
-	//if (GEngine != nullptr)
-	//{
-	//	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Orange, FString::Printf(TEXT("%s is lost focus"), *GetDebugName(this)));
-	//}
-
 	IsFocused = false;
 	StartMovingTo(CardTransformData.CardTransform, InHandTransDuration);
 	CardLostFocusEvent_OneP.Broadcast(this);
+	CardLostFocusEvent_BP();
 }
 
 void ACardActor::OnCardSelected()
@@ -147,10 +139,6 @@ void ACardActor::OnCardSelected()
 	}
 
 	IsSelected = true;
-	if (GEngine != nullptr)
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Blue, FString::Printf(TEXT("%s is selected"), *GetDebugName(this)));
-	}
 
 	StopMoving();
 	CardSelectedEvent_BP();
@@ -164,10 +152,6 @@ void ACardActor::OnCardUnselected()
 	}
 
 	IsSelected = false;
-	if (GEngine != nullptr)
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, FString::Printf(TEXT("%s is unselected"), *GetDebugName(this)));
-	}
 
 	FTransform curTrans = CardTransformData.CardTransform;
 	StartMovingTo(curTrans, InHandTransDuration);

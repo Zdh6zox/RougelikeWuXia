@@ -96,6 +96,12 @@ public:
 	void OnCardDiscarded();
 
 	UFUNCTION(BlueprintImplementableEvent)
+		void CardFocusedEvent_BP();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void CardLostFocusEvent_BP();
+
+	UFUNCTION(BlueprintImplementableEvent)
 		void CardSelectedEvent_BP();
 
 	UFUNCTION(BlueprintImplementableEvent)

@@ -21,3 +21,13 @@ void AScreenOnlyPlayerController::PlayerTick(float DeltaTime)
 
 
 }
+
+bool AScreenOnlyPlayerController::WasJustTriggered()
+{
+	return WasInputKeyJustPressed(EKeys::LeftMouseButton);
+}
+
+bool AScreenOnlyPlayerController::WasJustReleased()
+{
+	return WasInputKeyJustReleased(EKeys::LeftMouseButton);
+}

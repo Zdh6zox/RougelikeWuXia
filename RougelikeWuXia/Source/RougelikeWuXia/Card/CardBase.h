@@ -9,6 +9,7 @@
 
 
 class UTexture;
+class UCardRuntimeData;
 /**
  * 
  */
@@ -18,6 +19,7 @@ class ROUGELIKEWUXIA_API UCardBase : public UObject
 	GENERATED_BODY()
 	
 public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, category = "Card Basic")
 		int CardID;
 
@@ -30,11 +32,10 @@ public:
     UFUNCTION(BlueprintCallable, category = "Card Property")
         FText GetCardDescription() const;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Runtime")
-		int CardIndex;
-
-    void InitializeFromCardData(FCardData cardData);
+    void InitializeFromCardData(FCardData& cardData);
+	void InitializeFromCardRuntimeData(UCardRuntimeData* runtimeData);
 
 private:
+	UCardRuntimeData* m_RuntimeData;
 	FCardData m_CardDataCache;
 };

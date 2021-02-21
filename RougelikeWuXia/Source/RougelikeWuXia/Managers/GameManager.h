@@ -65,12 +65,6 @@ public:
 		void TestPlayerDrawCard();
 
 public:
-	UPROPERTY(EditAnywhere, category = "Cards")
-		AActor* CardMovingPlane;
-
-	UPROPERTY(EditAnywhere, category = "Cards")
-		AActor* CardTriggeringPlane;
-
     UPROPERTY(EditAnywhere, category = "Data Tables")
         UDataTable* CardDataTable;
 

@@ -15,23 +15,6 @@ class ROUGELIKEWUXIA_API APlayerCharacter : public ACharacterBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, category = "Attributes")
-		int Strength;
-
-	UPROPERTY(EditAnywhere, category = "Attributes")
-		int Agility;
-
-	UPROPERTY(EditAnywhere, category = "Attributes")
-		int InnerStrength;
-
-	UPROPERTY(EditAnywhere, category = "Attributes")
-		int Intelligence;
-
-	UPROPERTY(EditAnywhere, category = "Attributes")
-		int Instinct;
-
-	UPROPERTY(EditAnywhere, category = "Attributes")
-		int Luckiness;
 
     UPROPERTY(EditAnywhere, category = "Deck")
         TArray<uint32> CardDeck;

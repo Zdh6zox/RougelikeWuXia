@@ -3,6 +3,7 @@
 
 #include "CardBase.h"
 #include "Engine/Texture.h"
+#include "Card/CardRuntimeData.h"
 
 UTexture* UCardBase::GetCardPic() const
 {
@@ -19,7 +20,14 @@ FText UCardBase::GetCardDescription() const
     return m_CardDataCache.CardDescription;
 }
 
-void UCardBase::InitializeFromCardData(FCardData cardData)
+void UCardBase::InitializeFromCardData(FCardData& cardData)
 {
+	//m_RuntimeData->CardID = cardData.CardID;
+
     m_CardDataCache = cardData;
+}
+
+void UCardBase::InitializeFromCardRuntimeData(UCardRuntimeData* runtimeData)
+{
+	m_RuntimeData = runtimeData;
 }

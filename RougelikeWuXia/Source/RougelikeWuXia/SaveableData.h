@@ -6,6 +6,7 @@
 #include "GameFramework/SaveGame.h"
 #include "SaveableData.generated.h"
 
+class UPlayerRuntimeData;
 /**
  * 
  */
@@ -14,4 +15,7 @@ class ROUGELIKEWUXIA_API USaveableData : public USaveGame
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY()
+		UPlayerRuntimeData* PlayerData;
 };
