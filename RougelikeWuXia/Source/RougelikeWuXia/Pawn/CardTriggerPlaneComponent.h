@@ -9,6 +9,7 @@
 class UBoxComponent;
 class ACardPawnWithCamera;
 class ACardActor;
+class UStaticMesh;
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ROUGELIKEWUXIA_API UCardTriggerPlaneComponent : public USceneComponent
 {
@@ -18,9 +19,19 @@ public:
 	// Sets default values for this component's properties
 	UCardTriggerPlaneComponent();
 
+	UPROPERTY(EditAnywhere)
+		int ArrowSize = 0;
+
+	UPROPERTY(EditAnywhere)
+		UStaticMesh* ArrowMesh;
+
+	UPROPERTY(EditAnywhere)
+		UStaticMesh* ArrowHeadMesh;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -34,4 +45,6 @@ public:
 private:
 	UStaticMeshComponent* m_QueryPlane;
 	UBoxComponent* m_TriggerBox;
+	UStaticMeshComponent* m_ArrowHeadMeshComp;
+	TArray<UStaticMeshComponent*> m_ArrowMeshComps;
 };

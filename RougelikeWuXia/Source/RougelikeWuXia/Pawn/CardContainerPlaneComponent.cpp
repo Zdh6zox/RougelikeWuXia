@@ -43,30 +43,14 @@ void UCardContainerPlaneComponent::AddNewCard(ACardActor* newCard)
 {
 	ContainedCards.Insert(newCard, 0);
 
-
-	for (int i = 0; i < ContainedCards.Num(); ++i)
-	{
-		ACardActor* card = ContainedCards[i];
-
-		FTransform newTrans;
-		check(CalculateCardTransform(ContainedCards.Num(), i, newTrans));
-		FCardTransformData newCardTrans;
-		newCardTrans.CardInHandIndex = i;
-		newCardTrans.CardLocationType = ECardLocationType::InHand;
-		newCardTrans.CardTransform = newTrans;
-		card->CardTransformTo(newCardTrans);
-	}
+	RelocateAllCards();
 }
 
 void UCardContainerPlaneComponent::RemoveCard(ACardActor* removingCard)
 {
 	ContainedCards.Remove(removingCard);
 
-	for (int i = 0; i < ContainedCards.Num(); ++i)
-	{
-		ACardActor* card = ContainedCards[i];
-		card->CardTransformData.CardInHandIndex = i;
-	}
+	RelocateAllCards();
 }
 
 bool UCardContainerPlaneComponent::CalculateCardTransform(int totalNum, int index, FTransform& globalTrans)
@@ -94,5 +78,16 @@ bool UCardContainerPlaneComponent::CalculateCardTransform(int totalNum, int inde
 
 void UCardContainerPlaneComponent::RelocateAllCards()
 {
+	for (int i = 0; i < ContainedCards.Num(); ++i)
+	{
+		ACardActor* card = ContainedCards[i];
 
+		FTransform newTrans;
+		check(CalculateCardTransform(ContainedCards.Num(), i, newTrans));
+		FCardTransformData newCardTrans;
+		newCardTrans.CardInHandIndex = i;
+		newCardTrans.CardLocationType = ECardLocationType::InHand;
+		newCardTrans.CardTransform = newTrans;
+		card->CardTransformTo(newCardTrans);
+	}
 }

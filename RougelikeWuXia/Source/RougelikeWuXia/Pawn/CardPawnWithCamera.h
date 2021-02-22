@@ -55,7 +55,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void DrawCard();
-	void DiscardCard(int cardIndex);
+	void DiscardCard(ACardActor* discardingCard);
 	void OnBattleBegin();
 
 private:

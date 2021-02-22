@@ -114,7 +114,7 @@ void ACardPawnWithCamera::Tick(float DeltaTime)
 			m_CurrentPhase = Browse;
 
 			m_CurSelectedCard->OnCardTriggered();
-			DiscardCard(m_CurSelectedCard->CardTransformData.CardInHandIndex);
+			DiscardCard(m_CurSelectedCard);
 			SetCurSelectedCard(NULL);
 			return;
 		}
@@ -141,9 +141,9 @@ void ACardPawnWithCamera::DrawCard()
 	CardContainer->AddNewCard(spawnedCard);
 }
 
-void ACardPawnWithCamera::DiscardCard(int cardIndex)
+void ACardPawnWithCamera::DiscardCard(ACardActor* discardingCard)
 {
-
+	CardContainer->RemoveCard(discardingCard);
 }
 
 void ACardPawnWithCamera::SetCurFocusedCard(ACardActor* focusedCard)

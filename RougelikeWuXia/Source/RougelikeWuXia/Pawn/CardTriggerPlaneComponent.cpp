@@ -4,6 +4,7 @@
 #include "CardTriggerPlaneComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
 #include "Card/CardActor.h"
 
 // Sets default values for this component's properties
@@ -23,7 +24,35 @@ void UCardTriggerPlaneComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+	m_ArrowHeadMeshComp = NewObject<UStaticMeshComponent>(GetOwner());
+	GetOwner()->AddOwnedComponent(m_ArrowHeadMeshComp);
+	m_ArrowHeadMeshComp->RegisterComponent(); //necessary!!
+	m_ArrowHeadMeshComp->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+	m_ArrowHeadMeshComp->SetStaticMesh(ArrowHeadMesh);
+	m_ArrowHeadMeshComp->SetRelativeTransform(FTransform::Identity);
+
+	for (int i = 0; i < ArrowSize; ++i)
+	{
+		UStaticMeshComponent* newArrowMesh = NewObject<UStaticMeshComponent>(GetOwner());
+		GetOwner()->AddOwnedComponent(newArrowMesh);
+		newArrowMesh->RegisterComponent(); //necessary!!
+		newArrowMesh->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+		newArrowMesh->SetStaticMesh(ArrowMesh);
+
+		newArrowMesh->SetRelativeTransform(FTransform::Identity);
+		m_ArrowMeshComps.Add(newArrowMesh);
+	}
+}
+
+void UCardTriggerPlaneComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	//if (m_ArrowHeadMeshComp != NULL)
+	//{
+	//	m_ArrowHeadMeshComp->DestroyComponent();
+	//}
+
+	//m_ArrowMeshComps.Empty();
+	Super::EndPlay(EndPlayReason);
 }
 
 
