@@ -4,6 +4,7 @@
 #include "CardBase.h"
 #include "Engine/Texture.h"
 #include "Card/CardRuntimeData.h"
+#include "Card/CardEnums.h"
 
 UTexture* UCardBase::GetCardPic() const
 {
@@ -25,6 +26,11 @@ void UCardBase::InitializeFromCardData(FCardData& cardData)
 	//m_RuntimeData->CardID = cardData.CardID;
 
     m_CardDataCache = cardData;
+}
+
+ECardType UCardBase::GetCardType() const
+{
+	return m_CardDataCache.CardType;
 }
 
 void UCardBase::InitializeFromCardRuntimeData(UCardRuntimeData* runtimeData)

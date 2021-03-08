@@ -25,9 +25,9 @@ enum class ECardNatureType : uint8
 UENUM(BlueprintType)
 enum class ECardType : uint8
 {
-    Item UMETA(DisplayName = "物品"),
-    Skill UMETA(DisplayName = "招式"),
-    Intention UMETA(DisplayName = "意图")
+    Strategy UMETA(DisplayName = "谋"),
+    Skill UMETA(DisplayName = "术"),
+    Ultimate UMETA(DisplayName = "绝")
 };
 
 UENUM(BlueprintType)

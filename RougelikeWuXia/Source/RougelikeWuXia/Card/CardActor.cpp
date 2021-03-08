@@ -9,6 +9,8 @@
 #include "Components/BoxComponent.h"
 #include "Managers/GameManager.h"
 #include "Card/CardManager.h"
+#include "Card/CardEvents.h"
+#include "Card/CardEventChannel.h"
 
 // Sets default values
 ACardActor::ACardActor()
@@ -55,8 +57,8 @@ ACardActor::~ACardActor()
 	CardLostFocusEvent_OneP.Clear();
 	CardSelectedEvent_OneP.Clear();
 	CardUnselectedEvent_OneP.Clear();
-	CardTriggeredEvent_OneP.Clear();
-	CardAboutToTriggerEvent_OneP.Clear();
+	//CardTriggeredEvent_OneP.Clear();
+	//CardAboutToTriggerEvent_OneP.Clear();
 	CardCancelTriggerEvent_OneP.Clear();
 }
 
@@ -161,6 +163,10 @@ void ACardActor::OnCardUnselected()
 
 void ACardActor::OnCardTriggered()
 {
+	FCardTriggeredEvent* triggeredEvent = new FCardTriggeredEvent();
+	triggeredEvent->TriggeredCard = this;
+
+	triggeredEvent->Broadcast(UCardEventChannel::GetChannel());
 	OnCardDiscarded();
 }
 

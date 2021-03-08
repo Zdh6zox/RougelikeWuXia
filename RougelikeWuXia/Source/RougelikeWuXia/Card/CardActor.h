@@ -18,9 +18,9 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FCardFocusedEvent, ACardActor*);
 DECLARE_MULTICAST_DELEGATE_OneParam(FCardLostFocusEvent, ACardActor*);
 DECLARE_MULTICAST_DELEGATE_OneParam(FCardSelectedEvent, ACardActor*);
 DECLARE_MULTICAST_DELEGATE_OneParam(FCardUnselectedEvent, ACardActor*);
-DECLARE_MULTICAST_DELEGATE_OneParam(FCardAboutToTriggerEvent, ACardActor*);
+//DECLARE_MULTICAST_DELEGATE_OneParam(FCardAboutToTriggerEvent, ACardActor*);
 DECLARE_MULTICAST_DELEGATE_OneParam(FCardCancelTriggerEvent, ACardActor*);
-DECLARE_MULTICAST_DELEGATE_OneParam(FCardTriggeredEvent, ACardActor*);
+//DECLARE_MULTICAST_DELEGATE_OneParam(FCardTriggeredEvent, ACardActor*);
 
 UCLASS()
 class ROUGELIKEWUXIA_API ACardActor : public AActor
@@ -59,9 +59,9 @@ public:
 	FCardLostFocusEvent CardLostFocusEvent_OneP;
 	FCardSelectedEvent CardSelectedEvent_OneP;
 	FCardUnselectedEvent CardUnselectedEvent_OneP;
-	FCardAboutToTriggerEvent CardAboutToTriggerEvent_OneP;
+	//FCardAboutToTriggerEvent CardAboutToTriggerEvent_OneP;
 	FCardCancelTriggerEvent CardCancelTriggerEvent_OneP;
-	FCardTriggeredEvent CardTriggeredEvent_OneP;
+	//FCardTriggeredEvent CardTriggeredEvent_OneP;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

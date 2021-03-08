@@ -16,6 +16,20 @@ UCardContainerPlaneComponent::UCardContainerPlaneComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+	m_StrategySlotPivot = CreateDefaultSubobject<USceneComponent>("StrategySlotPivot");
+
+	//m_StrategySlotPivot->RegisterComponent();
+	m_StrategySlotPivot->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+	m_SkillSlotPivot = CreateDefaultSubobject<USceneComponent>("SkillSlotPivot");
+
+	//m_SkillSlotPivot->RegisterComponent();
+	m_SkillSlotPivot->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+	m_UltimateSlotPivot = CreateDefaultSubobject<USceneComponent>("UltimateSlotPivot");
+
+	//m_UltimateSlotPivot->RegisterComponent();
+	m_UltimateSlotPivot->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 
@@ -41,16 +55,121 @@ void UCardContainerPlaneComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 void UCardContainerPlaneComponent::AddNewCard(ACardActor* newCard)
 {
-	ContainedCards.Insert(newCard, 0);
+	switch (newCard->Card->GetCardType())
+	{
+	case ECardType::Strategy:
+		ContainedStrategyCards.Insert(newCard, 0);
+		break;
+	case ECardType::Skill:
+		ContainedSkillCards.Insert(newCard, 0);
+		break;
+	case ECardType::Ultimate:
+		ContainedUltimateCards.Insert(newCard, 0);
+		break;
+	default:
+		break;
+	}
 
-	RelocateAllCards();
+	RelocateDisplayingCards();
 }
 
 void UCardContainerPlaneComponent::RemoveCard(ACardActor* removingCard)
 {
-	ContainedCards.Remove(removingCard);
+	switch (removingCard->Card->GetCardType())
+	{
+	case ECardType::Strategy:
+		ContainedStrategyCards.Remove(removingCard);
+		break;
+	case ECardType::Skill:
+		ContainedSkillCards.Remove(removingCard);
+		break;
+	case ECardType::Ultimate:
+		ContainedUltimateCards.Remove(removingCard);
+		break;
+	default:
+		break;
+	}
 
-	RelocateAllCards();
+	RelocateDisplayingCards();
+}
+
+void UCardContainerPlaneComponent::HideCurrentCards(bool toLeft)
+{
+	FoldCards(m_Mode);
+	if (toLeft)
+	{
+	}
+}
+
+void UCardContainerPlaneComponent::FoldCards(EContainerMode curMode)
+{
+	TArray<ACardActor*> foldingCards;
+	switch (curMode)
+	{
+	case UCardContainerPlaneComponent::Strategy:
+		foldingCards = ContainedStrategyCards;
+		break;
+	case UCardContainerPlaneComponent::Skill:
+		foldingCards = ContainedSkillCards;
+		break;
+	case UCardContainerPlaneComponent::Ultimate:
+		foldingCards = ContainedUltimateCards;
+		break;
+	default:
+		break;
+	}
+
+	for (int i = 0; i < foldingCards.Num(); ++i)
+	{
+		FCardTransformData newCardTrans = foldingCards[i]->CardTransformData;
+		newCardTrans.CardTransform = GetComponentTransform();
+		foldingCards[i]->CardTransformTo(newCardTrans);
+	}
+}
+
+void UCardContainerPlaneComponent::UnfoldCards(EContainerMode curMode)
+{
+	TArray<ACardActor*> unfoldingCards;
+	switch (curMode)
+	{
+	case UCardContainerPlaneComponent::Strategy:
+		unfoldingCards = ContainedStrategyCards;
+		break;
+	case UCardContainerPlaneComponent::Skill:
+		unfoldingCards = ContainedSkillCards;
+		break;
+	case UCardContainerPlaneComponent::Ultimate:
+		unfoldingCards = ContainedUltimateCards;
+		break;
+	default:
+		break;
+	}
+
+	for (int i = 0; i < unfoldingCards.Num(); ++i)
+	{
+		FTransform newTrans;
+		check(CalculateCardTransform(unfoldingCards.Num(), i, newTrans));
+		FCardTransformData newCardTrans;
+		newCardTrans.CardInHandIndex = i;
+		newCardTrans.CardLocationType = ECardLocationType::InHand;
+		newCardTrans.CardTransform = newTrans;
+		unfoldingCards[i]->CardTransformTo(newCardTrans);
+	}
+}
+
+void UCardContainerPlaneComponent::DisplayCards(EContainerMode mode)
+{
+
+}
+
+void UCardContainerPlaneComponent::SetCurrentMode(EContainerMode newMode)
+{
+	if (m_Mode == newMode)
+	{
+		return;
+	}
+
+	m_Mode = newMode;
 }
 
 bool UCardContainerPlaneComponent::CalculateCardTransform(int totalNum, int index, FTransform& globalTrans)
@@ -76,14 +195,30 @@ bool UCardContainerPlaneComponent::CalculateCardTransform(int totalNum, int inde
 	return false;
 }
 
-void UCardContainerPlaneComponent::RelocateAllCards()
+void UCardContainerPlaneComponent::RelocateDisplayingCards()
 {
-	for (int i = 0; i < ContainedCards.Num(); ++i)
+	TArray<ACardActor*> displayingCards;
+	if (m_Mode == EContainerMode::Strategy)
 	{
-		ACardActor* card = ContainedCards[i];
+		displayingCards = ContainedStrategyCards;
+	}
+	else if (m_Mode == EContainerMode::Skill)
+	{
+		displayingCards = ContainedSkillCards;
+
+	}
+	else if (m_Mode == EContainerMode::Ultimate)
+	{
+		displayingCards = ContainedUltimateCards;
+	}
+
+
+	for (int i = 0; i < displayingCards.Num(); ++i)
+	{
+		ACardActor* card = displayingCards[i];
 
 		FTransform newTrans;
-		check(CalculateCardTransform(ContainedCards.Num(), i, newTrans));
+		check(CalculateCardTransform(displayingCards.Num(), i, newTrans));
 		FCardTransformData newCardTrans;
 		newCardTrans.CardInHandIndex = i;
 		newCardTrans.CardLocationType = ECardLocationType::InHand;

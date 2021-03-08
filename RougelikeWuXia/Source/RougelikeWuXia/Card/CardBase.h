@@ -10,6 +10,7 @@
 
 class UTexture;
 class UCardRuntimeData;
+enum class ECardType : uint8;
 /**
  * 
  */
@@ -31,6 +32,9 @@ public:
 
     UFUNCTION(BlueprintCallable, category = "Card Property")
         FText GetCardDescription() const;
+
+	UFUNCTION(BlueprintCallable, category = "Card Property")
+		ECardType GetCardType() const;
 
     void InitializeFromCardData(FCardData& cardData);
 	void InitializeFromCardRuntimeData(UCardRuntimeData* runtimeData);

@@ -3,6 +3,20 @@
 
 #include "BattleScreenWidget.h"
 #include "Card/CardActor.h"
+#include "Card/CardEvents.h"
+#include "Utils/EventBase.h"
+
+UBattleScreenWidget::UBattleScreenWidget(const FObjectInitializer& ObjectInitializer)
+	:UUserWidget(ObjectInitializer)
+{
+	//m_EventListener = new FEventListener();
+	//m_EventListener->BindFunction([this](FEventBase* event) {HandleCardTriggeredEvent(event); });
+}
+
+UBattleScreenWidget::~UBattleScreenWidget()
+{
+	//delete m_EventListener;
+}
 
 void UBattleScreenWidget::AddCardEventSpy(ACardActor* spyingCard)
 {
@@ -10,9 +24,14 @@ void UBattleScreenWidget::AddCardEventSpy(ACardActor* spyingCard)
 	spyingCard->CardLostFocusEvent_OneP.AddUObject(this, &UBattleScreenWidget::OnCardLostFocus);
 	spyingCard->CardSelectedEvent_OneP.AddUObject(this, &UBattleScreenWidget::OnCardSelected);
 	spyingCard->CardUnselectedEvent_OneP.AddUObject(this, &UBattleScreenWidget::OnCardUnselected);
-	spyingCard->CardAboutToTriggerEvent_OneP.AddUObject(this, &UBattleScreenWidget::OnCardAboutToTrigger);
+	//spyingCard->CardAboutToTriggerEvent_OneP.AddUObject(this, &UBattleScreenWidget::OnCardAboutToTrigger);
 	spyingCard->CardCancelTriggerEvent_OneP.AddUObject(this, &UBattleScreenWidget::OnCardCancelTrigger);
-	spyingCard->CardTriggeredEvent_OneP.AddUObject(this, &UBattleScreenWidget::OnCardTriggered);
+	//spyingCard->CardTriggeredEvent_OneP.AddUObject(this, &UBattleScreenWidget::OnCardTriggered);
+}
+
+void UBattleScreenWidget::HandleCardTriggeredEvent(FCardTriggeredEvent* event)
+{
+
 }
 
 void UBattleScreenWidget::OnCardFocused(ACardActor* focusedCard)

@@ -7,6 +7,8 @@
 #include "BattleScreenWidget.generated.h"
 
 class ACardActor;
+class FCardTriggeredEvent;
+class FEventListener;
 /**
  * 
  */
@@ -16,6 +18,9 @@ class ROUGELIKEWUXIA_API UBattleScreenWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UBattleScreenWidget(const FObjectInitializer& ObjectInitializer);
+	~UBattleScreenWidget();
+
 	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
 		void OnCardFocusedEvent_BP(ACardActor* focusedCard);
 
@@ -38,6 +43,8 @@ public:
 		void OnCardTriggeredEvent_BP(ACardActor* lostFocusCard);
 
 public:
+	void ConnectHandler();
+	void DisconnectHandler();
 	void AddCardEventSpy(ACardActor* spyingCard);
 
 	void OnCardFocused(ACardActor* focusedCard);
@@ -47,4 +54,9 @@ public:
 	void OnCardAboutToTrigger(ACardActor* triggeringCard);
 	void OnCardCancelTrigger(ACardActor* cancelledCard);
 	void OnCardTriggered(ACardActor* triggeredCard);
+
+	void HandleCardTriggeredEvent(FCardTriggeredEvent* event);
+
+private:
+	//FEventListener* m_EventListener;
 };
