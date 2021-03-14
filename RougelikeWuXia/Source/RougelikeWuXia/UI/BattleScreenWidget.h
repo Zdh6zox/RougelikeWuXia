@@ -42,6 +42,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
 		void OnCardTriggeredEvent_BP(ACardActor* lostFocusCard);
 
+	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
+		void OnHideCardContainer_BP();
+
+	UFUNCTION(BlueprintImplementableEvent, category = "Card Events")
+		void OnShowCardContainer_BP();
+
 public:
 	void ConnectHandler();
 	void DisconnectHandler();
@@ -54,6 +60,9 @@ public:
 	void OnCardAboutToTrigger(ACardActor* triggeringCard);
 	void OnCardCancelTrigger(ACardActor* cancelledCard);
 	void OnCardTriggered(ACardActor* triggeredCard);
+
+	void OnHideCardContainer();
+	void OnShowCardContainer();
 
 	void HandleCardTriggeredEvent(FCardTriggeredEvent* event);
 

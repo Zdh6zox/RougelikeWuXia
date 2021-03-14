@@ -15,11 +15,13 @@ class ROUGELIKEWUXIA_API UCardContainerPlaneComponent : public USceneComponent
 	GENERATED_BODY()
 
 public:	
-	enum EContainerMode
+	enum EContainerSlotType
 	{
-		Strategy, 
-		Skill,
-		Ultimate
+		Strategy = 0,
+		PositiveSkill,
+		NegativeSkill,
+		Ultimate,
+		Count
 	};
 
 	// Sets default values for this component's properties
@@ -29,10 +31,16 @@ public:
 	    TArray<ACardActor*> ContainedStrategyCards;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		TArray<ACardActor*> ContainedSkillCards;
+		TArray<ACardActor*> ContainedPositiveSkillCards;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		TArray<ACardActor*> ContainedNegativeSkillCards;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		TArray<ACardActor*> ContainedUltimateCards;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		float MovingDuration = 2.0f;
 
 protected:
 	// Called when the game starts
@@ -44,21 +52,38 @@ public:
 
 	void AddNewCard(ACardActor* newCard);
 	void RemoveCard(ACardActor* removingCard);
+	void AddNewCard(UCardBase* newCardBase);
 
-	void SetCurrentMode(EContainerMode newMode);
-	inline EContainerMode GetCurrentMode() { return m_Mode; }
+	void ShowContainer();
+	void HideContainer();
+
+	void SetCurrentType(EContainerSlotType newType);
+	inline EContainerSlotType GetCurrentType() { return m_CurrentType; }
+
+	void SetupSceneComponents(USceneComponent* strategyPivot, USceneComponent* positivePivot, USceneComponent* negativePivot, USceneComponent* ultimatePivot,
+		USceneComponent* deckPivot, USceneComponent* discardedPivot);
 
 private:
 	void RelocateDisplayingCards();
-	void HideCurrentCards(bool toLeft);
-	void FoldCards(EContainerMode curMode);
-	void UnfoldCards(EContainerMode curMode);
-	void DisplayCards(EContainerMode mode);
+	void HideCurrentCards();
+	void FoldCards(EContainerSlotType curMode);
+	void UnfoldCards(EContainerSlotType curMode);
+	void DisplayCards(EContainerSlotType mode);
 	bool CalculateCardTransform(int totalNum, int index, FTransform& globalTrans);
 
 	USceneComponent* m_StrategySlotPivot;
-	USceneComponent* m_SkillSlotPivot;
+	USceneComponent* m_PositiveSkillSlotPivot;
+	USceneComponent* m_NegativeSkillSlotPivot;
 	USceneComponent* m_UltimateSlotPivot;
+	USceneComponent* m_DeckPivot;
+	USceneComponent* m_DiscardedPivot;
 	ACardPawnWithCamera* m_OwnerPawnCache;
-	EContainerMode m_Mode;
+	EContainerSlotType m_CurrentType;
+	bool m_IsHiding = false;
+	bool m_IsMoving = false;
+	float m_MovingRatio = 0.f;
+	FVector m_TargetRelativeLoc = FVector::ZeroVector;
+
+private:
+	UClass* m_CardActorClass;
 };

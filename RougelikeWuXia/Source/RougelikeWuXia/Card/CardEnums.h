@@ -26,7 +26,8 @@ UENUM(BlueprintType)
 enum class ECardType : uint8
 {
     Strategy UMETA(DisplayName = "谋"),
-    Skill UMETA(DisplayName = "术"),
+	PositiveSkill UMETA(DisplayName = "攻"),
+	NegativeSkill UMETA(DisplayName = "御"),
     Ultimate UMETA(DisplayName = "绝")
 };
 

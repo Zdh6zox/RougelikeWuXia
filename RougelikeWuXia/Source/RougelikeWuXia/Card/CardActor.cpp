@@ -12,6 +12,7 @@
 #include "Card/CardEvents.h"
 #include "Card/CardEventChannel.h"
 
+#pragma optimize("",off)
 // Sets default values
 ACardActor::ACardActor()
 {
@@ -83,15 +84,15 @@ void ACardActor::Tick(float DeltaTime)
 	if (m_IsMoving && m_CurTransDuration > 0.0f)
 	{
 		m_MovingRatio += DeltaTime / m_CurTransDuration;
-		FVector curLoc = GetActorLocation();
-		FRotator curRot = GetActorRotation();
-		FVector curScale = GetActorScale3D();
+		FVector curLoc = RootComponent->GetRelativeLocation();
+		FRotator curRot = RootComponent->GetRelativeRotation();
+		FVector curScale = RootComponent->GetRelativeScale3D();
 		FVector newLoc = FMath::Lerp(curLoc, m_TargetTrans.GetLocation(), m_MovingRatio);
 		FRotator newRot = FMath::Lerp(curRot, FRotator(m_TargetTrans.GetRotation()), m_MovingRatio);
 		FVector newScale = FMath::Lerp(curScale, m_TargetTrans.GetScale3D(), m_MovingRatio);
 		FTransform newTrans = FTransform(newRot, newLoc, newScale);
 
-		SetActorTransform(newTrans);
+		SetActorRelativeTransform(newTrans);
 		if (m_MovingRatio >= 1.0f)
 		{
 			StopMoving();
@@ -196,3 +197,5 @@ void ACardActor::StopMoving()
 		Destroy();
 	}
 }
+
+#pragma optimize("",on)

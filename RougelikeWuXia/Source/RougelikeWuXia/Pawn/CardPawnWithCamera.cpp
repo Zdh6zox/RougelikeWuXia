@@ -30,10 +30,19 @@ ACardPawnWithCamera::ACardPawnWithCamera()
 	CardContainer->Mobility = EComponentMobility::Movable;
 	CardContainer->SetupAttachment(CustomRoot);
 
+	StrategySlotPivot = CreateDefaultSubobject<USceneComponent>("StrategySlotPivot");
+	PositiveSkillSlotPivot = CreateDefaultSubobject<USceneComponent>("PositiveSlotPivot");
+	NegativeSkillSlotPivot = CreateDefaultSubobject<USceneComponent>("NegativeSlotPivot");
+	UltimateSlotPivot = CreateDefaultSubobject<USceneComponent>("UltimateSlotPivot");
+	DeckPivot = CreateDefaultSubobject<USceneComponent>("DeckPivot");
+	DiscardedPivot = CreateDefaultSubobject<USceneComponent>("DiscardedPivot");
+	CardContainer->SetupSceneComponents(StrategySlotPivot, PositiveSkillSlotPivot, NegativeSkillSlotPivot, UltimateSlotPivot, DeckPivot, DiscardedPivot);
+
 	QueryPlane = CreateDefaultSubobject<UStaticMeshComponent>("QueryPlane");
 	QueryPlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>("TriggerBox");
+	CancelTriggerBox = CreateDefaultSubobject<UBoxComponent>("CancelTriggerBox");
 
 	TriggerPlane = CreateDefaultSubobject<UCardTriggerPlaneComponent>("CardTriggerPlane");
 	TriggerPlane->Mobility = EComponentMobility::Movable;
@@ -41,6 +50,7 @@ ACardPawnWithCamera::ACardPawnWithCamera()
 	TriggerPlane->SetTriggerBox(TriggerBox);
 	QueryPlane->SetupAttachment(TriggerPlane);
 	TriggerBox->SetupAttachment(TriggerPlane);
+	CancelTriggerBox->SetupAttachment(TriggerPlane);
 	TriggerPlane->SetupAttachment(CustomRoot);
 }
 
@@ -48,7 +58,8 @@ ACardPawnWithCamera::ACardPawnWithCamera()
 void ACardPawnWithCamera::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	m_CurrentPhase = Browse;
 }
 
 // Called every frame
@@ -103,6 +114,7 @@ void ACardPawnWithCamera::Tick(float DeltaTime)
 				if (TriggerPlane->IsCardInsideBox(m_CurSelectedCard))
 				{
 					m_CurrentPhase = Triggering;
+					CardContainer->HideContainer();
 				}
 			}
 		}
@@ -116,6 +128,7 @@ void ACardPawnWithCamera::Tick(float DeltaTime)
 			m_CurSelectedCard->OnCardTriggered();
 			DiscardCard(m_CurSelectedCard);
 			SetCurSelectedCard(NULL);
+			CardContainer->ShowContainer();
 			return;
 		}
 	}
@@ -135,10 +148,7 @@ void ACardPawnWithCamera::DrawCard()
 	UCardBase* drawingCard = m_CardsInDeck[drawingCardDeckIndex];
 	m_CardsInDeck.RemoveAt(drawingCardDeckIndex);
 
-	FCardManager& cardManager = gm->GetCardManager();
-	ACardActor* spawnedCard = cardManager.SpawnCardActor(drawingCard);
-
-	CardContainer->AddNewCard(spawnedCard);
+	CardContainer->AddNewCard(drawingCard);
 }
 
 void ACardPawnWithCamera::DiscardCard(ACardActor* discardingCard)

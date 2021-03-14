@@ -23,6 +23,7 @@ class ROUGELIKEWUXIA_API ACardPawnWithCamera : public APawn
 public:
 	enum CardPawnPhase
 	{
+		Hidding,
 		Browse,
 		MovingCard,
 		Triggering
@@ -42,6 +43,24 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UCardTriggerPlaneComponent* TriggerPlane;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		USceneComponent* StrategySlotPivot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		USceneComponent* PositiveSkillSlotPivot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		USceneComponent* NegativeSkillSlotPivot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		USceneComponent* UltimateSlotPivot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		USceneComponent* DeckPivot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		USceneComponent* DiscardedPivot;
 
 protected:
 	// Called when the game starts or when spawned
@@ -69,6 +88,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UBoxComponent* TriggerBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		UBoxComponent* CancelTriggerBox;
 
 	UPlayerRuntimeData* m_PlayerData;
 	TArray<UCardBase*> m_CardsInDeck;

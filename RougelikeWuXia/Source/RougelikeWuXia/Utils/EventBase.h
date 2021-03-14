@@ -14,6 +14,12 @@ public:
 	void Broadcast(UEventChannel* channel);
 };
 
+template<class T,typename U>
+class ROUGELIKEWUXIA_API FEventCallback
+{
+
+};
+
 class ROUGELIKEWUXIA_API FEventListener
 {
 public:

@@ -68,3 +68,13 @@ void UBattleScreenWidget::OnCardTriggered(ACardActor* triggeredCard)
 {
 	OnCardTriggeredEvent_BP(triggeredCard);
 }
+
+void UBattleScreenWidget::OnHideCardContainer()
+{
+	OnHideCardContainer_BP();
+}
+
+void UBattleScreenWidget::OnShowCardContainer()
+{
+	OnShowCardContainer_BP();
+}

@@ -45,6 +45,7 @@ public:
 private:
 	UStaticMeshComponent* m_QueryPlane;
 	UBoxComponent* m_TriggerBox;
+	UBoxComponent* m_CancelTriggerBox;
 	UStaticMeshComponent* m_ArrowHeadMeshComp;
 	TArray<UStaticMeshComponent*> m_ArrowMeshComps;
 };
