@@ -10,15 +10,15 @@ class ACharacterBase;
 /**
  * 
  */
-class FCardAboutToTriggerEvent : public FEventBase
-{
-public:
-	ACardActor* TriggeringCard;
-	ACharacterBase* TriggeringCharacter;
-};
-
-class FCardTriggeredEvent : public FEventBase
-{
-public:
-	ACardActor* TriggeredCard;
-};
+//class FCardAboutToTriggerEvent : public FEventBase
+//{
+//public:
+//	ACardActor* TriggeringCard;
+//	ACharacterBase* TriggeringCharacter;
+//};
+//
+//class FCardTriggeredEvent : public FEventBase
+//{
+//public:
+//	ACardActor* TriggeredCard;
+//};

@@ -3,31 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
+#include "Utils/EventHandler.h"
+#include "UObject/NoExportTypes.h"
+#include "EventBase.generated.h"
 /**
  * 
  */
 class UEventChannel;
-class ROUGELIKEWUXIA_API FEventBase
+UCLASS()
+class ROUGELIKEWUXIA_API UEventBase : public UObject
 {
+    GENERATED_BODY()
 public:
 	void Broadcast(UEventChannel* channel);
-};
-
-template<class T,typename U>
-class ROUGELIKEWUXIA_API FEventCallback
-{
-
-};
-
-class ROUGELIKEWUXIA_API FEventListener
-{
-public:
-	void JoinChannel(UEventChannel* channelToJoin);
-	void LeaveChannel(UEventChannel* channelToLeave);
-	void BindFunction(TFunction<void(FEventBase*)> callbackFunc);
-	void ExecuteIfBound(FEventBase* eventBase);
-
-private:
-	TFunction<void(FEventBase*)> m_EventCallback;
 };

@@ -14,13 +14,13 @@ void UEventChannel::RemoveListener(TSharedPtr<FEventListener> listener)
 	m_Listeners.Remove(TWeakPtr<FEventListener>(listener));
 }
 
-void UEventChannel::BroadcastEvent(FEventBase* event)
+void UEventChannel::BroadcastEvent(UEventBase* event)
 {
-	for (auto& listener : m_Listeners)
-	{
-		if (listener.IsValid())
-		{
-			listener.Pin()->ExecuteIfBound(event);
-		}
-	}
+	//for (auto& listener : m_Listeners)
+	//{
+	//	if (listener.IsValid())
+	//	{
+	//		listener.Pin()->ExecuteIfBound(event);
+	//	}
+	//}
 }

@@ -164,10 +164,10 @@ void ACardActor::OnCardUnselected()
 
 void ACardActor::OnCardTriggered()
 {
-	FCardTriggeredEvent* triggeredEvent = new FCardTriggeredEvent();
-	triggeredEvent->TriggeredCard = this;
+	//FCardTriggeredEvent* triggeredEvent = new FCardTriggeredEvent();
+	//triggeredEvent->TriggeredCard = this;
 
-	triggeredEvent->Broadcast(UCardEventChannel::GetChannel());
+	//triggeredEvent->Broadcast(UCardEventChannel::GetChannel());
 	OnCardDiscarded();
 }
 

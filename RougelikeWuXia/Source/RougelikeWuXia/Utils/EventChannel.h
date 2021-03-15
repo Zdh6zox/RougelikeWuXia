@@ -9,14 +9,14 @@
 /**
  * 
  */
-class FEventListener;
-class FEventBase;
+class UEventListener;
+class UEventBase;
 UCLASS()
 class ROUGELIKEWUXIA_API UEventChannel : public UObject
 {
 	GENERATED_BODY()
 public:
-	void BroadcastEvent(FEventBase* event);
+	void BroadcastEvent(UEventBase* event);
 	void AddListener(TSharedPtr<FEventListener> listener);
 	void RemoveListener(TSharedPtr<FEventListener> listener);
 
