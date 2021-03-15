@@ -10,6 +10,7 @@
 /**
  * 
  */
+class UCurveVector;
 USTRUCT(BlueprintType)
 struct ROUGELIKEWUXIA_API FCardTransformDataPreset : public FTableRowBase
 {
@@ -40,4 +41,17 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		FRotator CardRotaionOffset;
+};
+
+USTRUCT(BlueprintType)
+struct ROUGELIKEWUXIA_API FInHandCardLocationCurved : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+		int TotalNumberInHand;
+
+	UPROPERTY(EditAnywhere)
+		UCurveVector* Curve;
 };

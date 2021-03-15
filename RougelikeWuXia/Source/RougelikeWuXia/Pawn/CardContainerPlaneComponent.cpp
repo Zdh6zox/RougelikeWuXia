@@ -34,6 +34,9 @@ void UCardContainerPlaneComponent::BeginPlay()
 	FString cardActorPath = "Blueprint'/Game/Card/CardActor_BP.CardActor_BP_C'";
 	m_CardActorClass = LoadClass<ACardActor>(NULL, *cardActorPath);
 	check(m_CardActorClass != NULL);
+
+	m_OriginRelativeLoc = GetRelativeLocation();
+	m_HidingRelativeLoc = m_OriginRelativeLoc + FVector(0, 0, -10);
 }
 
 
@@ -47,15 +50,17 @@ void UCardContainerPlaneComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	if (m_IsMoving && MovingDuration > 0.0f)
 	{
 		m_MovingRatio += DeltaTime / MovingDuration;
-		FVector curLoc = GetRelativeLocation();
-		FVector newLoc = FMath::Lerp(curLoc, m_TargetRelativeLoc, m_MovingRatio);
+		FVector newLoc = FVector::ZeroVector;
+		if (m_IsHiding)
+		{
+			newLoc = FMath::Lerp(m_OriginRelativeLoc, m_HidingRelativeLoc, m_MovingRatio);
+		}
+		else
+		{
+			newLoc = FMath::Lerp(m_HidingRelativeLoc, m_OriginRelativeLoc, m_MovingRatio);
+		}
 
 		SetRelativeLocation(newLoc);
-		//FRotator newRot = FMath::Lerp(curRot, FRotator(m_TargetTrans.GetRotation()), m_MovingRatio);
-		//FVector newScale = FMath::Lerp(curScale, m_TargetTrans.GetScale3D(), m_MovingRatio);
-		//FTransform newTrans = FTransform(newRot, newLoc, newScale);
-
-		//SetActorRelativeTransform(newTrans);
 		if (m_MovingRatio >= 1.0f)
 		{
 			m_IsMoving = false;
@@ -101,19 +106,19 @@ void UCardContainerPlaneComponent::AddNewCard(UCardBase* newCardBase)
 	{
 	case ECardType::Strategy:
 		ContainedStrategyCards.Insert(spawnedActor, 0);
-		spawnedActor->AttachToComponent(m_StrategySlotPivot, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		spawnedActor->AttachToComponent(m_StrategySlotPivot, FAttachmentTransformRules::KeepWorldTransform);
 		break;
 	case ECardType::PositiveSkill:
 		ContainedPositiveSkillCards.Insert(spawnedActor, 0);
-		spawnedActor->AttachToComponent(m_PositiveSkillSlotPivot, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		spawnedActor->AttachToComponent(m_PositiveSkillSlotPivot, FAttachmentTransformRules::KeepWorldTransform);
 		break;
 	case ECardType::NegativeSkill:
 		ContainedNegativeSkillCards.Insert(spawnedActor, 0);
-		spawnedActor->AttachToComponent(m_NegativeSkillSlotPivot, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		spawnedActor->AttachToComponent(m_NegativeSkillSlotPivot, FAttachmentTransformRules::KeepWorldTransform);
 		break;
 	case ECardType::Ultimate:
 		ContainedUltimateCards.Insert(spawnedActor, 0);
-		spawnedActor->AttachToComponent(m_UltimateSlotPivot, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		spawnedActor->AttachToComponent(m_UltimateSlotPivot, FAttachmentTransformRules::KeepWorldTransform);
 		break;
 	default:
 		break;
@@ -124,6 +129,11 @@ void UCardContainerPlaneComponent::AddNewCard(UCardBase* newCardBase)
 
 void UCardContainerPlaneComponent::RemoveCard(ACardActor* removingCard)
 {
+	FCardTransformData newCardTrans;
+	newCardTrans.CardLocationType = ECardLocationType::Discarded;
+	newCardTrans.CardTransform = m_DiscardedPivot->GetRelativeTransform();
+	removingCard->CardTransformTo(newCardTrans);
+
 	switch (removingCard->Card->GetCardType())
 	{
 	case ECardType::Strategy:
@@ -233,19 +243,26 @@ bool UCardContainerPlaneComponent::CalculateCardTransform(int totalNum, int inde
 {
 	FCardManager& cm = AGameManager::GetGameManager(GetWorld())->GetCardManager();
 
-	FVector pivotOffset;
-	FRotator rotationOffset;
-	float radius;
-	if (cm.GetInHandTransformPreset(totalNum,index,pivotOffset,rotationOffset,radius))
+	//FVector pivotOffset;
+	//FRotator rotationOffset;
+	//float radius;
+	//if (cm.GetInHandTransformPreset(totalNum,index,pivotOffset,rotationOffset,radius))
+	//{
+	//	FVector finalVec = rotationOffset.RotateVector(FVector(0, 0, 1));
+	//	FVector finalLocation = finalVec * radius + FVector(0, 0, -radius);
+	//	//add little bias to avoid overlap
+	//	finalLocation = finalLocation + FVector(1, 0, 0) * 0.01f * index;
+
+	//	FTransform relativeTrans(rotationOffset, finalLocation);
+
+	//	globalTrans = relativeTrans;
+	//	return true;
+	//}
+
+	FVector location;
+	if (cm.GetInHandLocation_Curved(totalNum,(float)index, location))
 	{
-		FVector finalVec = rotationOffset.RotateVector(FVector(0, 0, 1));
-		FVector finalLocation = finalVec * radius + FVector(0, 0, -radius);
-		//add little bias to avoid overlap
-		finalLocation = finalLocation + FVector(1, 0, 0) * 0.01f * index;
-
-		FTransform relativeTrans(rotationOffset, finalLocation);
-
-		globalTrans = relativeTrans;
+		globalTrans = FTransform(FRotator::ZeroRotator, location);
 		return true;
 	}
 
@@ -298,7 +315,6 @@ void UCardContainerPlaneComponent::HideContainer()
 
 	m_IsMoving = true;
 	m_MovingRatio = 0;
-	m_TargetRelativeLoc = GetRelativeLocation() + FVector(0, 0, -10);
 }
 
 void UCardContainerPlaneComponent::ShowContainer()
@@ -311,7 +327,6 @@ void UCardContainerPlaneComponent::ShowContainer()
 	m_IsHiding = false;
 	m_IsMoving = true;
 	m_MovingRatio = 0;
-	m_TargetRelativeLoc = GetRelativeLocation() + FVector(0, 0, 10);
 }
 
 void UCardContainerPlaneComponent::SetupSceneComponents(USceneComponent* strategyPivot, USceneComponent* positivePivot, USceneComponent* negativePivot

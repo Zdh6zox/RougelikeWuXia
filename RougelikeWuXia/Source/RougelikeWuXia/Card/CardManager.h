@@ -35,6 +35,7 @@ public:
 	FCardTransformData GetTransformData(ECardLocationType locationType);
 	FCardTransformData GetInHandTransformData(int totalInHandNum, int cardIndex);
 	bool GetInHandTransformPreset(int totalInHandNum, int cardIndex, FVector& pivotOffset, FRotator& rotationOffset, float& radius);
+	bool GetInHandLocation_Curved(int totalInHandNum, float cardIndex, FVector& cardLocation);
 
 	//Test Functions
 	void Test_CreateDefaultCardsInDeck(int num);
@@ -50,6 +51,7 @@ private:
 	UDataTable* m_CardDataTable;
 	UDataTable* m_CardTransDataTable;
 	UDataTable* m_InHandCardOffsetTable;
+	UDataTable* m_CardInHandLocationCurvedTable;
 	AGameManager* m_GMCache;
     TArray<UCardBase*> m_AllPlayerCards;
 

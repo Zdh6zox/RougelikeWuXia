@@ -11,6 +11,7 @@
 #include "Card/CardActor.h"
 #include "UI/BattleScreenWidget.h"
 #include "ScreenOnlyPlayerController.h"
+#include "Engine/Classes/Curves/CurveVector.h"
 #include "RougelikeWuXia.h"
 
 
@@ -27,6 +28,10 @@ void FCardManager::InitializeManager(AGameManager* gm)
 	FString inHandOffsetTablePath = "DataTable'/Game/DataTable/CardInHandOffet.CardInHandOffet'";
 	m_InHandCardOffsetTable = LoadObject<UDataTable>(NULL, *inHandOffsetTablePath);
 	check(m_InHandCardOffsetTable != NULL);
+
+	FString inHandCurvedTablePath = "DataTable'/Game/DataTable/CardInHand_Curved.CardInHand_Curved'";
+	m_CardInHandLocationCurvedTable = LoadObject<UDataTable>(NULL, *inHandCurvedTablePath);
+	check(m_CardInHandLocationCurvedTable != NULL);
 
 	m_CardDataTable = m_GMCache->CardDataTable;
 
@@ -209,6 +214,22 @@ bool FCardManager::GetInHandTransformPreset(int totalInHandNum, int cardIndex, F
 	}
 
 	return foundTrans;
+}
+
+bool FCardManager::GetInHandLocation_Curved(int totalInHandNum, float cardIndex, FVector& cardLocation)
+{
+	TArray<FInHandCardLocationCurved*> allCurves;
+	m_CardInHandLocationCurvedTable->GetAllRows<FInHandCardLocationCurved>(FString(""), allCurves);
+	for (int i = 0; i < allCurves.Num(); i++)
+	{
+		if (allCurves[i]->TotalNumberInHand == totalInHandNum)
+		{
+			cardLocation = allCurves[i]->Curve->GetVectorValue(cardIndex);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void FCardManager::PlayerDrawCard()

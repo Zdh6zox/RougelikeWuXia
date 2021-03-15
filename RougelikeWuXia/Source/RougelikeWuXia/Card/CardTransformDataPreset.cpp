@@ -2,3 +2,4 @@
 
 
 #include "CardTransformDataPreset.h"
+#include "Engine/Classes/Curves/CurveVector.h"

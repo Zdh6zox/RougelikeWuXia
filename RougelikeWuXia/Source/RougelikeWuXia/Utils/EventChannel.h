@@ -9,7 +9,7 @@
 /**
  * 
  */
-class UEventListener;
+class FEventListener;
 class UEventBase;
 UCLASS()
 class ROUGELIKEWUXIA_API UEventChannel : public UObject

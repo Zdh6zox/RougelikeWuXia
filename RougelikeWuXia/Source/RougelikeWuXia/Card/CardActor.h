@@ -93,7 +93,6 @@ public:
 	void OnCardSelected();
 	void OnCardUnselected();
 	void OnCardTriggered();
-	void OnCardDiscarded();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void CardFocusedEvent_BP();
@@ -107,6 +106,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void CardUnselectedEvent_BP();
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void CardDiscardedEvent_BP();
+
 private:
 	void StartMovingTo(FTransform targetTrans, float time);
 	void StopMoving();
@@ -118,5 +120,6 @@ private:
 	bool m_IsDiscarding = false;
 	float m_MovingRatio = 0.f;
 	float m_CurTransDuration = 0.f;
+	FTransform m_OriginTrans;
 	FTransform m_TargetTrans;
 };

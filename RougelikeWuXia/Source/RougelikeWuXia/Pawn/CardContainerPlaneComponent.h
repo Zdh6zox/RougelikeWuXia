@@ -82,7 +82,8 @@ private:
 	bool m_IsHiding = false;
 	bool m_IsMoving = false;
 	float m_MovingRatio = 0.f;
-	FVector m_TargetRelativeLoc = FVector::ZeroVector;
+	FVector m_OriginRelativeLoc;
+	FVector m_HidingRelativeLoc = FVector::ZeroVector;
 
 private:
 	UClass* m_CardActorClass;

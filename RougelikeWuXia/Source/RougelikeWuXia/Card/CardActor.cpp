@@ -74,6 +74,10 @@ void ACardActor::CardTransformTo(FCardTransformData destTrans)
 	CardTransformData = destTrans;
 
 	StartMovingTo(CardTransformData.CardTransform, InHandTransDuration);
+	if (destTrans.CardLocationType == ECardLocationType::Discarded)
+	{
+		m_IsDiscarding = true;
+	}
 }
 
 // Called every frame
@@ -84,19 +88,22 @@ void ACardActor::Tick(float DeltaTime)
 	if (m_IsMoving && m_CurTransDuration > 0.0f)
 	{
 		m_MovingRatio += DeltaTime / m_CurTransDuration;
-		FVector curLoc = RootComponent->GetRelativeLocation();
-		FRotator curRot = RootComponent->GetRelativeRotation();
-		FVector curScale = RootComponent->GetRelativeScale3D();
+		if (m_MovingRatio >= 1.0f)
+		{
+			SetActorRelativeTransform(m_TargetTrans);
+			StopMoving();
+			return;
+		}
+
+		FVector curLoc = m_OriginTrans.GetLocation();
+		FRotator curRot = FRotator(m_OriginTrans.GetRotation());
+		FVector curScale = m_OriginTrans.GetScale3D();
 		FVector newLoc = FMath::Lerp(curLoc, m_TargetTrans.GetLocation(), m_MovingRatio);
 		FRotator newRot = FMath::Lerp(curRot, FRotator(m_TargetTrans.GetRotation()), m_MovingRatio);
 		FVector newScale = FMath::Lerp(curScale, m_TargetTrans.GetScale3D(), m_MovingRatio);
 		FTransform newTrans = FTransform(newRot, newLoc, newScale);
 
 		SetActorRelativeTransform(newTrans);
-		if (m_MovingRatio >= 1.0f)
-		{
-			StopMoving();
-		}
 	}
 }
 
@@ -168,14 +175,7 @@ void ACardActor::OnCardTriggered()
 	//triggeredEvent->TriggeredCard = this;
 
 	//triggeredEvent->Broadcast(UCardEventChannel::GetChannel());
-	OnCardDiscarded();
-}
-
-void ACardActor::OnCardDiscarded()
-{
-	FCardTransformData discardedTrans = AGameManager::GetGameManager(GetWorld())->GetCardManager().GetTransformData(ECardLocationType::Discarded);
-	CardTransformTo(discardedTrans);
-	m_IsDiscarding = true;
+	//OnCardDiscarded();
 }
 
 void ACardActor::StartMovingTo(FTransform targetTrans, float time)
@@ -183,6 +183,7 @@ void ACardActor::StartMovingTo(FTransform targetTrans, float time)
 	m_IsMoving = true;
 	m_MovingRatio = 0.f;
 
+	m_OriginTrans = RootComponent->GetRelativeTransform();
 	m_TargetTrans = targetTrans;
 	m_CurTransDuration = time;
 }
@@ -194,6 +195,7 @@ void ACardActor::StopMoving()
 
 	if (m_IsDiscarding)
 	{
+		CardDiscardedEvent_BP();
 		Destroy();
 	}
 }
