@@ -8,12 +8,12 @@ public class RougelikeWuXia : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Paper2D" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG" });
 
-        PublicIncludePaths.AddRange(new string[] { "RougelikeWuXia" });
+        PublicIncludePaths.AddRange(new string[] { "RougelikeWuXia", "Paper2D" });
 
-        PrivateIncludePaths.AddRange(new string[] { "RougelikeWuXia" });
+        PrivateIncludePaths.AddRange(new string[] { "RougelikeWuXia", "Paper2D" });
     }
 }

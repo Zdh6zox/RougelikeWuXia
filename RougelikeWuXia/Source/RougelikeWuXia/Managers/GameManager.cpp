@@ -25,6 +25,7 @@ void AGameManager::BeginPlay()
 {
 	m_BattleManager.Initialize(this);
 	m_CardManager.InitializeManager(this);
+	m_MapManager.Initialize(this);
 
 	m_RandomStream.GenerateNewSeed();
 	m_CurrentRandomSeed = m_RandomStream.GetCurrentSeed();

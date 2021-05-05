@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Card/CardManager.h"
 #include "BattleManager.h"
+#include "Map/MapManager.h"
 #include "Card/CardEnums.h"
 #include "GameManager.generated.h"
 
@@ -35,6 +36,7 @@ public:
 
 	FCardManager& GetCardManager() { return m_CardManager; }
 	FBattleManager& GetBattleManager() { return m_BattleManager; }
+	FMapManager& GetMapManager() { return m_MapManager; }
 	FRandomStream& GetRandomStream() { return m_RandomStream; }
 
 	FVector GetCameraUpVector();
@@ -79,6 +81,7 @@ public:
 private:
 	FCardManager m_CardManager;
 	FBattleManager m_BattleManager;
+	FMapManager m_MapManager;
 
 	ACameraActor* m_CameraCache;
 	AScreenOnlyPlayerController* m_PlayerController;

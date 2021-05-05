@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "Map/MapData.h"
 #include "SaveableData.generated.h"
 
 class UPlayerRuntimeData;
@@ -18,4 +19,7 @@ class ROUGELIKEWUXIA_API USaveableData : public USaveGame
 public:
 	UPROPERTY()
 		UPlayerRuntimeData* PlayerData;
+
+	UPROPERTY()
+		FMapDataStatic MapData;
 };
