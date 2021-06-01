@@ -9,6 +9,7 @@
 /**
  * 
  */
+class AMapNodeActor;
 USTRUCT()
 struct ROUGELIKEWUXIA_API FMapNodeStatic
 {
@@ -23,6 +24,9 @@ public:
 
 	UPROPERTY()
 		FVector2D NodeCoordinate;
+
+	UPROPERTY()
+		TSubclassOf<AMapNodeActor> NodeTemplate;
 };
 
 UCLASS()

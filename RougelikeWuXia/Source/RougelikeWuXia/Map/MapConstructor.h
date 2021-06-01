@@ -9,9 +9,13 @@
  * 
  */
 class UMapData;
+class UDataTable;
 
 class ROUGELIKEWUXIA_API FMapConstructor
 {
 public:
 	UMapData* ConstructMap(FMapConstructData& constructingData);
+
+private:
+    UDataTable* m_MapNodeTypeTable;
 };

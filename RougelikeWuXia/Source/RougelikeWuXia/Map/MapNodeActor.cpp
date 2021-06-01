@@ -3,6 +3,7 @@
 
 #include "MapNodeActor.h"
 #include "Paper2D/Classes/PaperSpriteComponent.h"
+#include "MapNode.h"
 
 // Sets default values
 AMapNodeActor::AMapNodeActor()

@@ -7,7 +7,8 @@
 #include "MapNodeActor.generated.h"
 
 class UPaperSpriteComponent;
-UCLASS()
+class UMapNode;
+UCLASS(abstract)
 class ROUGELIKEWUXIA_API AMapNodeActor : public AActor
 {
 	GENERATED_BODY()
@@ -22,6 +23,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UPaperSpriteComponent* SpriteComponent;
 
+	UPROPERTY()
+		UMapNode* Node;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,5 +33,4 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 };

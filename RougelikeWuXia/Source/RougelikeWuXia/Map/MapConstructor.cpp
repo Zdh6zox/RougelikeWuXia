@@ -3,6 +3,8 @@
 
 #include "MapConstructor.h"
 #include "MapData.h"
+#include "Engine/DataTable.h"
+#include "Engine/DataAsset.h"
 
 
 UMapData* FMapConstructor::ConstructMap(FMapConstructData& constructingData)
