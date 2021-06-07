@@ -15,5 +15,11 @@ public class RougelikeWuXia : ModuleRules
         PublicIncludePaths.AddRange(new string[] { "RougelikeWuXia", "Paper2D" });
 
         PrivateIncludePaths.AddRange(new string[] { "RougelikeWuXia", "Paper2D" });
+
+        if(Target.bBuildEditor)
+        {
+            PrivateDependencyModuleNames.AddRange(new string[] { "DetailCustomizations", "PropertyEditor", "EditorStyle" });
+            PublicDependencyModuleNames.AddRange(new string[] { "UnrealEd" });
+        }
     }
 }
