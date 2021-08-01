@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Map/MapNodeActor.h"
-#include "MapNodeActorSpecial.generated.h"
+#include "MapNodeActorPreset.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ROUGELIKEWUXIA_API AMapNodeActorSpecial : public AMapNodeActor
+class ROUGELIKEWUXIA_API AMapNodeActorPreset : public AMapNodeActor
 {
 	GENERATED_BODY()
+	
 };

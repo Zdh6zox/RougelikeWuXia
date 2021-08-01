@@ -22,4 +22,7 @@ public:
 
 	UPROPERTY(DisplayName = "Max Node Links Count")
 		uint32 MaxNodeLinksCount;
+
+	UPROPERTY()
+		FVector2D MapSize;
 };

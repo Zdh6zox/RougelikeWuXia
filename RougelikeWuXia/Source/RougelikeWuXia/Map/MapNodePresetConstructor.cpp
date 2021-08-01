@@ -58,6 +58,9 @@ void AMapNodePresetConstructor::ConstructFromData()
             }
         }
     }
+
+	float impactRadius = PresetData.PresetImpactRadius;
+	
 }
 
 void AMapNodePresetConstructor::ImportFromDataTable()
@@ -94,10 +97,11 @@ void AMapNodePresetConstructor::ExportToDataTable()
 		*allPresets[CurrentDataTableRowIndex] = PresetData;
 		return;
 	}
-	else if (allPresets.Num() == CurrentDataTableRowIndex)
+	else if (allPresets.Num() <= CurrentDataTableRowIndex)
 	{
 		//add new row
-		PresetTable->AddRow(FName("NewRow"), PresetData);
+		FString rowName = FString::Printf(TEXT("NewRow%d"), CurrentDataTableRowIndex);
+		PresetTable->AddRow(FName(*rowName), PresetData);
 	}
 }
 

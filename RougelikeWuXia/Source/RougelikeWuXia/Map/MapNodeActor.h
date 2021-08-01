@@ -26,6 +26,9 @@ public:
 	UPROPERTY()
 		UMapNode* Node;
 
+	UPROPERTY()
+		float NodeImpactRadius;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

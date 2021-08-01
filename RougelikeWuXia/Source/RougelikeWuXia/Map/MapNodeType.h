@@ -4,19 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "MapEnums.h"
 #include "MapNodeType.generated.h"
 
 /**
  * 
 */
 class AMapNodeActor;
-UENUM(BlueprintType)
-enum class EMapNodeClassRarenessEnum : uint8
-{
-	Necessary,
-	Normal,
-	Rare
-};
 
 
 USTRUCT(BlueprintType)
@@ -29,7 +23,7 @@ public:
 		float NodeConstructImpactRadius;
 
 	UPROPERTY(EditAnywhere)
-		EMapNodeClassRarenessEnum Rareness;
+		EMapConstructUnitRarenessType Rareness;
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<AMapNodeActor> NodeActorTemplate;

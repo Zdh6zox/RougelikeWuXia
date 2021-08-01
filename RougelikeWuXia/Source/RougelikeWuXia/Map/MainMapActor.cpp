@@ -25,3 +25,13 @@ void AMainMapActor::Tick(float DeltaTime)
 
 }
 
+void AMainMapActor::ConstructMap()
+{
+	MapData = m_MapConstructor.ConstructMap(MapConstructData);
+}
+
+void AMainMapActor::LoadConstructedMap()
+{
+
+}
+

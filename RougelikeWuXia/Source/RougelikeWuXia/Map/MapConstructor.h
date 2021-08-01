@@ -17,5 +17,11 @@ public:
 	UMapData* ConstructMap(FMapConstructData& constructingData);
 
 private:
-    UDataTable* m_MapNodeTypeTable;
+	void GetConstructUnitsLists();
+
+	TArray<FTableRowBase*> m_NecessaryUnitsArr;
+	TArray<FTableRowBase*> m_RareUnitsArr;
+	TArray<FTableRowBase*> m_NormalUnitsArr;
+    UDataTable* m_SingleNodeTable;
+	UDataTable* m_PresetTable;
 };

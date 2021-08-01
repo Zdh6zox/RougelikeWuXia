@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "MapEnums.h"
 #include "MapNodePreset.generated.h"
 /**
  * 
@@ -51,4 +52,10 @@ public:
 
     UPROPERTY(EditAnywhere)
         TArray<FMapNodePresetLink> Links;
+
+	UPROPERTY(EditAnywhere)
+		float PresetImpactRadius;
+
+	UPROPERTY(EditAnywhere)
+		EMapConstructUnitRarenessType Rareness;
 };
