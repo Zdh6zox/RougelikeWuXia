@@ -42,6 +42,32 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct ROUGELIKEWUXIA_API FImpactRadiusRatePair
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+		float Radius;
+
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 0.0f, ClampMax = 1.0f))
+		float Rate = 0.0f;
+};
+
+USTRUCT(BlueprintType)
+struct ROUGELIKEWUXIA_API FMapPresetImpactRadius
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+		EMapConstructUnitRarenessType Rareness;
+
+	UPROPERTY(EditAnywhere)
+		TArray<FImpactRadiusRatePair> RadiusPossibilities;
+};
+
+USTRUCT(BlueprintType)
 struct ROUGELIKEWUXIA_API FMapNodePreset : public FTableRowBase
 {
     GENERATED_USTRUCT_BODY()
@@ -54,7 +80,7 @@ public:
         TArray<FMapNodePresetLink> Links;
 
 	UPROPERTY(EditAnywhere)
-		float PresetImpactRadius;
+		TArray<FMapPresetImpactRadius> PresetImpactRadiusList;
 
 	UPROPERTY(EditAnywhere)
 		EMapConstructUnitRarenessType Rareness;

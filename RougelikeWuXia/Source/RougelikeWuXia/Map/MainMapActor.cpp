@@ -90,6 +90,8 @@ void AMainMapActor::ConstructMap_Actual()
 		}
 
 	}
+
+	
 }
 
 void AMainMapActor::LoadConstructedMap()

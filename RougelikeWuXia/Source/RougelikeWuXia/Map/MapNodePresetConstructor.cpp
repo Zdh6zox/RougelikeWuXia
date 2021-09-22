@@ -58,9 +58,6 @@ void AMapNodePresetConstructor::ConstructFromData()
             }
         }
     }
-
-	float impactRadius = PresetData.PresetImpactRadius;
-	
 }
 
 void AMapNodePresetConstructor::ImportFromDataTable()
