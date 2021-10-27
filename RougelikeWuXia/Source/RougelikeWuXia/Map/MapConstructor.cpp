@@ -95,3 +95,13 @@ bool FMapConstructor::CheckGeneratedLocationValid(const FMapNodeLocation& checki
 
 	return false;
 }
+
+void FMapConstructor::PoissonDiskSamplingGenerate()
+{
+	
+}
+
+void FMapConstructPoissonDiskSampler::RunSampler()
+{
+
+}

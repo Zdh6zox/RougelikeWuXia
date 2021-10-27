@@ -24,10 +24,10 @@ void AMainMapActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!ConstructCompleted)
-	{
-		ConstructMap();
-	}
+	//if (!ConstructCompleted)
+	//{
+	//	ConstructMap();
+	//}
 }
 
 void AMainMapActor::ConstructMap()

@@ -26,8 +26,11 @@ public:
 	UPROPERTY()
 		UMapNode* Node;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float NodeImpactRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool ShowImpactRadius = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -36,4 +39,10 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void DebugDisplay();
+
+private:
+	void DebugDisplayImpactRadius();
+	bool CheckHasNodeNearby();
 };

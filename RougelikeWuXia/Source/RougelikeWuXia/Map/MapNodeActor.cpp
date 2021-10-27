@@ -4,6 +4,8 @@
 #include "MapNodeActor.h"
 #include "Paper2D/Classes/PaperSpriteComponent.h"
 #include "MapNode.h"
+#include "DrawDebugHelpers.h"
+#include "EngineUtils.h"
 
 // Sets default values
 AMapNodeActor::AMapNodeActor()
@@ -31,5 +33,42 @@ void AMapNodeActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	DebugDisplay();
+}
+
+void AMapNodeActor::DebugDisplay()
+{
+	DebugDisplayImpactRadius();
+}
+
+void AMapNodeActor::DebugDisplayImpactRadius()
+{
+	if (ShowImpactRadius)
+	{
+		FColor circleColor = FColor::Green;
+		if (CheckHasNodeNearby())
+		{
+			circleColor = FColor::Red;
+		}
+		DrawDebugSphere(GetWorld(), GetActorLocation(), NodeImpactRadius, 32, circleColor);
+	}
+}
+
+bool AMapNodeActor::CheckHasNodeNearby()
+{
+	for (TActorIterator<AMapNodeActor> It(GetWorld(), AMapNodeActor::StaticClass()); It; ++It)
+	{
+		if (*It == this)
+		{
+			continue;
+		}
+		
+		if (FVector::Dist((*It)->GetActorLocation(),GetActorLocation()) <= NodeImpactRadius + (*It)->NodeImpactRadius)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
