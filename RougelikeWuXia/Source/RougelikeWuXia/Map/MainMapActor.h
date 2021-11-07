@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MapConstructData.h"
-#include "MapConstructor.h"
+#include "MapConstructor/MapConstructData.h"
+#include "MapConstructor/MapConstructor.h"
 #include "MainMapActor.generated.h"
 
 class UMapData;
