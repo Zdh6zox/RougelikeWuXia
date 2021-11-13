@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "MapConstructor/MapConstructData.h"
-#include "MapConstructor/MapConstructor.h"
 #include "MainMapActor.generated.h"
 
 class UMapData;
 class AMapBlock;
+class FMapConstructor;
 
 UCLASS()
 class ROUGELIKEWUXIA_API AMainMapActor : public AActor
@@ -40,6 +40,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -57,9 +58,10 @@ private:
 
 	void ConstructMap_Actual();
 
-	FMapConstructor m_MapConstructor;
+	FMapConstructor* m_MapConstructor = nullptr;
 	int m_CurRow;
 	int m_CurColumn;
+	bool m_ShowDebug = false;
 };
 
 class FMapConstructAsyncTask : public FNonAbandonableTask

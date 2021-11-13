@@ -3,22 +3,32 @@
 
 #include "MapConstructor.h"
 #include "RougelikeWuXia.h"
-#include "MapData.h"
-#include "MainMapActor.h"
+#include "Map/MapData.h"
+#include "Map/MainMapActor.h"
 #include "Managers/GameManager.h"
-#include "MapNodeType.h"
-#include "MapNodePreset.h"
+#include "Map/MapNodeType.h"
+#include "Map/MapNodePreset.h"
 #include "Engine/DataTable.h"
 #include "Engine/DataAsset.h"
+#include "MapConstructorSampler.h"
 
 
-UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, FMapConstructData& constructingData)
+UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, const FMapConstructData& constructingData)
 {
 	UMapData* newMapData = NewObject<UMapData>();
-	m_MapActor = mapActor;
-	GetConstructUnitsLists();
+	//m_MapActor = mapActor;
+	//GetConstructUnitsLists();
 
+	m_Sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxMapModeCount, 60, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
+	m_Sampler->RunSampler();
+
+	m_IsFinished = true;
 	return newMapData;
+}
+
+void FMapConstructor::GetConstructedNodeLoc(TArray<FVector2D>& locs) const
+{
+    m_Sampler->GetGeneratedMainNodes(locs);
 }
 
 void FMapConstructor::GetConstructUnitsLists()
@@ -94,14 +104,4 @@ bool FMapConstructor::CheckGeneratedLocationValid(const FMapNodeLocation& checki
 	}
 
 	return false;
-}
-
-void FMapConstructor::PoissonDiskSamplingGenerate()
-{
-	
-}
-
-void FMapConstructPoissonDiskSampler::RunSampler()
-{
-
 }

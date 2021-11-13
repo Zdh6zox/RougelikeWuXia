@@ -24,13 +24,15 @@ public:
         m_GeneratedSubNodeSamples.Reserve(subNodeNum);
     }
 
-    void RunSampler() { RunSampler(); }
-    void GetGeneratedMainNodes(TArray<FVector2D>& generatedNodes) { generatedNodes = m_GeneratedMainNodeSamples; }
-    void GetGeneratedSubNodes(TArray<FVector2D>& generatedNodes) { generatedNodes = m_GeneratedMainNodeSamples; }
+    void RunSampler() { RunSampler_Internal(); }
+    bool IsFinished() const { return m_IsFinished; }
+    void GetGeneratedMainNodes(TArray<FVector2D>& generatedNodes) const { generatedNodes = m_GeneratedMainNodeSamples; }
+    void GetGeneratedSubNodes(TArray<FVector2D>& generatedNodes) const { generatedNodes = m_GeneratedMainNodeSamples; }
 
-    virtual void RunSampler_Internal() const = 0;
+    virtual void RunSampler_Internal() = 0;
 
 protected:
+    bool CheckInsideMap(FVector2D newPoint) const;
     TArray<FVector2D> m_GeneratedMainNodeSamples;
     TArray<FVector2D> m_GeneratedSubNodeSamples;
     float m_MapSizeX;
@@ -39,25 +41,37 @@ protected:
     int m_MainNodeNum;
     int m_SubNodeNum;
     int m_NumCandidates;
+    bool m_IsFinished = false;
 };
 
 class ROUGELIKEWUXIA_API FMapConstructPoissonDiskSampler : public FMapConstructorSampler
 {
 public:
-    virtual void RunSampler_Internal();
+    FMapConstructPoissonDiskSampler(int mainNodeNum, float nodeImpactRadius, float mapSize_X, float mapSize_Y, int numCandidates)
+        :FMapConstructorSampler(mainNodeNum, nodeImpactRadius, mapSize_X, mapSize_Y, numCandidates)
+    {
+
+    }
+    FMapConstructPoissonDiskSampler(int subNodeNum, const TArray<FVector2D> mainNodes, float nodeImpactRadius, float mapSize_X, float mapSize_Y, int numCandidates)
+        :FMapConstructorSampler(subNodeNum, mainNodes, nodeImpactRadius, mapSize_X, mapSize_Y, numCandidates)
+    {
+        m_ActivatedPoint.Append(mainNodes);
+    }
+    virtual void RunSampler_Internal() override;
 private:
+    bool IsValidPoint(FVector2D newPoint) const;
     FVector2D GenerateRandomPoint(FVector2D center);
-    TArray<FVector2D> m_ActivedPoint;
+    TArray<FVector2D> m_ActivatedPoint;
 };
 
 class ROUGELIKEWUXIA_API FMapConstructorBestCandidateSampler : public FMapConstructorSampler
 {
 public:
-    virtual void RunSampler_Internal();
+    virtual void RunSampler_Internal() override;
 };
 
 class ROUGELIKEWUXIA_API FMapConstructorRandomSampler : public FMapConstructorSampler
 {
 public:
-    virtual void RunSampler_Internal();
+    virtual void RunSampler_Internal() override;
 };

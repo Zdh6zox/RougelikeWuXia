@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MapConstructData.h"
-#include "MapEnums.h"
+#include "Map/MapEnums.h"
 
 /**
  * 
@@ -14,6 +14,7 @@ class UDataTable;
 class AMainMapActor;
 struct FMapPresetImpactRadius;
 struct FMapNodePreset;
+class FMapConstructorSampler;
 
 enum ROUGELIKEWUXIA_API EMapConstructorSampleMethodType
 {
@@ -25,7 +26,7 @@ enum ROUGELIKEWUXIA_API EMapConstructorSampleMethodType
 class ROUGELIKEWUXIA_API FMapConstructor
 {
 public:
-	UMapData* ConstructMap(AMainMapActor* mapActor, FMapConstructData& constructingData);
+	UMapData* ConstructMap(AMainMapActor* mapActor, const FMapConstructData& constructingData);
 
 	struct FMapNodeLocation
 	{
@@ -41,12 +42,13 @@ public:
 		FVector2D Location;
 	};
 
+	void GetConstructedNodeLoc(TArray<FVector2D>& locs) const;
+	bool IsFinished() const { return m_IsFinished; }
+
 private:
 	void GetConstructUnitsLists();
 	FVector2D GeneratePosition(FMapNodePreset* preset);
 	bool CheckGeneratedLocationValid(const FMapNodeLocation& checkingLoc);
-
-	void PoissonDiskSamplingGenerate();
 
 	AMainMapActor* m_MapActor = nullptr;
 	float m_MapSizeX;
@@ -57,5 +59,8 @@ private:
 	TArray<FMapNodeLocation> m_ConstructedLocationArr;
     UDataTable* m_SingleNodeTable;
 	UDataTable* m_PresetTable;
+	bool m_IsFinished = false;
+
+	FMapConstructorSampler* m_Sampler = nullptr;
 };
 
