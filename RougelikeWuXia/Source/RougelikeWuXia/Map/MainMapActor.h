@@ -37,6 +37,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Transient)
 		bool ConstructCompleted = false;
 
+	UPROPERTY(VisibleAnywhere, Transient)
+		TArray<FVector2D> GeneratedMainLocs;
+
+    UPROPERTY(VisibleAnywhere, Transient)
+        TArray<FVector2D> GeneratedSubLocs;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

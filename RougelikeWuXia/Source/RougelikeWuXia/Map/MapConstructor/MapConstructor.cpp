@@ -19,8 +19,21 @@ UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, const FMapConst
 	//m_MapActor = mapActor;
 	//GetConstructUnitsLists();
 
-	m_Sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxMapModeCount, 60, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
+	m_Sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxMainNodeCount, constructingData.MainNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
 	m_Sampler->RunSampler();
+
+	TArray<FVector2D> constructedMainLoc;
+	m_Sampler->GetGeneratedMainNodes(constructedMainLoc);
+	m_GeneratedMainNodeLocs.Append(constructedMainLoc);
+
+	delete m_Sampler;
+
+	m_Sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxSubNodeCount, constructedMainLoc, constructingData.MainNodeRadius,
+		constructingData.SubNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
+	m_Sampler->RunSampler();
+	TArray<FVector2D> constructedSubLoc;
+	m_Sampler->GetGeneratedSubNodes(constructedSubLoc);
+	m_GeneratedSubNodeLocs.Append(constructedSubLoc);
 
 	m_IsFinished = true;
 	return newMapData;
@@ -28,7 +41,19 @@ UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, const FMapConst
 
 void FMapConstructor::GetConstructedNodeLoc(TArray<FVector2D>& locs) const
 {
-    m_Sampler->GetGeneratedMainNodes(locs);
+	locs.Append(m_GeneratedMainNodeLocs);
+
+	locs.Append(m_GeneratedSubNodeLocs);
+}
+
+void FMapConstructor::GetConstructedMainNodeLocs(TArray<FVector2D>& locs) const
+{
+	locs.Append(m_GeneratedMainNodeLocs);
+}
+
+void FMapConstructor::GetConstructedSubNodeLocs(TArray<FVector2D>& locs) const
+{
+	locs.Append(m_GeneratedSubNodeLocs);
 }
 
 void FMapConstructor::GetConstructUnitsLists()

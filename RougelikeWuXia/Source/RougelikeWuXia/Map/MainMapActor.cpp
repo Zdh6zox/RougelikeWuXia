@@ -48,15 +48,24 @@ void AMainMapActor::Tick(float DeltaTime)
 		&& m_ShowDebug)
 	{
 		m_ShowDebug = false;
-        TArray<FVector2D> locs;
-        m_MapConstructor->GetConstructedNodeLoc(locs);
+		GeneratedMainLocs.Empty();
+        m_MapConstructor->GetConstructedMainNodeLocs(GeneratedMainLocs);
 
-		DrawDebugString(GetWorld(), GetActorLocation(), FString::Printf(TEXT("%d"), locs.Num()), this, FColor::Black, 30.0f);
-        for (int i = 0; i < locs.Num(); ++i)
+        for (int i = 0; i < GeneratedMainLocs.Num(); ++i)
         {
-            FVector generatedLoc = GetActorLocation() + FVector(locs[i].X, locs[i].Y, 0.0f);
-            DrawDebugSphere(GetWorld(), generatedLoc, 20.f, 4, FColor::Red, true);
-            DrawDebugSphere(GetWorld(), generatedLoc, 60.f, 4, FColor::Blue, true);
+            FVector generatedLoc = GetActorLocation() + FVector(GeneratedMainLocs[i].X, GeneratedMainLocs[i].Y, 0.0f);
+			DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.MainNodeRadius / 2, 4, FColor::Orange, false, 30.f);
+			DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.MainNodeRadius, 4, FColor::Red, false, 30.f);
+        }
+
+		GeneratedSubLocs.Empty();
+        m_MapConstructor->GetConstructedSubNodeLocs(GeneratedSubLocs);
+
+        for (int i = 0; i < GeneratedSubLocs.Num(); ++i)
+        {
+            FVector generatedLoc = GetActorLocation() + FVector(GeneratedSubLocs[i].X, GeneratedSubLocs[i].Y, 0.0f);
+            DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.SubNodeRadius / 2, 4, FColor::Green, false, 30.f);
+            DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.SubNodeRadius, 4, FColor::Blue, false, 30.f);
         }
 	}
 }

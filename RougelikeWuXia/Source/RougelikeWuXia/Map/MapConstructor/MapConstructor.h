@@ -43,6 +43,8 @@ public:
 	};
 
 	void GetConstructedNodeLoc(TArray<FVector2D>& locs) const;
+	void GetConstructedMainNodeLocs(TArray<FVector2D>& locs) const;
+	void GetConstructedSubNodeLocs(TArray<FVector2D>& locs) const;
 	bool IsFinished() const { return m_IsFinished; }
 
 private:
@@ -62,5 +64,7 @@ private:
 	bool m_IsFinished = false;
 
 	FMapConstructorSampler* m_Sampler = nullptr;
+	TArray<FVector2D> m_GeneratedMainNodeLocs;
+	TArray<FVector2D> m_GeneratedSubNodeLocs;
 };
 

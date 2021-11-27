@@ -11,11 +11,27 @@ bool FMapConstructorSampler::CheckInsideMap(FVector2D newPoint) const
         && newPoint.Y <= m_MapSizeY && newPoint.Y >= 0.0f;
 }
 
-FVector2D FMapConstructPoissonDiskSampler::GenerateRandomPoint(FVector2D center)
+FVector2D FMapConstructPoissonDiskSampler::GenerateRandomPoint(FVector2D center, bool usingMainNodeCenter)
 {
     //find a random point inside circle ring which inner radius r outer radius 2r
     float randomAngle = FMath::RandRange(0.0f, 360.f);
-    float randomRadius = FMath::RandRange(m_NodeImpactRadius, 2 * m_NodeImpactRadius);
+    float randomRadius = 0.0f;
+    if (m_IsGeneratingSubNodes)
+    {
+        //generate point using different radius depending on main/sub center
+        if (!usingMainNodeCenter)
+        {
+            randomRadius = FMath::RandRange(m_SubNodeImpactRadius, 2 * m_SubNodeImpactRadius);
+        }
+        else
+        {
+            randomRadius = FMath::RandRange(m_MainNodeImpactRadius, m_SubNodeImpactRadius + m_MainNodeImpactRadius);
+        }
+    }
+    else
+    {
+        randomRadius = FMath::RandRange(m_MainNodeImpactRadius, 2 * m_MainNodeImpactRadius);
+    }
 
     FVector2D rotatingVec = FVector2D(1.0f, 0.0f);
     FVector2D randomVec = rotatingVec.GetRotated(randomAngle);
@@ -24,6 +40,20 @@ FVector2D FMapConstructPoissonDiskSampler::GenerateRandomPoint(FVector2D center)
 }
 
 void FMapConstructPoissonDiskSampler::RunSampler_Internal()
+{
+    if (m_IsGeneratingSubNodes)
+    {
+        SampleSubNodes();
+    }
+    else
+    {
+        SampleMainNodes();
+    }
+
+    m_IsFinished = true;
+}
+
+void FMapConstructPoissonDiskSampler::SampleMainNodes()
 {
     //generate first activated point if empty
     if (m_ActivatedPoint.Num() == 0)
@@ -40,11 +70,11 @@ void FMapConstructPoissonDiskSampler::RunSampler_Internal()
         //random pick one activated point
         int activatedPntInx = FMath::RandRange(0, m_ActivatedPoint.Num() - 1);
         FVector2D activatedPoint = m_ActivatedPoint[activatedPntInx];
-        
+
         int remainSamplingCount = m_NumCandidates;
         while (remainSamplingCount > 0)
         {
-            FVector2D newCandidate = GenerateRandomPoint(activatedPoint);
+            FVector2D newCandidate = GenerateRandomPoint(activatedPoint,true);
             if (IsValidPoint(newCandidate))
             {
                 m_ActivatedPoint.Add(newCandidate);
@@ -60,8 +90,46 @@ void FMapConstructPoissonDiskSampler::RunSampler_Internal()
             m_ActivatedPoint.Remove(activatedPoint);
         }
     }
+}
 
-    m_IsFinished = true;
+void FMapConstructPoissonDiskSampler::SampleSubNodes()
+{
+    while (m_ActivatedPoint.Num() > 0
+        && m_GeneratedSubNodeSamples.Num() < m_SubNodeNum)
+    {
+        //random pick one activated point
+        int activatedPntInx = FMath::RandRange(0, m_ActivatedPoint.Num() - 1);
+        bool isUsingMainNodeCenter = activatedPntInx < m_ActivatedMainPoint.Num();
+        FVector2D activatedPoint = m_ActivatedPoint[activatedPntInx];
+
+        int remainSamplingCount = m_NumCandidates;
+        while (remainSamplingCount > 0)
+        {
+            FVector2D newCandidate = GenerateRandomPoint(activatedPoint, isUsingMainNodeCenter);
+            if (IsValidPoint(newCandidate))
+            {
+                m_ActivatedPoint.Add(newCandidate);
+                m_ActivatedSubPoint.Add(newCandidate);
+                m_GeneratedSubNodeSamples.Add(newCandidate);
+                break;
+            }
+            remainSamplingCount--;
+        }
+
+        //no valid point generated, remove it from activated point list
+        if (remainSamplingCount == 0)
+        {
+            if (isUsingMainNodeCenter)
+            {
+                m_ActivatedMainPoint.Remove(activatedPoint);
+            }
+            else
+            {
+                m_ActivatedSubPoint.Remove(activatedPoint);
+            }
+            m_ActivatedPoint.Remove(activatedPoint);
+        }
+    }
 }
 
 bool FMapConstructPoissonDiskSampler::IsValidPoint(FVector2D newPoint) const
@@ -72,13 +140,38 @@ bool FMapConstructPoissonDiskSampler::IsValidPoint(FVector2D newPoint) const
     }
 
     //[TODO]Use object bucket to optimize
-    for (int i = 0; i < m_GeneratedMainNodeSamples.Num(); ++i)
+    if (!m_IsGeneratingSubNodes)
     {
-        FVector2D testingPoint = m_GeneratedMainNodeSamples[i];
-        float distance = FVector2D::Distance(testingPoint, newPoint);
-        if (distance <= m_NodeImpactRadius)
+        for (int i = 0; i < m_GeneratedMainNodeSamples.Num(); ++i)
         {
-            return false;
+            FVector2D testingPoint = m_GeneratedMainNodeSamples[i];
+            float distance = FVector2D::Distance(testingPoint, newPoint);
+            if (distance <= m_MainNodeImpactRadius)
+            {
+                return false;
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < m_GeneratedMainNodeSamples.Num(); ++i)
+        {
+            FVector2D testingPoint = m_GeneratedMainNodeSamples[i];
+            float distance = FVector2D::Distance(testingPoint, newPoint);
+            if (distance <= m_MainNodeImpactRadius)
+            {
+                return false;
+            }
+        }
+
+        for (int i = 0; i < m_GeneratedSubNodeSamples.Num(); ++i)
+        {
+            FVector2D testingPoint = m_GeneratedSubNodeSamples[i];
+            float distance = FVector2D::Distance(testingPoint, newPoint);
+            if (distance <= m_SubNodeImpactRadius)
+            {
+                return false;
+            }
         }
     }
 
