@@ -188,4 +188,75 @@ void FMapConstructorRandomSampler::RunSampler_Internal()
 
 }
 
+void FCells::AddPosition(FVector2D position)
+{
+    long u, v;
+    GetUVForPosition(position, u, v);
+
+    long index = v * NUM_2D_CELLS + u;
+    long objectCount = m_ObjectCount[index];
+    if (objectCount < NUM_OBJECTS_PER_CELL)
+    {
+        m_ObjectCount[index] ++;
+        m_Cells[index][objectCount] = position;
+    }
+}
+
+void FCells::GetUVForPosition(FVector2D pos, long& u, long& v)
+{
+    float x = fmod(pos.X / m_CellSize, (float)NUM_2D_CELLS);
+    float y = fmod(pos.Y / m_CellSize, (float)NUM_2D_CELLS);
+
+    u = (long)x;
+    v = (long)y;
+}
+
+void FCells::Gather(FVector2D targetPosition, float radius, TArray<FVector2D>& locs)
+{
+    // Radius is in meters, so convert in pixels
+    FVector2D Position = targetPosition;
+
+    float squaredRadius = radius * radius;
+    const long scanradius = 1 + (long)(radius / m_CellSize);
+
+    long u, v;
+    GetUVForPosition(Position, u, v);
+
+    long minu = u - scanradius;
+    long maxu = u + scanradius;
+    long minv = v - scanradius;
+    long maxv = v + scanradius;
+
+    long diameter = scanradius * 2;
+    if (diameter >= NUM_2D_CELLS)
+    {
+        minu = 0;
+        maxu = (long)(NUM_2D_CELLS - 1);
+    }
+    if (diameter >= NUM_2D_CELLS)
+    {
+        minv = 0;
+        maxv = (long)(NUM_2D_CELLS - 1);
+    }
+
+    for (long vv = minv; vv <= maxv; ++vv)
+    {
+        const long vvoffset = (vv % NUM_2D_CELLS) * NUM_2D_CELLS;
+
+        for (long uu = minu; uu <= maxu; ++uu)
+        {
+            const long elemIndex = (uu % NUM_2D_CELLS) + vvoffset;
+            const long bucketCount = m_ObjectCount[elemIndex];
+            for (long cnt = 0; cnt < bucketCount; ++cnt)
+            {
+                FVector2D oPos = m_Cells[elemIndex][cnt];
+                float sqdist = (oPos - targetPosition).SizeSquared();
+                if (sqdist <= squaredRadius)
+                {
+                    locs.Add(oPos);
+                }
+            }
+        }
+    }
+}
 #pragma optimize("",on)

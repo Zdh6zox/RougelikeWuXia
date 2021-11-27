@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 /**
  * 
  */
@@ -82,4 +81,33 @@ class ROUGELIKEWUXIA_API FMapConstructorRandomSampler : public FMapConstructorSa
 {
 public:
     virtual void RunSampler_Internal() override;
+};
+
+class FCells
+{
+private:
+    static const unsigned long NUM_2D_CELLS = 128;
+    static const unsigned long NUM_CELLS = NUM_2D_CELLS * NUM_2D_CELLS;
+    static const unsigned long NUM_OBJECTS_PER_CELL = 16;
+
+    FVector2D m_Cells[NUM_CELLS][NUM_OBJECTS_PER_CELL];
+    // buckets counts;
+    unsigned long m_ObjectCount[NUM_CELLS];
+
+    float  m_CellSize;
+public:
+    FCells() : m_CellSize(200.f) {}
+    void Clear()
+    {
+        for (long i = 0; i < NUM_CELLS; i++)
+        {
+            m_ObjectCount[i] = 0;
+        }
+    }
+
+    void AddPosition(FVector2D position);
+    void Gather(FVector2D targetPosition, float radius, TArray<FVector2D>& locs);
+
+private:
+    void GetUVForPosition(FVector2D pos, long& u, long& v);
 };
