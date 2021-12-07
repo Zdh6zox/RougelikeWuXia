@@ -16,6 +16,8 @@ struct FMapPresetImpactRadius;
 struct FMapNodePreset;
 class FMapConstructorSampler;
 
+//TODO: Use Voronoi Diagram to divide region, use generated region as a condition to generate nodes 
+
 enum ROUGELIKEWUXIA_API EMapConstructorSampleMethodType
 {
 	PossionDisk,
