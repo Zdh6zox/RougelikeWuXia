@@ -4,6 +4,7 @@
 #include "Modules/ModuleManager.h"
 
 DEFINE_LOG_CATEGORY(LogMain)
+DEFINE_LOG_CATEGORY(LogMainMapConstruct)
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, RougelikeWuXia, "RougelikeWuXia" );
  

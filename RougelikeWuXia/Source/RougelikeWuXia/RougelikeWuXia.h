@@ -6,3 +6,4 @@
 #include "Modules/ModuleManager.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMain, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogMainMapConstruct, Log, All);
