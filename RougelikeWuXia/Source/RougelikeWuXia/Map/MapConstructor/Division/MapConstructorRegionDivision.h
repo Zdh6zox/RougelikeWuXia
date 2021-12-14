@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "VoronoiDiagram/VoronoiDiagramGeneratedSite.h"
 
 class FVoronoiDiagram;
+
 class FMapConstructorRegionDivision
 {
 };
@@ -20,4 +22,5 @@ public:
 
 private:
     TSharedPtr<FVoronoiDiagram> m_VoronoDiagram;
+    FBox2D m_Bounds;
 };

@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "MapConstructData.h"
 #include "Map/MapEnums.h"
+#include "Map/MapNodePreset.h"
+#include "Division/VoronoiDiagram/VoronoiDiagramGeneratedSite.h"
+#include "Division/VoronoiDiagram/VoronoiDiagramGeneratedEdge.h"
 
 /**
  * 
@@ -12,9 +15,9 @@
 class UMapData;
 class UDataTable;
 class AMainMapActor;
-struct FMapPresetImpactRadius;
-struct FMapNodePreset;
 class FMapConstructorSampler;
+class FMapConstructorRegionDivision;
+class UWorld;
 
 //TODO: Use Voronoi Diagram to divide region, use generated region as a condition to generate nodes 
 
@@ -47,7 +50,10 @@ public:
 	void GetConstructedNodeLoc(TArray<FVector2D>& locs) const;
 	void GetConstructedMainNodeLocs(TArray<FVector2D>& locs) const;
 	void GetConstructedSubNodeLocs(TArray<FVector2D>& locs) const;
+    void GetGeneratedSites(TArray<class FVoronoiDiagramGeneratedSite>& sites) const;
 	bool IsFinished() const { return m_IsFinished; }
+
+    void ShowDebug(AMainMapActor* mapActor);
 
 private:
 	void GetConstructUnitsLists();
@@ -68,5 +74,6 @@ private:
 	FMapConstructorSampler* m_Sampler = nullptr;
 	TArray<FVector2D> m_GeneratedMainNodeLocs;
 	TArray<FVector2D> m_GeneratedSubNodeLocs;
+    TArray<FVoronoiDiagramGeneratedSite> m_GeneratedSites;
 };
 

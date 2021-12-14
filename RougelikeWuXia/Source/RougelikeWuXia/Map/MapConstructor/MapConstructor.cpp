@@ -11,6 +11,8 @@
 #include "Engine/DataTable.h"
 #include "Engine/DataAsset.h"
 #include "MapConstructorSampler.h"
+#include "Division/MapConstructorRegionDivision.h"
+#include "DrawDebugHelpers.h"
 
 
 UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, const FMapConstructData& constructingData)
@@ -28,12 +30,18 @@ UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, const FMapConst
 
 	delete m_Sampler;
 
-	m_Sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxSubNodeCount, constructedMainLoc, constructingData.MainNodeRadius,
-		constructingData.SubNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
-	m_Sampler->RunSampler();
-	TArray<FVector2D> constructedSubLoc;
-	m_Sampler->GetGeneratedSubNodes(constructedSubLoc);
-	m_GeneratedSubNodeLocs.Append(constructedSubLoc);
+    FRegionDivision_VoronoiDiagram* division = new FRegionDivision_VoronoiDiagram(FBox2D(FVector2D::ZeroVector, FVector2D(constructingData.MapSize.X, constructingData.MapSize.Y)));
+    division->AddPointsForDiagramGeneration(m_GeneratedMainNodeLocs);
+    division->GenerateDiagram(4);
+    
+    division->GetGeneratedSites(m_GeneratedSites);
+
+	//m_Sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxSubNodeCount, constructedMainLoc, constructingData.MainNodeRadius,
+	//	constructingData.SubNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
+	//m_Sampler->RunSampler();
+	//TArray<FVector2D> constructedSubLoc;
+	//m_Sampler->GetGeneratedSubNodes(constructedSubLoc);
+	//m_GeneratedSubNodeLocs.Append(constructedSubLoc);
 
 	m_IsFinished = true;
 	return newMapData;
@@ -54,6 +62,15 @@ void FMapConstructor::GetConstructedMainNodeLocs(TArray<FVector2D>& locs) const
 void FMapConstructor::GetConstructedSubNodeLocs(TArray<FVector2D>& locs) const
 {
 	locs.Append(m_GeneratedSubNodeLocs);
+}
+
+void FMapConstructor::GetGeneratedSites(TArray<FVoronoiDiagramGeneratedSite>& sites) const
+{
+    sites.Append(m_GeneratedSites);
+}
+
+void FMapConstructor::ShowDebug(AMainMapActor* mapActor)
+{
 }
 
 void FMapConstructor::GetConstructUnitsLists()

@@ -6,7 +6,9 @@
 /**
  * 
  */
-class ROUGELIKEWUXIA_API FMapConstructorSampler
+class AActor;
+
+class FMapConstructorSampler
 {
 public:
     FMapConstructorSampler(int mainNodeNum, float nodeImpactRadius, float mapSize_X, float mapSize_Y, int numCandidates)
@@ -27,6 +29,7 @@ public:
     bool IsFinished() const { return m_IsFinished; }
     void GetGeneratedMainNodes(TArray<FVector2D>& generatedNodes) const { generatedNodes = m_GeneratedMainNodeSamples; }
     void GetGeneratedSubNodes(TArray<FVector2D>& generatedNodes) const { generatedNodes = m_GeneratedSubNodeSamples; }
+    virtual void ShowDebug(AActor* mapActor) = 0;
 
     virtual void RunSampler_Internal() = 0;
 
@@ -44,7 +47,7 @@ protected:
     bool m_IsFinished = false;
 };
 
-class ROUGELIKEWUXIA_API FMapConstructPoissonDiskSampler : public FMapConstructorSampler
+class FMapConstructPoissonDiskSampler : public FMapConstructorSampler
 {
 public:
     FMapConstructPoissonDiskSampler(int mainNodeNum, float nodeImpactRadius, float mapSize_X, float mapSize_Y, int numCandidates)
@@ -60,6 +63,7 @@ public:
         m_IsGeneratingSubNodes = true;
     }
     virtual void RunSampler_Internal() override;
+    virtual void ShowDebug(AActor* mapActor) override;
 private:
     void SampleMainNodes();
     void SampleSubNodes();
@@ -71,16 +75,18 @@ private:
     bool m_IsGeneratingSubNodes = false;
 };
 
-class ROUGELIKEWUXIA_API FMapConstructorBestCandidateSampler : public FMapConstructorSampler
+class FMapConstructorBestCandidateSampler : public FMapConstructorSampler
 {
 public:
     virtual void RunSampler_Internal() override;
+    virtual void ShowDebug(AActor* mapActor) override;
 };
 
-class ROUGELIKEWUXIA_API FMapConstructorRandomSampler : public FMapConstructorSampler
+class FMapConstructorRandomSampler : public FMapConstructorSampler
 {
 public:
     virtual void RunSampler_Internal() override;
+    virtual void ShowDebug(AActor* mapActor) override;
 };
 
 class FCells

@@ -178,12 +178,29 @@ bool FMapConstructPoissonDiskSampler::IsValidPoint(FVector2D newPoint) const
     return true;
 }
 
+void FMapConstructPoissonDiskSampler::ShowDebug(AActor* mapActor)
+{
+
+}
+
 void FMapConstructorBestCandidateSampler::RunSampler_Internal()
 {
 
 }
 
+void FMapConstructorBestCandidateSampler::ShowDebug(AActor* mapActor)
+{
+
+}
+
+
+
 void FMapConstructorRandomSampler::RunSampler_Internal()
+{
+
+}
+
+void FMapConstructorRandomSampler::ShowDebug(AActor* mapActor)
 {
 
 }
