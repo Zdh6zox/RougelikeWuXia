@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MapConstructRegion.h"
 /**
  * 
  */
@@ -11,68 +12,76 @@ class AActor;
 class FMapConstructorSampler
 {
 public:
-    FMapConstructorSampler(int mainNodeNum, float nodeImpactRadius, float mapSize_X, float mapSize_Y, int numCandidates)
-        : m_MapSizeX(mapSize_X), m_MapSizeY(mapSize_Y), m_MainNodeNum(mainNodeNum), m_MainNodeImpactRadius(nodeImpactRadius), m_NumCandidates(numCandidates)
-    {
-        m_GeneratedMainNodeSamples.Reserve(mainNodeNum);
-    }
-
-    FMapConstructorSampler(int subNodeNum, const TArray<FVector2D> mainNodes, float mainNodeImpactRadius, float subNodeImpactRadius, float mapSize_X, float mapSize_Y, int numCandidates)
-        : m_MapSizeX(mapSize_X), m_MapSizeY(mapSize_Y), m_SubNodeNum(subNodeNum), m_MainNodeImpactRadius(mainNodeImpactRadius), m_SubNodeImpactRadius(subNodeImpactRadius), m_NumCandidates(numCandidates)
-    {
-        m_GeneratedMainNodeSamples.Empty();
-        m_GeneratedMainNodeSamples.Append(mainNodes);
-        m_GeneratedSubNodeSamples.Reserve(subNodeNum);
-    }
-
+    virtual void GetGeneratedNodes(TArray<FVector2D>& nodes) {}
     void RunSampler() { RunSampler_Internal(); }
     bool IsFinished() const { return m_IsFinished; }
-    void GetGeneratedMainNodes(TArray<FVector2D>& generatedNodes) const { generatedNodes = m_GeneratedMainNodeSamples; }
-    void GetGeneratedSubNodes(TArray<FVector2D>& generatedNodes) const { generatedNodes = m_GeneratedSubNodeSamples; }
     virtual void ShowDebug(AActor* mapActor) = 0;
 
     virtual void RunSampler_Internal() = 0;
 
 protected:
-    bool CheckInsideMap(FVector2D newPoint) const;
-    TArray<FVector2D> m_GeneratedMainNodeSamples;
-    TArray<FVector2D> m_GeneratedSubNodeSamples;
-    float m_MapSizeX;
-    float m_MapSizeY;
-    float m_MainNodeImpactRadius;
-    float m_SubNodeImpactRadius;
-    int m_MainNodeNum;
-    int m_SubNodeNum;
-    int m_NumCandidates;
     bool m_IsFinished = false;
 };
 
 class FMapConstructPoissonDiskSampler : public FMapConstructorSampler
 {
 public:
-    FMapConstructPoissonDiskSampler(int mainNodeNum, float nodeImpactRadius, float mapSize_X, float mapSize_Y, int numCandidates)
-        :FMapConstructorSampler(mainNodeNum, nodeImpactRadius, mapSize_X, mapSize_Y, numCandidates)
+    FMapConstructPoissonDiskSampler(int nodeNum, float nodeImpactRadius, float mapSize_X, float mapSize_Y, int numCandidates)
     {
-        m_IsGeneratingSubNodes = false;
+        m_NodeNum = nodeNum;
+        m_ImpactRadius = nodeImpactRadius;
+        m_MapSizeX = mapSize_X;
+        m_MapSizeY = mapSize_Y;
+        m_NumCandidates = numCandidates;
     }
-    FMapConstructPoissonDiskSampler(int subNodeNum, const TArray<FVector2D> mainNodes, float mainNodeImpactRadius, float subNodeImpactRadius, float mapSize_X, float mapSize_Y, int numCandidates)
-        :FMapConstructorSampler(subNodeNum, mainNodes, mainNodeImpactRadius, subNodeImpactRadius, mapSize_X, mapSize_Y, numCandidates)
-    {
-        m_ActivatedMainPoint.Append(mainNodes);
-        m_ActivatedPoint.Append(mainNodes);
-        m_IsGeneratingSubNodes = true;
-    }
+
     virtual void RunSampler_Internal() override;
     virtual void ShowDebug(AActor* mapActor) override;
+    virtual void GetGeneratedNodes(TArray<FVector2D>& nodes) override;
+
 private:
-    void SampleMainNodes();
-    void SampleSubNodes();
+    void SampleNodes();
     bool IsValidPoint(FVector2D newPoint) const;
-    FVector2D GenerateRandomPoint(FVector2D center, bool usingMainNodeCenter);
+    FVector2D GenerateRandomPoint(FVector2D center);
+    bool CheckInsideMap(FVector2D newPoint) const;
+
     TArray<FVector2D> m_ActivatedPoint;
-    TArray<FVector2D> m_ActivatedMainPoint;
-    TArray<FVector2D> m_ActivatedSubPoint;
-    bool m_IsGeneratingSubNodes = false;
+    TArray<FVector2D> m_GeneratedNodeSamples;
+    float m_MapSizeX;
+    float m_MapSizeY;
+    float m_ImpactRadius;
+    int m_NodeNum;
+    int m_NumCandidates;
+};
+
+class FMapConstructPoissonDiskWithRegionSampler : public FMapConstructorSampler
+{
+public:
+    FMapConstructPoissonDiskWithRegionSampler(int nodeNum, float nodeImpactRadius, const TArray<FMapConstructRegion>& regions, int numCandidates)
+    {
+        m_MaxRegionNodeNum = nodeNum;
+        m_ImpactRadius = nodeImpactRadius;
+        m_Regions = regions;
+        m_NumCandidates = numCandidates;
+    }
+
+    virtual void RunSampler_Internal() override;
+    virtual void ShowDebug(AActor* mapActor) override;
+    virtual void GetGeneratedNodes(TArray<FVector2D>& nodes) override;
+
+private:
+    void GenerateNodesInsideRegion(FMapConstructRegion region);
+    FVector2D GenerateRandomPoint(FVector2D center);
+    bool IsValidPoint(FVector2D newPoint, FMapConstructRegion region, const TArray<FVector2D>& generatedLocs) const;
+
+    int m_CurRegionNodeNum;
+    int m_MaxRegionNodeNum;
+    float m_ImpactRadius;
+    TArray<FMapConstructRegion> m_Regions;
+    TArray<FVector2D> m_GeneratedNodeSamples;
+    TArray<FVector2D> m_ActivatedNodes;
+    int m_NumCandidates;
+    int m_CurRegionIndex;
 };
 
 class FMapConstructorBestCandidateSampler : public FMapConstructorSampler

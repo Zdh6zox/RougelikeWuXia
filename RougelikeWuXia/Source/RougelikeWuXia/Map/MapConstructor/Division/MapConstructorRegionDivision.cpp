@@ -21,6 +21,17 @@ void FRegionDivision_VoronoiDiagram::GenerateDiagram(int32 RelaxationCycles)
     m_VoronoDiagram->GenerateSites(RelaxationCycles);
 }
 
+void FRegionDivision_VoronoiDiagram::GetGeneratedRegions(TArray<FMapConstructRegion>& generatedRegion)
+{
+    for (auto it(m_VoronoDiagram->GeneratedSites.CreateConstIterator()); it; ++it)
+    {
+        FMapConstructRegion region;
+        region.RegionVertices = it->Value.Vertices;
+        region.RegionCenter = it->Value.Coordinate;
+        generatedRegion.Add(region);
+    }
+}
+
 void FRegionDivision_VoronoiDiagram::GetGeneratedSites(TArray<FVoronoiDiagramGeneratedSite>& generatedSites)
 {
     for (auto it(m_VoronoDiagram->GeneratedSites.CreateConstIterator()); it; ++it)

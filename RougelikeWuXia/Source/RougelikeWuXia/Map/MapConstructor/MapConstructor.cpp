@@ -21,27 +21,29 @@ UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, const FMapConst
 	//m_MapActor = mapActor;
 	//GetConstructUnitsLists();
 
-	m_Sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxMainNodeCount, constructingData.MainNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
-	m_Sampler->RunSampler();
+	FMapConstructPoissonDiskSampler* sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxMainNodeCount, constructingData.MainNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
+	sampler->RunSampler();
 
 	TArray<FVector2D> constructedMainLoc;
-	m_Sampler->GetGeneratedMainNodes(constructedMainLoc);
+	sampler->GetGeneratedNodes(constructedMainLoc);
 	m_GeneratedMainNodeLocs.Append(constructedMainLoc);
-
-	delete m_Sampler;
 
     FRegionDivision_VoronoiDiagram* division = new FRegionDivision_VoronoiDiagram(FBox2D(FVector2D::ZeroVector, FVector2D(constructingData.MapSize.X, constructingData.MapSize.Y)));
     division->AddPointsForDiagramGeneration(m_GeneratedMainNodeLocs);
     division->GenerateDiagram(4);
-    
-    division->GetGeneratedSites(m_GeneratedSites);
+    division->GetGeneratedSites(m_Sites);
+	division->GetGeneratedRegions(m_Regions);
+	m_GeneratedMainNodeLocs.Empty();
+	for (auto& region : m_Regions)
+	{
+		m_GeneratedMainNodeLocs.Add(region.RegionCenter);
+	}
 
-	//m_Sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxSubNodeCount, constructedMainLoc, constructingData.MainNodeRadius,
-	//	constructingData.SubNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
-	//m_Sampler->RunSampler();
-	//TArray<FVector2D> constructedSubLoc;
-	//m_Sampler->GetGeneratedSubNodes(constructedSubLoc);
-	//m_GeneratedSubNodeLocs.Append(constructedSubLoc);
+	FMapConstructPoissonDiskWithRegionSampler* regionSampler = new FMapConstructPoissonDiskWithRegionSampler(constructingData.MaxSubNodeCount, constructingData.SubNodeRadius, m_Regions, 20);
+	regionSampler->RunSampler();
+	TArray<FVector2D> constructedSubLoc;
+	regionSampler->GetGeneratedNodes(constructedSubLoc);
+	m_GeneratedSubNodeLocs.Append(constructedSubLoc);
 
 	m_IsFinished = true;
 	return newMapData;
@@ -66,7 +68,12 @@ void FMapConstructor::GetConstructedSubNodeLocs(TArray<FVector2D>& locs) const
 
 void FMapConstructor::GetGeneratedSites(TArray<FVoronoiDiagramGeneratedSite>& sites) const
 {
-    sites.Append(m_GeneratedSites);
+    sites.Append(m_Sites);
+}
+
+void FMapConstructor::GetGeneratedRegions(TArray<class FMapConstructRegion>& regions) const
+{
+	regions.Append(m_Regions);
 }
 
 void FMapConstructor::ShowDebug(AMainMapActor* mapActor)

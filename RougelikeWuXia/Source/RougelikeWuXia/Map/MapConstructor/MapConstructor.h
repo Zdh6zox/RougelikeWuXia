@@ -6,8 +6,7 @@
 #include "MapConstructData.h"
 #include "Map/MapEnums.h"
 #include "Map/MapNodePreset.h"
-#include "Division/VoronoiDiagram/VoronoiDiagramGeneratedSite.h"
-#include "Division/VoronoiDiagram/VoronoiDiagramGeneratedEdge.h"
+#include "MapConstructRegion.h"
 
 /**
  * 
@@ -51,6 +50,7 @@ public:
 	void GetConstructedMainNodeLocs(TArray<FVector2D>& locs) const;
 	void GetConstructedSubNodeLocs(TArray<FVector2D>& locs) const;
     void GetGeneratedSites(TArray<class FVoronoiDiagramGeneratedSite>& sites) const;
+	void GetGeneratedRegions(TArray<class FMapConstructRegion>& regions) const;
 	bool IsFinished() const { return m_IsFinished; }
 
     void ShowDebug(AMainMapActor* mapActor);
@@ -74,6 +74,7 @@ private:
 	FMapConstructorSampler* m_Sampler = nullptr;
 	TArray<FVector2D> m_GeneratedMainNodeLocs;
 	TArray<FVector2D> m_GeneratedSubNodeLocs;
-    TArray<FVoronoiDiagramGeneratedSite> m_GeneratedSites;
+    TArray<FMapConstructRegion> m_Regions;
+	TArray<FVoronoiDiagramGeneratedSite> m_Sites;
 };
 

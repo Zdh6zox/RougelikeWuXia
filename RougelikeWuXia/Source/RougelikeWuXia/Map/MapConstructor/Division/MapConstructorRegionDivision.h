@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "VoronoiDiagram/VoronoiDiagramGeneratedSite.h"
+#include "Map/MapConstructor/Division/VoronoiDiagram/VoronoiDiagramGeneratedSite.h"
+#include "Map/MapConstructor/Division/VoronoiDiagram/VoronoiDiagramGeneratedEdge.h"
+#include "Map/MapConstructor/MapConstructRegion.h"
 
 class FVoronoiDiagram;
 
@@ -18,6 +20,7 @@ public:
 
     void AddPointsForDiagramGeneration(const TArray<FVector2D>& points);
     void GenerateDiagram(int32 RelaxationCycles);
+    void GetGeneratedRegions(TArray<FMapConstructRegion>& generatedRegion);
     void GetGeneratedSites(TArray<FVoronoiDiagramGeneratedSite>& generatedSites);
 
 private:
