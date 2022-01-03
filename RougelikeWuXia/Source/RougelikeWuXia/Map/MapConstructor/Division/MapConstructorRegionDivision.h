@@ -7,10 +7,16 @@
 #include "Map/MapConstructor/Division/VoronoiDiagram/VoronoiDiagramGeneratedEdge.h"
 #include "Map/MapConstructor/MapConstructRegion.h"
 
+class FMapConstructDebugger;
 class FVoronoiDiagram;
 
 class FMapConstructorRegionDivision
 {
+public:
+    void AttachDebugger(FMapConstructDebugger* debugger);
+
+protected:
+    FMapConstructDebugger* m_Debugger = nullptr;
 };
 
 class FRegionDivision_VoronoiDiagram : public FMapConstructorRegionDivision

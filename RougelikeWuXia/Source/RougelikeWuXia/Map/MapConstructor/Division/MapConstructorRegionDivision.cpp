@@ -4,6 +4,12 @@
 #include "MapConstructorRegionDivision.h"
 #include "RougelikeWuXia.h"
 #include "Map/MapConstructor/Division/VoronoiDiagram/VoronoiDiagram.h"
+#include "Map/MapConstructor/MapConstructDebugger.h"
+
+void FMapConstructorRegionDivision::AttachDebugger(FMapConstructDebugger* debugger)
+{
+    m_Debugger = debugger;
+}
 
 FRegionDivision_VoronoiDiagram::FRegionDivision_VoronoiDiagram(FBox2D InBounds)
 {

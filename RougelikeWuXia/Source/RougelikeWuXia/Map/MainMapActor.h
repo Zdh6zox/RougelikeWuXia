@@ -64,10 +64,13 @@ private:
 
 	void ConstructMap_Actual();
 
+	void TriggerDisplayStep();
+
 	FMapConstructor* m_MapConstructor = nullptr;
 	int m_CurRow;
 	int m_CurColumn;
 	bool m_ShowDebug = false;
+	FTimerHandle m_DebugDisplayTimer;
 };
 
 class FMapConstructAsyncTask : public FNonAbandonableTask

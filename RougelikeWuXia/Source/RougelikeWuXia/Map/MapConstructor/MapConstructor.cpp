@@ -12,8 +12,18 @@
 #include "Engine/DataAsset.h"
 #include "MapConstructorSampler.h"
 #include "Division/MapConstructorRegionDivision.h"
+#include "MapConstructDebugger.h"
 #include "DrawDebugHelpers.h"
 
+FMapConstructor::~FMapConstructor()
+{
+	for (int i = 0; i < m_Debuggers.Num(); ++i)
+	{
+		delete m_Debuggers[i];
+	}
+
+	m_Debuggers.Empty();
+}
 
 UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, const FMapConstructData& constructingData)
 {
@@ -21,14 +31,20 @@ UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, const FMapConst
 	//m_MapActor = mapActor;
 	//GetConstructUnitsLists();
 
+	FMapConstructDebugger* newDebugger1 = new FMapConstructDebugger(EMapConstructPhaseType::GenerateMainCity);
+	m_Debuggers.Add(newDebugger1);
 	FMapConstructPoissonDiskSampler* sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxMainNodeCount, constructingData.MainNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
+	sampler->AttachDebugger(newDebugger1);
 	sampler->RunSampler();
 
 	TArray<FVector2D> constructedMainLoc;
 	sampler->GetGeneratedNodes(constructedMainLoc);
 	m_GeneratedMainNodeLocs.Append(constructedMainLoc);
 
+    FMapConstructDebugger* newDebugger2 = new FMapConstructDebugger(EMapConstructPhaseType::GenerateRegion);
+    m_Debuggers.Add(newDebugger2);
     FRegionDivision_VoronoiDiagram* division = new FRegionDivision_VoronoiDiagram(FBox2D(FVector2D::ZeroVector, FVector2D(constructingData.MapSize.X, constructingData.MapSize.Y)));
+	division->AttachDebugger(newDebugger2);
     division->AddPointsForDiagramGeneration(m_GeneratedMainNodeLocs);
     division->GenerateDiagram(4);
     division->GetGeneratedSites(m_Sites);
@@ -76,8 +92,17 @@ void FMapConstructor::GetGeneratedRegions(TArray<class FMapConstructRegion>& reg
 	regions.Append(m_Regions);
 }
 
-void FMapConstructor::ShowDebug(AMainMapActor* mapActor)
+void FMapConstructor::ShowDebugStep(AMainMapActor* mapActor)
 {
+	//Test
+	for (int i = 0; i < m_Debuggers.Num(); ++i)
+	{
+		if (m_Debuggers[i]->GetPhaseType() == EMapConstructPhaseType::GenerateMainCity)
+		{
+			m_Debuggers[i]->ShowDebug(mapActor->GetWorld(), 16.f, m_CurDisplayStep);
+		}
+	}
+	m_CurDisplayStep++;
 }
 
 void FMapConstructor::GetConstructUnitsLists()

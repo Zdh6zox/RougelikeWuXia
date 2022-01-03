@@ -8,6 +8,7 @@
 #include "DrawDebugHelpers.h"
 #include "MapConstructor/Division/VoronoiDiagram/VoronoiDiagramGeneratedEdge.h"
 #include "MapConstructor/Division/VoronoiDiagram/VoronoiDiagramGeneratedSite.h"
+#include "TimerManager.h"
 
 #pragma optimize("",off)
 // Sets default values
@@ -36,6 +37,11 @@ void AMainMapActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	delete m_MapConstructor;
 }
 
+void AMainMapActor::TriggerDisplayStep()
+{
+	m_MapConstructor->ShowDebugStep(this);
+}
+
 // Called every frame
 void AMainMapActor::Tick(float DeltaTime)
 {
@@ -46,46 +52,48 @@ void AMainMapActor::Tick(float DeltaTime)
 	//	ConstructMap();
 	//}
 
-	if (m_MapConstructor->IsFinished()
-		&& m_ShowDebug)
-	{
-		m_ShowDebug = false;
-        GeneratedMainLocs.Empty();
-        m_MapConstructor->GetConstructedMainNodeLocs(GeneratedMainLocs);
+    if (m_MapConstructor->IsFinished()
+        && m_ShowDebug)
+    {
+        m_ShowDebug = false;
+		GetWorldTimerManager().SetTimer(m_DebugDisplayTimer, this, &AMainMapActor::TriggerDisplayStep, 3.0f, true);
 
-        for (int i = 0; i < GeneratedMainLocs.Num(); ++i)
-        {
-            FVector generatedLoc = GetActorLocation() + FVector(GeneratedMainLocs[i].X, GeneratedMainLocs[i].Y, 0.0f);
-            DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.MainNodeRadius / 4, 8, FColor::Orange, false, 30.f);
-            //DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.MainNodeRadius, 16, FColor::Red, false, 30.f);
-        }
+        //GeneratedMainLocs.Empty();
+        //m_MapConstructor->GetConstructedMainNodeLocs(GeneratedMainLocs);
 
-        GeneratedSubLocs.Empty();
-        m_MapConstructor->GetConstructedSubNodeLocs(GeneratedSubLocs);
+        //for (int i = 0; i < GeneratedMainLocs.Num(); ++i)
+        //{
+        //    FVector generatedLoc = GetActorLocation() + FVector(GeneratedMainLocs[i].X, GeneratedMainLocs[i].Y, 0.0f);
+        //    DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.MainNodeRadius / 4, 8, FColor::Orange, false, 30.f);
+        //    //DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.MainNodeRadius, 16, FColor::Red, false, 30.f);
+        //}
 
-        for (int i = 0; i < GeneratedSubLocs.Num(); ++i)
-        {
-            FVector generatedLoc = GetActorLocation() + FVector(GeneratedSubLocs[i].X, GeneratedSubLocs[i].Y, 0.0f);
-            DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.SubNodeRadius / 4, 8, FColor::Green, false, 30.f);
-            //DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.SubNodeRadius, 16, FColor::Blue, false, 30.f);
-        }
+        //GeneratedSubLocs.Empty();
+        //m_MapConstructor->GetConstructedSubNodeLocs(GeneratedSubLocs);
 
-        TArray<FVoronoiDiagramGeneratedSite> sites;
-        m_MapConstructor->GetGeneratedSites(sites);
+        //for (int i = 0; i < GeneratedSubLocs.Num(); ++i)
+        //{
+        //    FVector generatedLoc = GetActorLocation() + FVector(GeneratedSubLocs[i].X, GeneratedSubLocs[i].Y, 0.0f);
+        //    DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.SubNodeRadius / 4, 8, FColor::Green, false, 30.f);
+        //    //DrawDebugSphere(GetWorld(), generatedLoc, MapConstructData.SubNodeRadius, 16, FColor::Blue, false, 30.f);
+        //}
 
-        for (int i = 0; i < sites.Num(); ++i)
-        {
-            FVector sitsOrigin = GetActorLocation() + FVector(sites[i].Coordinate.X, sites[i].Coordinate.Y, 0.0f);
-            DrawDebugSphere(GetWorld(), sitsOrigin, 5.0f, 10.0f, FColor::Black, false, 30.f);
+        //TArray<FVoronoiDiagramGeneratedSite> sites;
+        //m_MapConstructor->GetGeneratedSites(sites);
 
-            for (int j = 0; j < sites[i].Edges.Num(); ++j)
-            {
-                FVoronoiDiagramGeneratedEdge edge = sites[i].Edges[j];
-                FVector startPos = GetActorLocation() + FVector(edge.LeftEndPoint.X, edge.LeftEndPoint.Y, 0.0f);
-                FVector endPos = GetActorLocation() + FVector(edge.RightEndPoint.X, edge.RightEndPoint.Y, 0.0f);
-                DrawDebugLine(GetWorld(), startPos, endPos, FColor::Blue, false, 30.f, (uint8)'\000', 10.f);
-            }
-        }
+        //for (int i = 0; i < sites.Num(); ++i)
+        //{
+        //    FVector sitsOrigin = GetActorLocation() + FVector(sites[i].Coordinate.X, sites[i].Coordinate.Y, 0.0f);
+        //    DrawDebugSphere(GetWorld(), sitsOrigin, 5.0f, 10.0f, FColor::Black, false, 30.f);
+
+        //    for (int j = 0; j < sites[i].Edges.Num(); ++j)
+        //    {
+        //        FVoronoiDiagramGeneratedEdge edge = sites[i].Edges[j];
+        //        FVector startPos = GetActorLocation() + FVector(edge.LeftEndPoint.X, edge.LeftEndPoint.Y, 0.0f);
+        //        FVector endPos = GetActorLocation() + FVector(edge.RightEndPoint.X, edge.RightEndPoint.Y, 0.0f);
+        //        DrawDebugLine(GetWorld(), startPos, endPos, FColor::Blue, false, 30.f, (uint8)'\000', 10.f);
+        //    }
+        //}
 	}
 }
 

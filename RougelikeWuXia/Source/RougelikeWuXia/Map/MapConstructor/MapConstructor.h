@@ -16,9 +16,12 @@ class UDataTable;
 class AMainMapActor;
 class FMapConstructorSampler;
 class FMapConstructorRegionDivision;
+class FMapConstructDebugger;
 class UWorld;
 
-//TODO: Use Voronoi Diagram to divide region, use generated region as a condition to generate nodes 
+//先生成区域地图：
+//在维诺图生成后，使用泊松盘生成
+//后生成门派，奇遇点
 
 enum ROUGELIKEWUXIA_API EMapConstructorSampleMethodType
 {
@@ -31,6 +34,7 @@ class ROUGELIKEWUXIA_API FMapConstructor
 {
 public:
 	UMapData* ConstructMap(AMainMapActor* mapActor, const FMapConstructData& constructingData);
+	~FMapConstructor();
 
 	struct FMapNodeLocation
 	{
@@ -53,7 +57,7 @@ public:
 	void GetGeneratedRegions(TArray<class FMapConstructRegion>& regions) const;
 	bool IsFinished() const { return m_IsFinished; }
 
-    void ShowDebug(AMainMapActor* mapActor);
+    void ShowDebugStep(AMainMapActor* mapActor);
 
 private:
 	void GetConstructUnitsLists();
@@ -76,5 +80,8 @@ private:
 	TArray<FVector2D> m_GeneratedSubNodeLocs;
     TArray<FMapConstructRegion> m_Regions;
 	TArray<FVoronoiDiagramGeneratedSite> m_Sites;
+
+	TArray<FMapConstructDebugger*> m_Debuggers;
+	int m_CurDisplayStep = 0;
 };
 

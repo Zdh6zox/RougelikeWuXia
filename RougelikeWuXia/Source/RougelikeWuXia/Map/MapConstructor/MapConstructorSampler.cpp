@@ -3,6 +3,7 @@
 
 #include "MapConstructorSampler.h"
 #include "DrawDebugHelpers.h"
+#include "MapConstructDebugger.h"
 
 #pragma optimize("",off)
 bool FMapConstructPoissonDiskSampler::CheckInsideMap(FVector2D newPoint) const
@@ -44,6 +45,14 @@ void FMapConstructPoissonDiskSampler::SampleNodes()
     {
         float ranX = FMath::RandRange(0.0, m_MapSizeX);
         float ranY = FMath::RandRange(0.0, m_MapSizeY);
+
+        FMapConstructDebugLog* newLog = new FMapConstructDebugLog();
+        newLog->ImportanceType = Main;
+        newLog->LogType = Sphere;
+        newLog->DebugLocation1 = FVector(ranX, ranY, 0.0f);
+        newLog->DebugFloat1 = m_ImpactRadius;
+        m_Debugger->AddDebugLog(newLog,true);
+
         m_GeneratedNodeSamples.Add(FVector2D(ranX, ranY));
         m_ActivatedPoint.Add(FVector2D(ranX, ranY));
     }
@@ -61,6 +70,13 @@ void FMapConstructPoissonDiskSampler::SampleNodes()
             FVector2D newCandidate = GenerateRandomPoint(activatedPoint);
             if (IsValidPoint(newCandidate))
             {
+                FMapConstructDebugLog* newLog = new FMapConstructDebugLog();
+                newLog->ImportanceType = Main;
+                newLog->LogType = Sphere;
+                newLog->DebugLocation1 = FVector(newCandidate.X, newCandidate.Y, 0.0f);
+                newLog->DebugFloat1 = m_ImpactRadius;
+                m_Debugger->AddDebugLog(newLog,true);
+
                 m_ActivatedPoint.Add(newCandidate);
                 m_GeneratedNodeSamples.Add(newCandidate);
                 break;
@@ -80,6 +96,13 @@ bool FMapConstructPoissonDiskSampler::IsValidPoint(FVector2D newPoint) const
 {
     if (!CheckInsideMap(newPoint))
     {
+        FMapConstructDebugLog* newLog = new FMapConstructDebugLog();
+        newLog->ImportanceType = ErrorLog;
+        newLog->LogType = Sphere;
+        newLog->DebugLocation1 = FVector(newPoint.X, newPoint.Y, 0.0f);
+        newLog->DebugFloat1 = m_ImpactRadius;
+        m_Debugger->AddDebugLog(newLog,false);
+
         return false;
     }
 
@@ -90,16 +113,25 @@ bool FMapConstructPoissonDiskSampler::IsValidPoint(FVector2D newPoint) const
         float distance = FVector2D::Distance(testingPoint, newPoint);
         if (distance <= m_ImpactRadius)
         {
+            FMapConstructDebugLog* newLog = new FMapConstructDebugLog();
+            newLog->ImportanceType = ErrorLog;
+            newLog->LogType = Sphere;
+            newLog->DebugLocation1 = FVector(newPoint.X, newPoint.Y, 0.0f);
+            newLog->DebugFloat1 = m_ImpactRadius;
+            m_Debugger->AddDebugLog(newLog,false);
+
+            FMapConstructDebugLog* newLog2 = new FMapConstructDebugLog();
+            newLog2->ImportanceType = ErrorLog;
+            newLog2->LogType = Sphere;
+            newLog2->DebugLocation1 = FVector(testingPoint.X, testingPoint.Y, 0.0f);
+            newLog2->DebugFloat1 = m_ImpactRadius;
+            m_Debugger->AddDebugLog(newLog2,false);
+
             return false;
         }
     }
 
     return true;
-}
-
-void FMapConstructPoissonDiskSampler::ShowDebug(AActor* mapActor)
-{
-
 }
 
 void FMapConstructPoissonDiskWithRegionSampler::RunSampler_Internal()
@@ -186,11 +218,6 @@ FVector2D FMapConstructPoissonDiskWithRegionSampler::GenerateRandomPoint(FVector
     return center + randomVec * randomRadius;
 }
 
-void FMapConstructPoissonDiskWithRegionSampler::ShowDebug(AActor* mapActor)
-{
-
-}
-
 void FMapConstructPoissonDiskWithRegionSampler::GetGeneratedNodes(TArray<FVector2D>& nodes)
 {
     nodes = m_GeneratedNodeSamples;
@@ -201,19 +228,7 @@ void FMapConstructorBestCandidateSampler::RunSampler_Internal()
 
 }
 
-void FMapConstructorBestCandidateSampler::ShowDebug(AActor* mapActor)
-{
-
-}
-
-
-
 void FMapConstructorRandomSampler::RunSampler_Internal()
-{
-
-}
-
-void FMapConstructorRandomSampler::ShowDebug(AActor* mapActor)
 {
 
 }

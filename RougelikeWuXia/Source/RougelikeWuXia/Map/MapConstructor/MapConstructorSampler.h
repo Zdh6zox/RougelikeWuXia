@@ -15,12 +15,13 @@ public:
     virtual void GetGeneratedNodes(TArray<FVector2D>& nodes) {}
     void RunSampler() { RunSampler_Internal(); }
     bool IsFinished() const { return m_IsFinished; }
-    virtual void ShowDebug(AActor* mapActor) = 0;
+    void AttachDebugger(FMapConstructDebugger* debugger) { m_Debugger = debugger; }
 
     virtual void RunSampler_Internal() = 0;
 
 protected:
     bool m_IsFinished = false;
+    FMapConstructDebugger* m_Debugger = nullptr;
 };
 
 class FMapConstructPoissonDiskSampler : public FMapConstructorSampler
@@ -36,7 +37,6 @@ public:
     }
 
     virtual void RunSampler_Internal() override;
-    virtual void ShowDebug(AActor* mapActor) override;
     virtual void GetGeneratedNodes(TArray<FVector2D>& nodes) override;
 
 private:
@@ -66,7 +66,6 @@ public:
     }
 
     virtual void RunSampler_Internal() override;
-    virtual void ShowDebug(AActor* mapActor) override;
     virtual void GetGeneratedNodes(TArray<FVector2D>& nodes) override;
 
 private:
@@ -88,14 +87,12 @@ class FMapConstructorBestCandidateSampler : public FMapConstructorSampler
 {
 public:
     virtual void RunSampler_Internal() override;
-    virtual void ShowDebug(AActor* mapActor) override;
 };
 
 class FMapConstructorRandomSampler : public FMapConstructorSampler
 {
 public:
     virtual void RunSampler_Internal() override;
-    virtual void ShowDebug(AActor* mapActor) override;
 };
 
 class FCells
