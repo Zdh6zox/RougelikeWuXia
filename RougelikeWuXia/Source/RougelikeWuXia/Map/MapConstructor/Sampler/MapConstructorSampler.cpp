@@ -3,7 +3,7 @@
 
 #include "MapConstructorSampler.h"
 #include "DrawDebugHelpers.h"
-#include "MapConstructDebugger.h"
+#include "Map/MapConstructor/MapConstructDebugger.h"
 
 #pragma optimize("",off)
 bool FMapConstructPoissonDiskSampler::CheckInsideMap(FVector2D newPoint) const

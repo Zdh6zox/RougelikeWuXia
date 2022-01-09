@@ -35,11 +35,6 @@ void FMapConstructDebugger::ShowDebug(const UWorld* world, float debugExistTime,
             break;
         }
 
-        if (m_DebugLogs[i]->ImportanceType == Period)
-        {
-            break;
-        }
-
         FColor debugColor;
         float existingTime = debugExistTime;
         switch (m_DebugLogs[i]->ImportanceType)
@@ -54,9 +49,6 @@ void FMapConstructDebugger::ShowDebug(const UWorld* world, float debugExistTime,
         case EMapConstructLogImportanceType::ErrorLog:
             debugColor = FColor::Red;
             existingTime = 1.0f;
-            break;
-        case EMapConstructLogImportanceType::Period:
-            debugColor = FColor::Orange;
             break;
         default:
             debugColor = FColor::Black;

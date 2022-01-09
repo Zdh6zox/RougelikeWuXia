@@ -10,7 +10,7 @@
 #include "Map/MapNodePreset.h"
 #include "Engine/DataTable.h"
 #include "Engine/DataAsset.h"
-#include "MapConstructorSampler.h"
+#include "Sampler/MapConstructorSampler.h"
 #include "Division/MapConstructorRegionDivision.h"
 #include "MapConstructDebugger.h"
 #include "DrawDebugHelpers.h"

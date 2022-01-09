@@ -31,8 +31,7 @@ enum EMapConstructLogImportanceType
 {
     Main,
     Procedure,
-    ErrorLog,
-    Period
+    ErrorLog
 };
 
 class FMapConstructDebugLog
@@ -46,6 +45,7 @@ public:
     float DebugFloat1;
     float DebugFloat2;
     int Step;
+    int SubStep;
 };
 
 //TODO:
