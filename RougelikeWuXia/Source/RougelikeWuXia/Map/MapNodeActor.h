@@ -8,6 +8,7 @@
 
 class UPaperSpriteComponent;
 class UMapNode;
+class UTextRenderComponent;
 UCLASS(abstract)
 class ROUGELIKEWUXIA_API AMapNodeActor : public AActor
 {
@@ -22,6 +23,18 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UPaperSpriteComponent* SpriteComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		UTextRenderComponent* TextRenderer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FString ActorName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float TextSize = 50.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FTransform OffsetTransform;
 
 	UPROPERTY()
 		UMapNode* Node;

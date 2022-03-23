@@ -3,6 +3,7 @@
 
 #include "MapNodeActor.h"
 #include "Paper2D/Classes/PaperSpriteComponent.h"
+#include "Engine/Classes/Components/TextRenderComponent.h"
 #include "MapNode.h"
 #include "DrawDebugHelpers.h"
 #include "EngineUtils.h"
@@ -19,6 +20,10 @@ AMapNodeActor::AMapNodeActor()
 
 	SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>("NodeSprite");
 	SpriteComponent->SetupAttachment(CustomRoot);
+
+	TextRenderer = CreateDefaultSubobject<UTextRenderComponent>("TextRenderer");
+	TextRenderer->SetVerticalAlignment(EVRTA_TextCenter);
+	TextRenderer->SetupAttachment(CustomRoot);
 }
 
 // Called when the game starts or when spawned
@@ -26,6 +31,11 @@ void AMapNodeActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	TextRenderer->SetWorldSize(50.0f);
+	TextRenderer->SetRelativeTransform(OffsetTransform);
+	TextRenderer->SetText(ActorName);
+
+	SpriteComponent->SetRelativeTransform(OffsetTransform);
 }
 
 // Called every frame
