@@ -12,8 +12,6 @@ class FVoronoiDiagramGeneratedSite
 public:
     FVoronoiDiagramGeneratedSite(int32 InIndex, FVector2D InCoordinate, FVector2D InCentroid, FColor InColor, bool InIsCorner, bool InIsEdge);
 
-    FMapConstructRegion ConstructRegion();
-
     int32 Index;
     FColor Color;
     FVector2D Coordinate;

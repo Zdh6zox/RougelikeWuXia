@@ -21,10 +21,7 @@ void AMainMapActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//Test PossionDiskSampling
 	m_MapConstructor = new FMapConstructor();
-
-	ConstructMap();
 
 	m_ShowDebug = true;
 }
@@ -94,18 +91,6 @@ void AMainMapActor::Tick(float DeltaTime)
 	}
 }
 
-void AMainMapActor::ConstructMap()
-{
-	//MapData = m_MapConstructor.ConstructMap(MapConstructData);
-
-	//Create Async Task to construct map
-	auto task = new FAutoDeleteAsyncTask<FMapConstructAsyncTask>(this);
-	if (task)
-	{
-		task->StartBackgroundTask();
-	}
-}
-
 void AMainMapActor::ConstructMap_Actual()
 {
 	////fill main map with blocks according to parameters
@@ -158,7 +143,27 @@ void AMainMapActor::ConstructMap_Actual()
 	
 }
 
-void AMainMapActor::LoadConstructedMap()
+void AMainMapActor::DebugGenMainCityLocs()
+{
+	m_MapConstructor->GenerateMainCityLocations(this, MapConstructData);
+}
+
+void AMainMapActor::DebugDividRegion()
+{
+	m_MapConstructor->DividRegion(this,MapConstructData);
+}
+
+void AMainMapActor::DebugGenSubNodesLocs()
+{
+	m_MapConstructor->GenerateSubNodesLocations(this,MapConstructData);
+}
+
+void AMainMapActor::DebugGenLinks()
+{
+	m_MapConstructor->GenerateLinks(this,MapConstructData);
+}
+
+void AMainMapActor::DebugSpawnActors()
 {
 
 }

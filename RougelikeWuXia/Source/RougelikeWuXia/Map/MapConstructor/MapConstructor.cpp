@@ -11,7 +11,6 @@
 #include "Engine/DataTable.h"
 #include "Engine/DataAsset.h"
 #include "Sampler/MapConstructorSampler.h"
-#include "Division/MapConstructorRegionDivision.h"
 #include "MapConstructDebugger.h"
 #include "DrawDebugHelpers.h"
 
@@ -31,38 +30,86 @@ UMapData* FMapConstructor::ConstructMap(AMainMapActor* mapActor, const FMapConst
 	//m_MapActor = mapActor;
 	//GetConstructUnitsLists();
 
-	FMapConstructDebugger* newDebugger1 = new FMapConstructDebugger(EMapConstructPhaseType::GenerateMainCity);
-	m_Debuggers.Add(newDebugger1);
-	FMapConstructPoissonDiskSampler* sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxMainNodeCount, constructingData.MainNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
-	sampler->AttachDebugger(newDebugger1);
-	sampler->RunSampler();
+	GenerateMainCityLocations(mapActor,constructingData);
 
-	TArray<FVector2D> constructedMainLoc;
-	sampler->GetGeneratedNodes(constructedMainLoc);
-	m_GeneratedMainNodeLocs.Append(constructedMainLoc);
+	DividRegion(mapActor, constructingData);
 
-    FMapConstructDebugger* newDebugger2 = new FMapConstructDebugger(EMapConstructPhaseType::GenerateRegion);
-    m_Debuggers.Add(newDebugger2);
-    FRegionDivision_VoronoiDiagram* division = new FRegionDivision_VoronoiDiagram(FBox2D(FVector2D::ZeroVector, FVector2D(constructingData.MapSize.X, constructingData.MapSize.Y)));
-	division->AttachDebugger(newDebugger2);
-    division->AddPointsForDiagramGeneration(m_GeneratedMainNodeLocs);
-    division->GenerateDiagram(4);
-    division->GetGeneratedSites(m_Sites);
-	division->GetGeneratedRegions(m_Regions);
-	m_GeneratedMainNodeLocs.Empty();
-	for (auto& region : m_Regions)
-	{
-		m_GeneratedMainNodeLocs.Add(region.RegionCenter);
-	}
+	GenerateSubNodesLocations(mapActor,constructingData);
 
-	FMapConstructPoissonDiskWithRegionSampler* regionSampler = new FMapConstructPoissonDiskWithRegionSampler(constructingData.MaxSubNodeCount, constructingData.SubNodeRadius, m_Regions, 20);
-	regionSampler->RunSampler();
-	TArray<FVector2D> constructedSubLoc;
-	regionSampler->GetGeneratedNodes(constructedSubLoc);
-	m_GeneratedSubNodeLocs.Append(constructedSubLoc);
+	GenerateLinks(mapActor,constructingData);
 
 	m_IsFinished = true;
 	return newMapData;
+}
+
+void FMapConstructor::GenerateMainCityLocations(AMainMapActor* mapActor, const FMapConstructData& constructingData)
+{
+	m_GeneratedMainNodeLocs.Empty();
+    FMapConstructDebugger* newDebugger1 = new FMapConstructDebugger(EMapConstructPhaseType::GenerateMainCity);
+    m_Debuggers.Add(newDebugger1);
+    FMapConstructPoissonDiskSampler* sampler = new FMapConstructPoissonDiskSampler(constructingData.MaxMainNodeCount, constructingData.MainNodeRadius, constructingData.MapSize.X, constructingData.MapSize.Y, 20);
+    sampler->AttachDebugger(newDebugger1);
+    sampler->RunSampler();
+
+    TArray<FVector2D> constructedMainLoc;
+    sampler->GetGeneratedNodes(constructedMainLoc);
+    m_GeneratedMainNodeLocs.Append(constructedMainLoc);
+
+	m_CurPhase = MainLocsGenerated;
+}
+
+void FMapConstructor::DividRegion(AMainMapActor* mapActor, const FMapConstructData& constructingData)
+{
+	if (m_CurPhase == NotStarted)
+	{
+		UE_LOG(LogMainMapConstruct, Error, TEXT("Cannot Divid Region without main city location generated"));
+		return;
+	}
+
+	m_Regions.Empty();
+    FMapConstructDebugger* newDebugger2 = new FMapConstructDebugger(EMapConstructPhaseType::GenerateRegion);
+    m_Debuggers.Add(newDebugger2);
+    FRegionDivision_VoronoiDiagram* division = new FRegionDivision_VoronoiDiagram(FBox2D(FVector2D::ZeroVector, FVector2D(constructingData.MapSize.X, constructingData.MapSize.Y)));
+    division->AttachDebugger(newDebugger2);
+    division->AddPointsForDiagramGeneration(m_GeneratedMainNodeLocs);
+    division->GenerateDiagram(4);
+    division->GetGeneratedSites(m_Sites);
+    division->GetGeneratedRegions(m_Regions);
+
+	m_CurPhase = RegionDivided;
+}
+
+void FMapConstructor::GenerateSubNodesLocations(AMainMapActor* mapActor, const FMapConstructData& constructingData)
+{
+    if (m_CurPhase == NotStarted
+	|| m_CurPhase == MainLocsGenerated)
+    {
+        UE_LOG(LogMainMapConstruct, Error, TEXT("Cannot Generate Sub locations without region divided"));
+        return;
+    }
+
+	m_GeneratedSubNodeLocs.Empty();
+    FMapConstructPoissonDiskWithRegionSampler* regionSampler = new FMapConstructPoissonDiskWithRegionSampler(constructingData.MaxSubNodeCount, constructingData.SubNodeRadius, m_Regions, 20);
+    regionSampler->RunSampler();
+    TArray<FVector2D> constructedSubLoc;
+    regionSampler->GetGeneratedNodes(constructedSubLoc);
+    m_GeneratedSubNodeLocs.Append(constructedSubLoc);
+
+	m_CurPhase = SubLocsGenerated;
+}
+
+void FMapConstructor::GenerateLinks(AMainMapActor* mapActor, const FMapConstructData& constructingData)
+{
+    if (m_CurPhase == NotStarted
+	||m_CurPhase == MainLocsGenerated
+	|| m_CurPhase == RegionDivided)
+    {
+        UE_LOG(LogMainMapConstruct, Error, TEXT("Cannot Generate links without sub locations generated"));
+        return;
+    }
+
+	UE_LOG(LogMainMapConstruct, Error, TEXT("Generate Link not implemented yet"));
+	return;
 }
 
 void FMapConstructor::GetConstructedNodeLoc(TArray<FVector2D>& locs) const
@@ -80,11 +127,6 @@ void FMapConstructor::GetConstructedMainNodeLocs(TArray<FVector2D>& locs) const
 void FMapConstructor::GetConstructedSubNodeLocs(TArray<FVector2D>& locs) const
 {
 	locs.Append(m_GeneratedSubNodeLocs);
-}
-
-void FMapConstructor::GetGeneratedSites(TArray<FVoronoiDiagramGeneratedSite>& sites) const
-{
-    sites.Append(m_Sites);
 }
 
 void FMapConstructor::GetGeneratedRegions(TArray<class FMapConstructRegion>& regions) const

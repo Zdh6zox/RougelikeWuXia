@@ -52,11 +52,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(CallInEditor, BlueprintCallable)
-		void ConstructMap();
-
 	UFUNCTION(BlueprintCallable)
-		void LoadConstructedMap();
+		void DebugGenMainCityLocs();
+
+    UFUNCTION(BlueprintCallable)
+        void DebugDividRegion();
+
+    UFUNCTION(BlueprintCallable)
+        void DebugGenSubNodesLocs();
+
+    UFUNCTION(BlueprintCallable)
+        void DebugSpawnActors();
+
+    UFUNCTION(BlueprintCallable)
+        void DebugGenLinks();
 
 private:
 	UPROPERTY(Transient)
