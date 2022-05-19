@@ -3,6 +3,10 @@
 /RougelikeWuXia/Saved/*
 /RougelikeWuXia/Content/StarterContent/*
 /RougelikeWuXia/.vs/*
+/RougelikeWuXia/Plugins/RandomGenerator/Binaries/*
+/RougelikeWuXia/Plugins/RandomGenerator/Intermediate/*
+/RougelikeWuXia/Plugins/MapGenerator/Binaries/*
+/RougelikeWuXia/Plugins/MapGenerator/Intermediate/*
 *.orig
 *.sln
 *.gif
