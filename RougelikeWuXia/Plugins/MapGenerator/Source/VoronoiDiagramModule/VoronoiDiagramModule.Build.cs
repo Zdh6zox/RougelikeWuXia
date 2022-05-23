@@ -2,15 +2,16 @@
 
 using UnrealBuildTool;
 
-public class MapGenerator : ModuleRules
+public class VoronoiDiagramModule : ModuleRules
 {
-	public MapGenerator(ReadOnlyTargetRules Target) : base(Target)
+	public VoronoiDiagramModule(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
+				"VoronoiDiagramModule/Public"
 			}
 			);
 				
@@ -18,6 +19,7 @@ public class MapGenerator : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
+				"VoronoiDiagramModule/Private"
 			}
 			);
 			
@@ -26,8 +28,6 @@ public class MapGenerator : ModuleRules
 			new string[]
 			{
 				"Core",
-				"RandomGenerator",
-				"VoronoiDiagramModule"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

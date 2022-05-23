@@ -94,7 +94,7 @@ private:
 	TArray<FVector2D> m_GeneratedMainNodeLocs;
 	TArray<FVector2D> m_GeneratedSubNodeLocs;
     TArray<class FMapConstructRegion> m_Regions;
-	TArray<class FVoronoiDiagramGeneratedSite> m_Sites;
+	//TArray<class FVoronoiDiagramGeneratedSite> m_Sites;
 
 	TArray<FMapConstructDebugger*> m_Debuggers;
 	int m_CurDisplayStep = 0;

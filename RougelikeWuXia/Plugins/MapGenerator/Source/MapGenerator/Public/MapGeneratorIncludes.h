@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-
-/**
- * 
- */
+#include "MapGenerator2DSetting.h"
+#include "Map2DGenerationResult.h"
+#include "MapGeneratorFacade.h"

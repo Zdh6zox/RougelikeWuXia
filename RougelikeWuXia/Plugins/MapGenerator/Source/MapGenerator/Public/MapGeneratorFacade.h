@@ -3,15 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
+#include "MapGenerator2DSetting.h"
+#include "Map2DGenerationResult.h"
 /**
  * 
  */
 class MAPGENERATOR_API FMapGeneratorFacade
 {
 public:
-    static void Generate2DMapPOILocation();
-    static void Generate2DMapPathes();
-    static void Generate3DMapPOILocation();
-    static void Generate3DMapPathes();
+    static void Generate2DMapPOIAndLinks(const FMapGenerator2DSetting& generationSetting, FMap2DGenerationResult& generationResult);
 };

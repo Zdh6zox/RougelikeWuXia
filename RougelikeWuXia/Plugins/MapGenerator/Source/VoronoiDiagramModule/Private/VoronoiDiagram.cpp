@@ -4,7 +4,6 @@
 #include "VoronoiDiagram.h"
 
 #include "ImageUtils.h"
-#include "RougelikeWuXia.h"
 
 FVoronoiDiagram::FVoronoiDiagram(FBox2D InBounds)
     : Bounds(InBounds)
@@ -19,8 +18,8 @@ bool FVoronoiDiagram::AddPoints(const TArray<FVector2D>& Points)
         FVector2D CurrentPoint = *Itr;
         if (!Bounds.IsInside(CurrentPoint))
         {
-            UE_LOG(LogMainMapConstruct, Error, TEXT("Point (%i, %i) out of diagram bounds min(%i, %i) max(&i, %i)"),
-                CurrentPoint.X, CurrentPoint.Y, Bounds.Min.X, Bounds.Min.Y, Bounds.Max.X, Bounds.Max.Y);
+            //UE_LOG(LogMainMapConstruct, Error, TEXT("Point (%i, %i) out of diagram bounds min(%i, %i) max(&i, %i)"),
+            //    CurrentPoint.X, CurrentPoint.Y, Bounds.Min.X, Bounds.Min.Y, Bounds.Max.X, Bounds.Max.Y);
             return false;
         }
     }
@@ -38,7 +37,7 @@ void FVoronoiDiagram::GenerateSites(int32 RelaxationCycles)
 {
     if (OriginalSites.Num() == 0)
     {
-        UE_LOG(LogMainMapConstruct, Error, TEXT("No points added to the diagram.  Sites cannot be generated"));
+        //UE_LOG(LogMainMapConstruct, Error, TEXT("No points added to the diagram.  Sites cannot be generated"));
         return;
     }
 
@@ -276,7 +275,7 @@ void FVoronoiDiagram::GenerateSites(int32 RelaxationCycles)
 
             if (!Bounds.IsInside(currentSite.Centroid))
             {
-                UE_LOG(LogMainMapConstruct, Error, TEXT("Centroid point outside of diagram bounds"));
+                //UE_LOG(LogMainMapConstruct, Error, TEXT("Centroid point outside of diagram bounds"));
                 return;
             }
 

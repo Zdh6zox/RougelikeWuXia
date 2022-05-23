@@ -66,17 +66,17 @@ void FMapConstructor::DividRegion(AMainMapActor* mapActor, const FMapConstructDa
 		return;
 	}
 
-	m_Regions.Empty();
-    FMapConstructDebugger* newDebugger2 = new FMapConstructDebugger(EMapConstructPhaseType::GenerateRegion);
-    m_Debuggers.Add(newDebugger2);
-    FRegionDivision_VoronoiDiagram* division = new FRegionDivision_VoronoiDiagram(FBox2D(FVector2D::ZeroVector, FVector2D(constructingData.MapSize.X, constructingData.MapSize.Y)));
-    division->AttachDebugger(newDebugger2);
-    division->AddPointsForDiagramGeneration(m_GeneratedMainNodeLocs);
-    division->GenerateDiagram(4);
-    division->GetGeneratedSites(m_Sites);
-    division->GetGeneratedRegions(m_Regions);
+	//m_Regions.Empty();
+ //   FMapConstructDebugger* newDebugger2 = new FMapConstructDebugger(EMapConstructPhaseType::GenerateRegion);
+ //   m_Debuggers.Add(newDebugger2);
+ //   FRegionDivision_VoronoiDiagram* division = new FRegionDivision_VoronoiDiagram(FBox2D(FVector2D::ZeroVector, FVector2D(constructingData.MapSize.X, constructingData.MapSize.Y)));
+ //   division->AttachDebugger(newDebugger2);
+ //   division->AddPointsForDiagramGeneration(m_GeneratedMainNodeLocs);
+ //   division->GenerateDiagram(4);
+ //   division->GetGeneratedSites(m_Sites);
+ //   division->GetGeneratedRegions(m_Regions);
 
-	m_CurPhase = RegionDivided;
+	//m_CurPhase = RegionDivided;
 }
 
 void FMapConstructor::GenerateSubNodesLocations(AMainMapActor* mapActor, const FMapConstructData& constructingData)
@@ -88,14 +88,14 @@ void FMapConstructor::GenerateSubNodesLocations(AMainMapActor* mapActor, const F
         return;
     }
 
-	m_GeneratedSubNodeLocs.Empty();
+    m_GeneratedSubNodeLocs.Empty();
     FMapConstructPoissonDiskWithRegionSampler* regionSampler = new FMapConstructPoissonDiskWithRegionSampler(constructingData.MaxSubNodeCount, constructingData.SubNodeRadius, m_Regions, 20);
     regionSampler->RunSampler();
     TArray<FVector2D> constructedSubLoc;
     regionSampler->GetGeneratedNodes(constructedSubLoc);
     m_GeneratedSubNodeLocs.Append(constructedSubLoc);
 
-	m_CurPhase = SubLocsGenerated;
+    m_CurPhase = SubLocsGenerated;
 }
 
 void FMapConstructor::GenerateLinks(AMainMapActor* mapActor, const FMapConstructData& constructingData)

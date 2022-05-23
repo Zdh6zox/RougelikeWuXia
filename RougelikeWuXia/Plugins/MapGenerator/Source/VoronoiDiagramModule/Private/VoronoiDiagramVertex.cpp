@@ -5,7 +5,7 @@
 #include "VoronoiDiagramEdge.h"
 #include "VoronoiDiagramSite.h"
 #include "VoronoiDiagramHalfEdge.h"
-#include "RougelikeWuXia.h"
+//#include "RougelikeWuXia.h"
 
 TSharedPtr<FVoronoiDiagramVertex, ESPMode::ThreadSafe> FVoronoiDiagramVertex::CreatePtr(int32 Index, FVector2D Coordinate)
 {
@@ -77,7 +77,7 @@ FVoronoiDiagramVertex::FVoronoiDiagramVertex(int32 InIndex, FVector2D InCoordina
     if (Coordinate.X != Coordinate.X || Coordinate.Y != Coordinate.Y)
     {
         // This probably should not happen, but it will alert in the logs if it does
-        UE_LOG(LogMainMapConstruct, Error, TEXT("Contains NaN"));
+        //UE_LOG(LogMainMapConstruct, Error, TEXT("Contains NaN"));
     }
 }
 
