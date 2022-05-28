@@ -7,17 +7,21 @@ public class MapGenerator : ModuleRules
 	public MapGenerator(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
+
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
+				System.IO.Path.Combine(ModuleDirectory,"Public/Map2DProperty"),
+				System.IO.Path.Combine(ModuleDirectory,"Public/Division")
 			}
-			);
+			) ;
 				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
+				System.IO.Path.Combine(ModuleDirectory,"Private/Map2DProperty"),
+				System.IO.Path.Combine(ModuleDirectory,"Private/Division")
 			}
 			);
 			
