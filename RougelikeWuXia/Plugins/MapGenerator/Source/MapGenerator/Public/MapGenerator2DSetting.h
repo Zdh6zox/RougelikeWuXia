@@ -23,5 +23,11 @@ public:
         int MainNodeCount;
 
     UPROPERTY(EditAnywhere)
+        float MainNodeImpactRadius;
+
+    UPROPERTY(EditAnywhere)
         int SubNodeCount;
+
+    UPROPERTY(EditAnywhere)
+        float SubNodeImpactRadius;
 };
