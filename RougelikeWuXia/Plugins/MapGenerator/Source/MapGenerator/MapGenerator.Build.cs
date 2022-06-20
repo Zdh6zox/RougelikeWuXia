@@ -46,6 +46,7 @@ public class MapGenerator : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"VoronoiDiagramModule"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -8,9 +8,9 @@
 /**
  * 
  */
-class FMap2DDivisionParameters;
 class MAPGENERATOR_API IMapGeneratorRegionDivider
 {
 public:
-    virtual void Divide2DMap(FMap2DDivisionParameters divisionParams, TArray<FMap2DRegion>& generatedRegions) const = 0;
+    virtual ~IMapGeneratorRegionDivider() {}
+    virtual void Divide2DMap(const FMap2DDivisionParameters& divisionParams, TArray<FMap2DRegion>& generatedRegions) const = 0;
 };

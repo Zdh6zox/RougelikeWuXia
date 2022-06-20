@@ -30,4 +30,7 @@ public:
 
     UPROPERTY(EditAnywhere)
         float SubNodeImpactRadius;
+
+    UPROPERTY(EditAnywhere)
+        int IterationCandidateNum;
 };

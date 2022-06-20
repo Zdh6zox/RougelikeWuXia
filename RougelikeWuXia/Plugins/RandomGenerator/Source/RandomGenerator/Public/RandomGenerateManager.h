@@ -23,7 +23,11 @@ public:
     void Initialize();
     void SetSeed(int32 newSeed);
     int32 GetCurrentSeed() const;
+
+    //[min,max]
     int32 RandRange_Int(int32 min, int32 max, ERandomMethodType method = ERandomMethodType::Normal);
+
+    //[min,max)
     float RandRange_Float(float min, float max, ERandomMethodType method = ERandomMethodType::Normal);
     bool Rand_Bool(ERandomMethodType method = ERandomMethodType::Normal);
     FVector Rand_UnitVec(ERandomMethodType method = ERandomMethodType::Normal);

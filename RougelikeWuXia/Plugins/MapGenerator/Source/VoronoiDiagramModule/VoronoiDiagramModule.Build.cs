@@ -11,7 +11,8 @@ public class VoronoiDiagramModule : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-				"VoronoiDiagramModule/Public"
+				System.IO.Path.Combine(ModuleDirectory,"Public"),
+				System.IO.Path.Combine(ModuleDirectory,"Private")
 			}
 			);
 				
@@ -19,7 +20,7 @@ public class VoronoiDiagramModule : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
-				"VoronoiDiagramModule/Private"
+				System.IO.Path.Combine(ModuleDirectory,"Private")
 			}
 			);
 			

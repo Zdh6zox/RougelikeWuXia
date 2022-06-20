@@ -302,7 +302,7 @@ public:
 /*
  *  Generates Voronoi Diagram from a set of provided points
  */
-class FVoronoiDiagram
+class VORONOIDIAGRAMMODULE_API FVoronoiDiagram
 {
 public:
     /*

@@ -21,8 +21,16 @@ public:
         m_Width = width;
     }
 
-    bool IsInsideMap(FVector2D relativePos, bool includingBorder = false) const;
+    //FMap2DBorder& operator= (const FMap2DBorder& rhs)
+    //{
+    //    m_Length = rhs.GetMapLength();
+    //    m_Width = rhs.GetMapWidth();
+    //    return *this;
+    //}
 
+    bool IsInsideMap(FVector2D relativePos, bool includingBorder = false) const;
+    float GetMapLength() const { return m_Length; }
+    float GetMapWidth() const { return m_Width; }
 private:
     float m_Length;
     float m_Width;
