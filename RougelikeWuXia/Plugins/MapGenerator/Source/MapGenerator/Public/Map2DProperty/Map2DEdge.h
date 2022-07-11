@@ -27,6 +27,8 @@ public:
 	FVector2D GetStartPos() const { return m_StartPos; }
 	FVector2D GetEndPos() const { return m_EndPos; }
 
+	void DebugDisplayEdge(UWorld* currentWorld, FVector2D originalLoc, FColor edgeColor) const;
+
 private:
 	FVector2D m_StartPos;
 	FVector2D m_EndPos;

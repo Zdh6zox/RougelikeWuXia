@@ -10,9 +10,10 @@
 class FMap2DSampler_PoissonDisk : public IMapGenerationSampler
 {
 public:
+    FMap2DSampler_PoissonDisk(){}
     ~FMap2DSampler_PoissonDisk() override {}
-    void SampleIn2DMap(const FMap2DSampleSettings& sampleSettings, TArray<FVector2D>& postionSamples);
-    void SampleInRegion(const FMap2DSampleSettings& sampleSettings, const FMap2DRegion& region, TArray<FVector2D>& postionSamples);
+    void SampleIn2DMap(const FMap2DSampleSettings& sampleSettings, TArray<FMap2DSite>& postionSamples) override;
+    void SampleInRegion(const FMap2DSampleSettings& sampleSettings, FMap2DRegion& region, TArray<FMap2DSite>& postionSamples) override;
 
 private:
     FVector2D GenerateRandomPoint_CenterBased(FVector2D center, float impactRadius);

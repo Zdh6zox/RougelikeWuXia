@@ -14,6 +14,7 @@
 class FMap2DRegionDivider_VD : public IMapGeneratorRegionDivider
 {
 public:
+    FMap2DRegionDivider_VD(){}
     ~FMap2DRegionDivider_VD() override {}
 
     void Divide2DMap(const FMap2DDivisionParameters& divisionParams, TArray<FMap2DRegion>& generatedRegions) const override;

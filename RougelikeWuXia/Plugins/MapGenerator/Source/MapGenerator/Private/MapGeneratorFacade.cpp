@@ -6,5 +6,7 @@
 
 void FMapGeneratorFacade::Generate2DMapPOIAndLinks(const FMapGenerator2DSetting& generationSetting, FMap2DGenerationResult& generationResult)
 {
-
+    FMapGenerator2D* mapGenerator2D = new FMapGenerator2D(generationSetting);
+    mapGenerator2D->Construct2DMap(generationResult);
+    delete mapGenerator2D;
 }

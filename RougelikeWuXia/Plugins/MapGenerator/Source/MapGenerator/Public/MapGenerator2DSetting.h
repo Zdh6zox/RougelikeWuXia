@@ -33,4 +33,7 @@ public:
 
     UPROPERTY(EditAnywhere)
         int IterationCandidateNum;
+
+    UPROPERTY(EditAnywhere)
+        int VDRelaxationCycles;
 };

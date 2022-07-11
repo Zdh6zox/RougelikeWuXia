@@ -20,6 +20,7 @@ public:
         m_SubNodeRadius = settings.SubNodeImpactRadius;
         m_MapSizeWidth = settings.Map2DSizeWidth;
         m_MapSizeLength = settings.Map2DSizeLength;
+        m_IterationCandidateNum = settings.IterationCandidateNum;
     }
 
 public:

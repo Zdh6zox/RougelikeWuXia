@@ -3,6 +3,7 @@
 
 #include "Map2DRegion.h"
 #include "Map2DEdge.h"
+#include "Map2DSite.h"
 
 FMap2DRegion::FMap2DRegion(FVector2D regionOrigin, const TArray<class FMap2DEdge>& edges)
 {
@@ -13,6 +14,8 @@ FMap2DRegion::FMap2DRegion(FVector2D regionOrigin, const TArray<class FMap2DEdge
         m_Vertices.AddUnique(edge.GetStartPos());
         m_Vertices.AddUnique(edge.GetEndPos());
     }
+
+    AddSite(regionOrigin);
 }
 
 //FMap2DRegion& FMap2DRegion::operator=(const FMap2DRegion& rhs)
@@ -49,6 +52,12 @@ bool FMap2DRegion::IsInsideRegion(FVector2D testingPos, bool includingBorder, fl
     return bOddNodes;
 }
 
+void FMap2DRegion::AddSite(FVector2D siteLocation)
+{
+    FMap2DSite site(siteLocation);
+    m_Sites.Add(site);
+}
+
 FMap2DRegion FMap2DRegion::GetRegionFromBorder(const FMap2DBorder& border)
 {
     FVector2D x_0 = FVector2D(0.0f, 0.0f);
@@ -65,4 +74,19 @@ FMap2DRegion FMap2DRegion::GetRegionFromBorder(const FMap2DBorder& border)
     FMap2DRegion region = FMap2DRegion(mapCenter, regionEdges);
 
     return region;
+}
+
+void FMap2DRegion::DebugDisplayRegion(UWorld* currentWorld, FVector2D originalLoc, float siteRadius, FColor siteColor, FColor borderColor) const
+{
+    //Draw all sites
+    for (const FMap2DSite& site : m_Sites)
+    {
+        site.DebugDisplaySite(currentWorld, originalLoc, siteRadius, siteColor);
+    }
+
+    //Draw all edges
+    for (const FMap2DEdge& edge : m_Edges)
+    {
+        edge.DebugDisplayEdge(currentWorld, originalLoc, borderColor);
+    }
 }

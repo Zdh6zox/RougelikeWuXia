@@ -29,5 +29,5 @@ FMap2DRegion FMap2DRegionDivider_VD::ConvertGeneratedSite(const FVoronoiDiagramG
         edges.Add(FMap2DEdge(generatedEdge.LeftEndPoint, generatedEdge.RightEndPoint));
     }
 
-    return FMap2DRegion(site.Centroid, edges);
+    return FMap2DRegion(site.Coordinate, edges);
 }

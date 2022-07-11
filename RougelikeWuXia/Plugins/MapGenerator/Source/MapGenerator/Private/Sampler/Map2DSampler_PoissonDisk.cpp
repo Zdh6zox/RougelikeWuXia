@@ -4,7 +4,7 @@
 #include "Sampler/Map2DSampler_PoissonDisk.h"
 #include "RandomGenerateManager.h"
 
-void FMap2DSampler_PoissonDisk::SampleIn2DMap(const FMap2DSampleSettings& sampleSettings, TArray<FVector2D>& postionSamples)
+void FMap2DSampler_PoissonDisk::SampleIn2DMap(const FMap2DSampleSettings& sampleSettings, TArray<FMap2DSite>& postionSamples)
 {
     m_SampleSettings = sampleSettings;
 
@@ -40,22 +40,25 @@ void FMap2DSampler_PoissonDisk::SampleIn2DMap(const FMap2DSampleSettings& sample
         }
 
         //no valid point generated, remove it from activated point list
-        if (remainSamplingCount == 0)
+        if (remainSamplingCount <= 0)
         {
             m_ActivatedPoint.Remove(activatedPoint);
         }
     }
 
-    postionSamples = m_GeneratedNodeSamples;
+    for (FVector2D sample : m_GeneratedNodeSamples)
+    {
+        postionSamples.Add(sample);
+    }
 }
 
-void FMap2DSampler_PoissonDisk::SampleInRegion(const FMap2DSampleSettings& sampleSettings, const FMap2DRegion& region, TArray<FVector2D>& postionSamples)
+void FMap2DSampler_PoissonDisk::SampleInRegion(const FMap2DSampleSettings& sampleSettings, FMap2DRegion& region, TArray<FMap2DSite>& postionSamples)
 {
     m_SampleSettings = sampleSettings;
 
     m_ActivatedPoint.Empty();
     m_GeneratedNodeSamples.Empty();
-    m_Region = m_Region;
+    m_Region = region;
 
     m_ActivatedPoint.Add(region.GetRegionOrigin());
 
@@ -67,7 +70,7 @@ void FMap2DSampler_PoissonDisk::SampleInRegion(const FMap2DSampleSettings& sampl
         int activatedPntInx = FRandomGenerateManager::GetInstance()->RandRange_Int(0, m_ActivatedPoint.Num() - 1);
         FVector2D activatedPoint = m_ActivatedPoint[activatedPntInx];
 
-        int remainSamplingCount = m_SampleSettings.m_IterationCandidateNum;;
+        int remainSamplingCount = m_SampleSettings.m_IterationCandidateNum;
         while (remainSamplingCount > 0)
         {
             FVector2D newCandidate = GenerateRandomPoint_CenterBased(activatedPoint, impactRadius);
@@ -87,7 +90,11 @@ void FMap2DSampler_PoissonDisk::SampleInRegion(const FMap2DSampleSettings& sampl
         }
     }
 
-    postionSamples = m_GeneratedNodeSamples;
+    for (FVector2D sample : m_GeneratedNodeSamples)
+    {
+        postionSamples.Add(sample);
+        region.AddSite(sample);
+    }
 }
 
 FVector2D FMap2DSampler_PoissonDisk::GenerateRandomPoint_CenterBased(FVector2D center, float impactRadius)

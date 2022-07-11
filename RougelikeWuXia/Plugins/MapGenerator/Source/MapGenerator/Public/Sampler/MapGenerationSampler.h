@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Map2DSampleSettings.h"
 #include "Map2DRegion.h"
+#include "Map2DSite.h"
 /**
  * 
  */
@@ -12,6 +13,6 @@ class MAPGENERATOR_API IMapGenerationSampler
 {
 public:
     virtual ~IMapGenerationSampler() {}
-    virtual void SampleIn2DMap(const FMap2DSampleSettings& sampleSettings, TArray<FVector2D>& postionSamples) = 0;
-    virtual void SampleInRegion(const FMap2DSampleSettings& sampleSettings, const FMap2DRegion& region, TArray<FVector2D>& postionSamples) = 0;
+    virtual void SampleIn2DMap(const FMap2DSampleSettings& sampleSettings, TArray<FMap2DSite>& postionSamples) = 0;
+    virtual void SampleInRegion(const FMap2DSampleSettings& sampleSettings, FMap2DRegion& region, TArray<FMap2DSite>& postionSamples) = 0;
 };
