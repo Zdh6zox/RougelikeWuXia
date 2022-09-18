@@ -17,6 +17,7 @@ class MAPGENERATOR_API AMapGeneratorTestActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AMapGeneratorTestActor();
+	~AMapGeneratorTestActor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,7 +29,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-		void DebugGenerate2DMap();
+		void DebugGenerate2DMap(int& regionNum);
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -43,6 +44,12 @@ public:
     UPROPERTY(EditAnywhere)
 		FColor EdgeDisplayColor;
 
+	UFUNCTION(BlueprintCallable)
+		void Display2DMapGenerationResult(int regionIndex);
+
+	UFUNCTION(BlueprintCallable)
+		int GetRegionSize() const;
+
 private:
-	void Display2DMapGenerationResult(FMap2DGenerationResult* result);
+	FMap2DGenerationResult* m_CacheResult = nullptr;
 };

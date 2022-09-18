@@ -3,6 +3,7 @@
 
 #include "MapGeneratorTestActor.h"
 #include "Map2DGenerationResult.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AMapGeneratorTestActor::AMapGeneratorTestActor()
@@ -10,6 +11,12 @@ AMapGeneratorTestActor::AMapGeneratorTestActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	m_CacheResult = new FMap2DGenerationResult();
+}
+
+AMapGeneratorTestActor::~AMapGeneratorTestActor()
+{
+	delete m_CacheResult;
 }
 
 // Called when the game starts or when spawned
@@ -26,19 +33,32 @@ void AMapGeneratorTestActor::Tick(float DeltaTime)
 
 }
 
-void AMapGeneratorTestActor::DebugGenerate2DMap()
+void AMapGeneratorTestActor::DebugGenerate2DMap(int& regionNum)
 {
 	FMap2DGenerationResult result;
-	FMapGeneratorFacade::Generate2DMapPOIAndLinks(Map2DGenerationSetting, result);
+	FMapGeneratorFacade::Generate2DMapPOIAndLinks(Map2DGenerationSetting, *m_CacheResult);
 
-	Display2DMapGenerationResult(&result);
+	regionNum = m_CacheResult->GeneratedRegions.Num();
 }
 
-void AMapGeneratorTestActor::Display2DMapGenerationResult(FMap2DGenerationResult* result)
+void AMapGeneratorTestActor::Display2DMapGenerationResult(int regionIndex)
 {
-	for (const FMap2DRegion& region : result->GeneratedRegions)
+	//Clean previous debug drawing
+	FlushPersistentDebugLines(GetWorld());
+	FlushDebugStrings(GetWorld());
+
+	if (regionIndex >= m_CacheResult->GeneratedRegions.Num())
 	{
-		FVector actorLocation = GetActorLocation();
-		region.DebugDisplayRegion(GetWorld(), FVector2D(actorLocation), SiteDisplayRadius, FColor::MakeRandomColor(), EdgeDisplayColor);
+		return;
 	}
+
+	m_CacheResult->GeneratedRegions[regionIndex].DebugDisplayRegion(GetWorld(), FVector2D(GetActorLocation()), SiteDisplayRadius, SiteDisplayColor, EdgeDisplayColor);
+}
+
+int AMapGeneratorTestActor::GetRegionSize() const
+{
+	if (m_CacheResult == nullptr)
+		return 0;
+
+	return m_CacheResult->GeneratedRegions.Num();
 }

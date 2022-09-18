@@ -4,6 +4,7 @@
 #include "Map2DRegion.h"
 #include "Map2DEdge.h"
 #include "Map2DSite.h"
+#include "DrawDebugHelpers.h"
 
 FMap2DRegion::FMap2DRegion(FVector2D regionOrigin, const TArray<class FMap2DEdge>& edges)
 {
@@ -28,7 +29,7 @@ FMap2DRegion::FMap2DRegion(FVector2D regionOrigin, const TArray<class FMap2DEdge
 
 bool FMap2DRegion::IsInsideRegion(FVector2D testingPos, bool includingBorder, float borderThickness) const
 {
-    //TODO: Do we need to consider borderthickness?
+    //TODO: Do we need to consider border thickness?
     int32 i;
     int32 j = m_Vertices.Num() - 1;
 
@@ -79,9 +80,13 @@ FMap2DRegion FMap2DRegion::GetRegionFromBorder(const FMap2DBorder& border)
 void FMap2DRegion::DebugDisplayRegion(UWorld* currentWorld, FVector2D originalLoc, float siteRadius, FColor siteColor, FColor borderColor) const
 {
     //Draw all sites
+    int index = 0;
     for (const FMap2DSite& site : m_Sites)
     {
         site.DebugDisplaySite(currentWorld, originalLoc, siteRadius, siteColor);
+        FVector siteStrLoc = FVector(site.GetSiteLocation(), siteRadius);
+        DrawDebugString(currentWorld, siteStrLoc, FString::Printf(TEXT("Index: %d"), index), NULL, FColor::MakeRandomColor());
+        index++;
     }
 
     //Draw all edges
