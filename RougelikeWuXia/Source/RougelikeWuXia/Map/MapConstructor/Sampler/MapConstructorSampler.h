@@ -8,6 +8,7 @@
  * 
  */
 class AActor;
+class FMapConstructDebugger;
 
 class FMapConstructorSampler
 {

@@ -43,8 +43,8 @@ void FMapConstructPoissonDiskSampler::SampleNodes()
     //generate first activated point if empty
     if (m_ActivatedPoint.Num() == 0)
     {
-        float ranX = FMath::RandRange(0.0, m_MapSizeX);
-        float ranY = FMath::RandRange(0.0, m_MapSizeY);
+        float ranX = FMath::RandRange(0.0f, m_MapSizeX);
+        float ranY = FMath::RandRange(0.0f, m_MapSizeY);
 
         FMapConstructDebugLog* newLog = new FMapConstructDebugLog();
         newLog->ImportanceType = Main;

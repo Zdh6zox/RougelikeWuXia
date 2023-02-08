@@ -33,7 +33,7 @@ void AMapNodeActor::BeginPlay()
 	
 	TextRenderer->SetWorldSize(50.0f);
 	TextRenderer->SetRelativeTransform(OffsetTransform);
-	TextRenderer->SetText(ActorName);
+	TextRenderer->SetText(FText::FromString(ActorName));
 
 	SpriteComponent->SetRelativeTransform(OffsetTransform);
 }

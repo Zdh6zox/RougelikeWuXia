@@ -79,7 +79,7 @@ void ACardPawnWithCamera::Tick(float DeltaTime)
 		playerCon->GetHitResultUnderCursor(ECC_WorldDynamic, false, hitResult);
 		if (hitResult.bBlockingHit)
 		{
-			AActor* hittedActor = hitResult.Actor.Get();
+			AActor* hittedActor = hitResult.GetActor();
 			ACardActor* hittedCardActor = Cast<ACardActor>(hittedActor);
 			ActorHittedUnderCursorEvent_BP(hittedActor, true);
 			
@@ -105,7 +105,7 @@ void ACardPawnWithCamera::Tick(float DeltaTime)
 		playerCon->GetHitResultUnderCursor(ECC_PhysicsBody, false, hitResult);
 		if (hitResult.bBlockingHit)
 		{
-			AActor* hittedActor = hitResult.Actor.Get();
+			AActor* hittedActor = hitResult.GetActor();
 			ActorHittedUnderCursorEvent_BP(hittedActor, false);
 			if (hittedActor == this)
 			{
