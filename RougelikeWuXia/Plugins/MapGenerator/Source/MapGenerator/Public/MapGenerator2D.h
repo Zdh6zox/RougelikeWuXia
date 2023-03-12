@@ -10,6 +10,7 @@
  */
 class IMapGeneratorRegionDivider;
 class IMapGenerationSampler;
+class FMapGenerationDebugger;
 class MAPGENERATOR_API FMapGenerator2D
 {
 public:
@@ -17,12 +18,14 @@ public:
     ~FMapGenerator2D();
 
     void Construct2DMap(FMap2DGenerationResult& generationResult);
+    void AttachDebugger(FMapGenerationDebugger* debugger);
 
 private:
     FMapGenerator2D(){}
 
     FMapGenerator2DSetting m_GenerationSetting;
-    IMapGeneratorRegionDivider* m_RegionDivider = nullptr;
-    IMapGenerationSampler* m_MainNodeSampler = nullptr;
-    IMapGenerationSampler* m_RegionNodeSampler = nullptr;
+    IMapGeneratorRegionDivider* m_RegionDivider{ nullptr };
+    IMapGenerationSampler* m_MainNodeSampler{ nullptr };
+    IMapGenerationSampler* m_RegionNodeSampler{ nullptr };
+    FMapGenerationDebugger* m_Debugger{ nullptr };
 };

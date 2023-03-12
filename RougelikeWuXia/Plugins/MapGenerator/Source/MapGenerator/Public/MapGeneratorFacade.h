@@ -8,8 +8,9 @@
 /**
  * 
  */
+class FMapGenerationDebugger;
 class MAPGENERATOR_API FMapGeneratorFacade
 {
 public:
-    static void Generate2DMapPOIAndLinks(const FMapGenerator2DSetting& generationSetting, FMap2DGenerationResult& generationResult);
+    static void Generate2DMapPOIAndLinks(const FMapGenerator2DSetting& generationSetting, FMap2DGenerationResult& generationResult, FMapGenerationDebugger* debugger);
 };

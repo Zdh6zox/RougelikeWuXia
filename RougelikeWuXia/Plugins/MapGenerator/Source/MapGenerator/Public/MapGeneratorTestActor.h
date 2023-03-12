@@ -9,6 +9,7 @@
 
 
 class FMap2DGenerationResult;
+class FMapGenerationDebugger;
 UCLASS()
 class MAPGENERATOR_API AMapGeneratorTestActor : public AActor
 {
@@ -22,6 +23,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -50,6 +52,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 		int GetRegionSize() const;
 
+    UFUNCTION(BlueprintCallable)
+        int GetDebugPeriodCount() const;
+
+    UFUNCTION(BlueprintCallable)
+        int GetDebugPeriodElementCount(int periodInx) const;
+
+    UFUNCTION(BlueprintCallable)
+        void ClearDebugLog();
+
+	UFUNCTION(BlueprintCallable)
+		void ShowDebug(int periodInx, int elementInx) const;
+
 private:
 	FMap2DGenerationResult* m_CacheResult = nullptr;
+	FMapGenerationDebugger* m_Debugger{ nullptr };
 };

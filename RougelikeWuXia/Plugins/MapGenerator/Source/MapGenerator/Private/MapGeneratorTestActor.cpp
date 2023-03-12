@@ -4,6 +4,7 @@
 #include "MapGeneratorTestActor.h"
 #include "Map2DGenerationResult.h"
 #include "DrawDebugHelpers.h"
+#include "Debug/MapGenerationDebugger.h"
 
 // Sets default values
 AMapGeneratorTestActor::AMapGeneratorTestActor()
@@ -12,11 +13,14 @@ AMapGeneratorTestActor::AMapGeneratorTestActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	m_CacheResult = new FMap2DGenerationResult();
+	m_Debugger = new FMapGenerationDebugger();
+	m_Debugger->SetDebugOwner(this);
 }
 
 AMapGeneratorTestActor::~AMapGeneratorTestActor()
 {
 	delete m_CacheResult;
+	delete m_Debugger;
 }
 
 // Called when the game starts or when spawned
@@ -24,6 +28,12 @@ void AMapGeneratorTestActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AMapGeneratorTestActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
@@ -36,7 +46,7 @@ void AMapGeneratorTestActor::Tick(float DeltaTime)
 void AMapGeneratorTestActor::DebugGenerate2DMap(int& regionNum)
 {
 	FMap2DGenerationResult result;
-	FMapGeneratorFacade::Generate2DMapPOIAndLinks(Map2DGenerationSetting, *m_CacheResult);
+	FMapGeneratorFacade::Generate2DMapPOIAndLinks(Map2DGenerationSetting, *m_CacheResult, m_Debugger);
 
 	regionNum = m_CacheResult->GeneratedRegions.Num();
 }
@@ -61,4 +71,24 @@ int AMapGeneratorTestActor::GetRegionSize() const
 		return 0;
 
 	return m_CacheResult->GeneratedRegions.Num();
+}
+
+int AMapGeneratorTestActor::GetDebugPeriodCount() const
+{
+	return m_Debugger->GetPeriodSize();
+}
+
+int AMapGeneratorTestActor::GetDebugPeriodElementCount(int periodInx) const
+{
+	return m_Debugger->GetPeriodElementSize(periodInx);
+}
+
+void AMapGeneratorTestActor::ClearDebugLog()
+{
+	m_Debugger->ClearDebugLogs();
+}
+
+void AMapGeneratorTestActor::ShowDebug(int periodInx, int elementInx) const
+{
+	m_Debugger->DebugDisplayElement(GetWorld(), periodInx, elementInx);
 }

@@ -3,9 +3,11 @@
 
 #include "Sampler/Map2DSampler_PoissonDisk.h"
 #include "RandomGenerateManager.h"
+#include "Debug/MapGenerationDebugger.h"
 
 void FMap2DSampler_PoissonDisk::SampleIn2DMap(const FMap2DSampleSettings& sampleSettings, TArray<FMap2DSite>& postionSamples)
 {
+    m_Debugger->AddDebugString("Start Sampling in 2D Map");
     m_SampleSettings = sampleSettings;
 
     m_ActivatedPoint.Empty();
@@ -15,6 +17,8 @@ void FMap2DSampler_PoissonDisk::SampleIn2DMap(const FMap2DSampleSettings& sample
 
     //Generate first point as a base point
     FVector2D firstPnt = GenerateRandomPoint_CoordinateBased(0.0f, 0.0f, border.GetMapLength(), border.GetMapWidth());
+    m_Debugger->AddDebugString(FString::Printf(TEXT("First Point %s"), *firstPnt.ToString()));
+    m_Debugger->AddDebugSphere(firstPnt, FColor::Green);
     m_ActivatedPoint.Add(firstPnt);
     m_GeneratedNodeSamples.Add(firstPnt);
 
@@ -25,6 +29,8 @@ void FMap2DSampler_PoissonDisk::SampleIn2DMap(const FMap2DSampleSettings& sample
         //random pick one activated point
         int activatedPntInx = FRandomGenerateManager::GetInstance()->RandRange_Int(0, m_ActivatedPoint.Num() - 1);
         FVector2D activatedPoint = m_ActivatedPoint[activatedPntInx];
+        m_Debugger->AddDebugString(FString::Printf(TEXT("Using Activate Point %s"), *activatedPoint.ToString()));
+        m_Debugger->AddDebugSphere(activatedPoint, FColor::Green);
 
         int remainSamplingCount = m_SampleSettings.m_IterationCandidateNum;
         while (remainSamplingCount > 0)
@@ -42,7 +48,9 @@ void FMap2DSampler_PoissonDisk::SampleIn2DMap(const FMap2DSampleSettings& sample
         //no valid point generated, remove it from activated point list
         if (remainSamplingCount <= 0)
         {
+            m_Debugger->AddDebugString(FString::Printf(TEXT("No valid point generated for activate Point %s"), *activatedPoint.ToString()));
             m_ActivatedPoint.Remove(activatedPoint);
+            m_Debugger->AddDebugString(FString::Printf(TEXT("Activated points remain %d"), m_ActivatedPoint.Num()));
         }
     }
 
@@ -54,6 +62,7 @@ void FMap2DSampler_PoissonDisk::SampleIn2DMap(const FMap2DSampleSettings& sample
 
 void FMap2DSampler_PoissonDisk::SampleInRegion(const FMap2DSampleSettings& sampleSettings, FMap2DRegion& region, TArray<FMap2DSite>& postionSamples)
 {
+    m_Debugger->AddDebugString("Start Sampling in Region");
     m_SampleSettings = sampleSettings;
 
     m_ActivatedPoint.Empty();
@@ -69,6 +78,8 @@ void FMap2DSampler_PoissonDisk::SampleInRegion(const FMap2DSampleSettings& sampl
         //random pick one activated point
         int activatedPntInx = FRandomGenerateManager::GetInstance()->RandRange_Int(0, m_ActivatedPoint.Num() - 1);
         FVector2D activatedPoint = m_ActivatedPoint[activatedPntInx];
+        m_Debugger->AddDebugString(FString::Printf(TEXT("Using Activate Point %s"), *activatedPoint.ToString()));
+        m_Debugger->AddDebugSphere(activatedPoint, FColor::Green);
 
         int remainSamplingCount = m_SampleSettings.m_IterationCandidateNum;
         while (remainSamplingCount > 0)
@@ -86,7 +97,9 @@ void FMap2DSampler_PoissonDisk::SampleInRegion(const FMap2DSampleSettings& sampl
         //no valid point generated, remove it from activated point list
         if (remainSamplingCount == 0)
         {
+            m_Debugger->AddDebugString(FString::Printf(TEXT("No valid point generated for activate Point %s"), *activatedPoint.ToString()));
             m_ActivatedPoint.Remove(activatedPoint);
+            m_Debugger->AddDebugString(FString::Printf(TEXT("Activated points remain %d"), m_ActivatedPoint.Num()));
         }
     }
 
@@ -120,6 +133,8 @@ bool FMap2DSampler_PoissonDisk::IsValidPoint(FVector2D newPoint, float impactRad
 {
     if (!m_Region.IsInsideRegion(newPoint, true))
     {
+        m_Debugger->AddDebugString(FString::Printf(TEXT("Point %s not in region"), *newPoint.ToString()));
+        m_Debugger->AddDebugSphere(newPoint, FColor::Red);
         return false;
     }
 
@@ -129,6 +144,8 @@ bool FMap2DSampler_PoissonDisk::IsValidPoint(FVector2D newPoint, float impactRad
         float distance = FVector2D::Distance(testingPoint, newPoint);
         if (distance <= impactRadius)
         {
+            m_Debugger->AddDebugString(FString::Printf(TEXT("Point %s within impact radius"), *newPoint.ToString()));
+            m_Debugger->AddDebugSphere(newPoint, FColor::Red);
             return false;
         }
     }

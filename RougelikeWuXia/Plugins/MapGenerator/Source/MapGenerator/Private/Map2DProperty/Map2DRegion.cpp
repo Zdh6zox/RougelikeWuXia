@@ -30,6 +30,7 @@ FMap2DRegion::FMap2DRegion(FVector2D regionOrigin, const TArray<class FMap2DEdge
 bool FMap2DRegion::IsInsideRegion(FVector2D testingPos, bool includingBorder, float borderThickness) const
 {
     //TODO: Do we need to consider border thickness?
+    //TODO: Something wrong with this check
     int32 i;
     int32 j = m_Vertices.Num() - 1;
 
