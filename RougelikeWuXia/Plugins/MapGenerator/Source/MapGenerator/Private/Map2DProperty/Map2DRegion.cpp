@@ -5,16 +5,47 @@
 #include "Map2DEdge.h"
 #include "Map2DSite.h"
 #include "DrawDebugHelpers.h"
+#include "Math/ConvexHull2d.h"
 
 FMap2DRegion::FMap2DRegion(FVector2D regionOrigin, const TArray<class FMap2DEdge>& edges)
 {
+    //ToDo: should close the region, merge with the border
     m_Origin = regionOrigin;
     m_Edges = edges;
+
     for (const FMap2DEdge& edge : m_Edges)
     {
-        m_Vertices.AddUnique(edge.GetStartPos());
-        m_Vertices.AddUnique(edge.GetEndPos());
+        if (!CheckVertexExist(edge.GetStartPos()))
+        {
+            m_Vertices.Add(edge.GetStartPos());
+        }
+
+        if (!CheckVertexExist(edge.GetEndPos()))
+        {
+            m_Vertices.Add(edge.GetEndPos());
+        }
     }
+
+    //sort vertices use convex hull 2D
+    TArray< int32 > convexHullIndices;
+    ConvexHull2D::ComputeConvexHull(m_Vertices, convexHullIndices);
+
+    TArray<FVector2D> sortedVertices;
+    sortedVertices.Reserve(convexHullIndices.Num());
+    for (int32 Index : convexHullIndices)
+    {
+        sortedVertices.Emplace(m_Vertices[Index]);
+    }
+
+    m_Vertices.Empty();
+    m_Vertices.Append(sortedVertices);
+
+    ////close region
+    //if (m_Vertices.Num() >= 2 && m_Vertices.Num() >= m_Edges.Num())
+    //{
+    //    FMap2DEdge edge = FMap2DEdge(m_Vertices[0], m_Vertices[1], false);
+    //    m_Edges.Add(edge);
+    //}
 
     AddSite(regionOrigin);
 }
@@ -54,6 +85,20 @@ bool FMap2DRegion::IsInsideRegion(FVector2D testingPos, bool includingBorder, fl
     return bOddNodes;
 }
 
+bool FMap2DRegion::CheckVertexExist(const FVector2D& vec) const
+{
+    constexpr float ErrorTolerance = 1.e-4f;
+    for (const FVector2D& vector2D : m_Vertices)
+    {
+        if (vector2D.Equals(vec, ErrorTolerance))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void FMap2DRegion::AddSite(FVector2D siteLocation)
 {
     FMap2DSite site(siteLocation);
@@ -85,8 +130,8 @@ void FMap2DRegion::DebugDisplayRegion(UWorld* currentWorld, FVector2D originalLo
     for (const FMap2DSite& site : m_Sites)
     {
         site.DebugDisplaySite(currentWorld, originalLoc, siteRadius, siteColor);
-        FVector siteStrLoc = FVector(site.GetSiteLocation(), siteRadius);
-        DrawDebugString(currentWorld, siteStrLoc, FString::Printf(TEXT("Index: %d"), index), NULL, FColor::MakeRandomColor());
+        FVector siteStrLoc = FVector(site.GetSiteLocation() + originalLoc, siteRadius);
+        DrawDebugString(currentWorld, siteStrLoc, FString::Printf(TEXT("Site Index: %d"), index), NULL, FColor::MakeRandomColor());
         index++;
     }
 
@@ -94,5 +139,14 @@ void FMap2DRegion::DebugDisplayRegion(UWorld* currentWorld, FVector2D originalLo
     for (const FMap2DEdge& edge : m_Edges)
     {
         edge.DebugDisplayEdge(currentWorld, originalLoc, borderColor);
+    }
+
+    //Draw all vertices
+    int vertexIndex = 0;
+    for (const FVector2D& vertex : m_Vertices)
+    {
+        FVector vertex3D = FVector(vertex + originalLoc, siteRadius);
+        DrawDebugString(currentWorld, vertex3D, FString::Printf(TEXT("Vertex Index: %d"), vertexIndex), NULL, FColor::MakeRandomColor());
+        vertexIndex++;
     }
 }

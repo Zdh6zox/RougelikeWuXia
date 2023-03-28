@@ -51,18 +51,49 @@ void AMapGeneratorTestActor::DebugGenerate2DMap(int& regionNum)
 	regionNum = m_CacheResult->GeneratedRegions.Num();
 }
 
+void AMapGeneratorTestActor::DisplayAllResult()
+{
+	for (int32 i = 0; i < m_CacheResult->GeneratedRegions.Num(); ++i)
+	{
+		m_CacheResult->GeneratedRegions[i].DebugDisplayRegion(GetWorld(), FVector2D(GetActorLocation()), SiteDisplayRadius, SiteDisplayColor, EdgeDisplayColor);
+	}
+
+	FlushDebugStrings(GetWorld());
+}
+
 void AMapGeneratorTestActor::Display2DMapGenerationResult(int regionIndex)
 {
-	//Clean previous debug drawing
-	FlushPersistentDebugLines(GetWorld());
-	FlushDebugStrings(GetWorld());
-
 	if (regionIndex >= m_CacheResult->GeneratedRegions.Num())
 	{
 		return;
 	}
 
 	m_CacheResult->GeneratedRegions[regionIndex].DebugDisplayRegion(GetWorld(), FVector2D(GetActorLocation()), SiteDisplayRadius, SiteDisplayColor, EdgeDisplayColor);
+}
+
+void AMapGeneratorTestActor::Display2DMapBorder()
+{
+	FVector vec0 = GetActorLocation();
+	FVector vec1 = GetActorLocation() + Map2DGenerationSetting.Map2DSizeLength * FVector::ForwardVector;
+	FVector vec2 = vec1 + Map2DGenerationSetting.Map2DSizeWidth * FVector::RightVector;
+	FVector vec3 = vec0 + Map2DGenerationSetting.Map2DSizeWidth * FVector::RightVector;
+	DrawDebugLine(GetWorld(), vec0, vec1, EdgeDisplayColor, true);
+	DrawDebugLine(GetWorld(), vec1, vec2, EdgeDisplayColor, true);
+	DrawDebugLine(GetWorld(), vec2, vec3, EdgeDisplayColor, true);
+	DrawDebugLine(GetWorld(), vec3, vec0, EdgeDisplayColor, true);
+}
+
+void AMapGeneratorTestActor::ClearDebugDisplay(bool clearStrings, bool clearLines)
+{
+	if (clearStrings)
+	{
+		FlushDebugStrings(GetWorld());
+	}
+
+	if (clearLines)
+	{
+		FlushPersistentDebugLines(GetWorld());
+	}
 }
 
 int AMapGeneratorTestActor::GetRegionSize() const

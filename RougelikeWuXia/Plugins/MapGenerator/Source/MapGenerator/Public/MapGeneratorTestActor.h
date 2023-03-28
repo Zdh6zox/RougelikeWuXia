@@ -49,6 +49,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Display2DMapGenerationResult(int regionIndex);
 
+    UFUNCTION(BlueprintCallable)
+        void DisplayAllResult();
+
+	UFUNCTION(BlueprintCallable)
+		void Display2DMapBorder();
+
+	UFUNCTION(BlueprintCallable)
+		void ClearDebugDisplay(bool clearStrings, bool clearLines);
+
 	UFUNCTION(BlueprintCallable)
 		int GetRegionSize() const;
 

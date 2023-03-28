@@ -65,9 +65,6 @@ void FMapGenerator2D::Construct2DMap(FMap2DGenerationResult& generationResult)
         m_RegionNodeSampler->SampleInRegion(sampleSetting, region, generatedSites);
         m_Debugger->EndLogPeriod();
         regionInx++;
-
-        //[TODO]
-        //Investigate why sometimes there is no sites generated in region
     }
 
     generationResult.GeneratedRegions = generatedRegions;

@@ -30,6 +30,7 @@ public:
     void DebugDisplayRegion(UWorld* currentWorld, FVector2D originalLoc, float siteRadius, FColor siteColor, FColor borderColor) const;
 
 private:
+    bool CheckVertexExist(const FVector2D& vec) const;
     FVector2D m_Origin;
     TArray<FMap2DEdge> m_Edges;
     TArray<FMap2DSite> m_Sites;
