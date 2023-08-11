@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.1",
+	"EngineAssociation": "5.2",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -13,6 +13,12 @@
 				"Engine",
 				"UMG"
 			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "PhysicsControl",
+			"Enabled": true
 		}
 	]
 }

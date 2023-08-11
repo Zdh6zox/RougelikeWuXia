@@ -27,7 +27,7 @@ public:
         : MinimumValues(InMinimumValues)
         , DeltaValues(InDeltaValues)
     {
-        for (int32 i = 0; i < 2 * FMath::Sqrt(NumberOfSites); ++i)
+        for (int32 i = 0; i < 2 * FMath::Sqrt((float)NumberOfSites); ++i)
         {
             Hash.Add(nullptr);
         }
@@ -182,7 +182,7 @@ public:
         , DeltaValues(InDeltaValues)
     {
         // Create an array full of dummies that represent the beginning of a bucket
-        for (int32 i = 0; i < 4 * FMath::Sqrt(NumberOfSites); ++i)
+        for (int32 i = 0; i < 4 * FMath::Sqrt((float)NumberOfSites); ++i)
         {
             Hash.Add(FVoronoiDiagramHalfEdge::CreatePtr(nullptr, EVoronoiDiagramEdge::None));
             Hash[i]->NextInPriorityQueue = nullptr;
